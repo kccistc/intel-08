@@ -3,7 +3,7 @@
 ## Clone code 
 
 ```shell
-git clone --recurse-submodules https://github.com/kccistc/intel-03.git
+git clone --recurse-submodules https://github.com/kccistc/intel-08.git
 ```
 
 * `--recurse-submodules` option 없이 clone 한 경우, 아래를 통해 submodule update
