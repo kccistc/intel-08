@@ -14,11 +14,11 @@
 ---
 
 ### 1) 차량(수신) 먼저 실행
-python3 v2x_alert_client.py --log alerts.csv
+python3 client.py --log alerts.csv
 NIC가 여러 개면 예) --iface 192.168.0.23
 
 ### 2) 서버(송신)에서 반복 브로드캐스트
-python3 v2x_alert_server.py --repeat \
+python3 server.py --repeat \
   --type collision --severity high --distance-m 500 \
   --suggest slow_down --road segment_A \
   --lat 37.12345 --lon 127.12345
@@ -28,11 +28,11 @@ python3 v2x_alert_server.py --repeat \
 두쪽에 같은 키를 지정하세요:
 
 export V2X_KEY="mysecret" \
-python3 v2x_alert_server.py --repeat --hmac-key "$V2X_KEY" \
-python3 v2x_alert_client.py --hmac-key "$V2X_KEY" 
+python3 server.py --repeat --hmac-key "$V2X_KEY" \
+python3 client.py --hmac-key "$V2X_KEY" 
 
 ### 4) (선택) ROS2 퍼블리시(차량)
-python3 v2x_alert_client.py --ros2 \
+python3 client.py --ros2 \
 토픽: /v2x/alert (std_msgs/String, payload는 JSON 문자열)
 
 ### 메시지 포맷(JSON)
@@ -55,7 +55,7 @@ python3 v2x_alert_client.py --ros2 \
 
 서버는 --repeat --hz 2.0 등으로 반복 송신하여 누락 대비 권장.
 
-### 서버 옵션(v2x_alert_server.py)
+### 서버 옵션(server.py)
 --mcast        멀티캐스트 그룹 (기본: 239.20.20.20) \
 --port         포트 (기본: 5520) \
 --iface        송신 인터페이스 IPv4(옵션) \
@@ -73,7 +73,7 @@ python3 v2x_alert_client.py --ros2 \
 --suggest      조치 권고 (slow_down|stop|detour|caution) \
 --message      자유 텍스트 메시지 
 
-### 클라이언트 옵션(v2x_alert_client.py)
+### 클라이언트 옵션(client.py)
 --mcast        멀티캐스트 그룹 (기본: 239.20.20.20) \
 --port         포트 (기본: 5520) \
 --iface        가입 인터페이스 IPv4(옵션) \
