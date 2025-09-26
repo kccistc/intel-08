@@ -33,7 +33,7 @@ python3 v2x_alert_client.py --hmac-key "$V2X_KEY"
 
 ### 4) (선택) ROS2 퍼블리시(차량)
 python3 v2x_alert_client.py --ros2
-# 토픽: /v2x/alert (std_msgs/String, payload는 JSON 문자열)
+토픽: /v2x/alert (std_msgs/String, payload는 JSON 문자열)
 
 ### 메시지 포맷(JSON)
 {
