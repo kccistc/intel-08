@@ -1,0 +1,405 @@
+4-1) 순환 녹화(FFmpeg) 서비스 만들기
+
+CCTV/웹캠 영상을 10초 세그먼트로 계속 저장(롤링). 파일명에 epoch를 넣어 타임스탬프 기준으로 쉽게 자르기.
+
+저장 경로 만들기
+
+sudo mkdir -p /var/rec /var/archive
+
+
+서비스 유닛 생성 (RTSP 예시; USB 웹캠이면 주석 교체)
+
+sudo tee /etc/systemd/system/v2x-recorder.service >/dev/null <<'EOF'
+[Unit]
+Description=V2X Circular Recorder (FFmpeg 10s segments)
+After=network-online.target
+
+[Service]
+Type=simple
+# === RTSP 입력 === (예: rtsp://user:pass@CAM_IP/stream)
+ExecStart=/usr/bin/ffmpeg -nostdin -y -rtsp_transport tcp -i "RTSP_URL_HERE" \
+  -c copy -f segment -segment_time 10 -strftime 1 -reset_timestamps 1 \
+  /var/rec/seg_%s.mp4
+# === USB 웹캠 입력(위 대신 이 줄로 바꿔도 됨) ===
+# ExecStart=/usr/bin/ffmpeg -nostdin -y -f v4l2 -i /dev/video0 \
+#  -c:v libx264 -preset veryfast -crf 23 \
+#  -f segment -segment_time 10 -strftime 1 /var/rec/seg_%s.mp4
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+적용/시작/확인
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now v2x-recorder.service
+journalctl -u v2x-recorder.service -f
+# 몇 분 뒤 파일 확인
+ls -lh /var/rec | tail
+
+4-2) 전후 5분 클립 생성 스크립트 설치
+
+이벤트 시각 ts 기준으로 T0-300s ~ T0+300s 범위의 seg_* 파일을 모아 concat.
+
+스크립트 설치
+
+sudo tee /opt/v2x/make_clip.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import sys, os, time, math, subprocess
+REC_DIR="/var/rec"; OUT_DIR="/var/archive"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+def pick_segments(t0, pre=300, post=300, segdur=10):
+    lo = int(math.floor((t0-pre)/segdur)*segdur)
+    hi = int(math.ceil((t0+post)/segdur)*segdur)
+    files=[]
+    for ts in range(lo, hi, segdur):
+        p = f"{REC_DIR}/seg_{ts}.mp4"
+        if os.path.exists(p): files.append(p)
+    return files
+
+def concat(files, out):
+    if not files:
+        raise SystemExit("no segment files found for the requested window")
+    tmp="/tmp/concat.txt"
+    with open(tmp,"w") as f:
+        for p in files: f.write(f"file '{p}'\n")
+    # copy 실패시 재인코딩으로 fallback
+    r = subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",tmp,"-c","copy",out])
+    if r.returncode != 0:
+        subprocess.check_call(["ffmpeg","-y","-f","concat","-safe","0","-i",tmp,"-c:v","libx264","-crf","23","-preset","veryfast",out])
+    print("saved:", out)
+
+if __name__=="__main__":
+    t0 = float(sys.argv[1]) if len(sys.argv)>1 else time.time()
+    files = pick_segments(t0)
+    out = f"{OUT_DIR}/accident_{int(t0)}.mp4"
+    concat(files, out)
+EOF
+sudo chmod +x /opt/v2x/make_clip.py
+
+
+테스트 (최근 시각으로 한번 만들어 보기)
+
+python3 /opt/v2x/make_clip.py $(date +%s)
+ls -lh /var/archive | tail
+
+4-3) 이벤트 워처(파일 떨어지면 → 방송 + 클립 생성)
+
+감지기가 /opt/v2x/events/*.json 파일을 만들면:
+(1) server.py를 호출해 멀티캐스트 방송, (2) make_clip.py로 10분 클립 생성.
+
+이벤트 디렉터리 & 워처 설치
+
+sudo mkdir -p /opt/v2x/events
+sudo tee /opt/v2x/watch_and_broadcast.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import time, json, subprocess, os
+from pathlib import Path
+EVENT_DIR = Path("/opt/v2x/events")
+BROADCAST = ["/usr/bin/python3","/opt/v2x/server.py","--repeat"]  # 서버 스크립트 경로/옵션
+CLIPPER   = ["/usr/bin/python3","/opt/v2x/make_clip.py"]
+SEEN=set()
+
+def broadcast(evt):
+    cmd = BROADCAST + [
+        "--type", evt.get("type","unknown"),
+        "--severity", evt.get("severity","high"),
+        "--distance-m", str(evt.get("distance_m",500)),
+        "--road", evt.get("road","segment_A"),
+        "--lat", str(evt.get("lat",0.0)),
+        "--lon", str(evt.get("lon",0.0)),
+        "--ttl-s","10.0"
+    ]
+    # HMAC 키를 server.env에 이미 넣어 systemd로 실행 중이면 생략 가능
+    subprocess.Popen(cmd)
+
+def make_clip(evt):
+    ts = float(evt.get("ts", time.time()))
+    subprocess.Popen(CLIPPER + [str(ts)])
+
+def main():
+    EVENT_DIR.mkdir(parents=True, exist_ok=True)
+    while True:
+        for p in EVENT_DIR.glob("*.json"):
+            if p in SEEN:
+                continue
+            try:
+                evt=json.loads(p.read_text())
+            except Exception as e:
+                print("[WARN] bad json:", p, e); 
+                SEEN.add(p); continue
+            broadcast(evt)
+            if evt.get("clip_hint", True):
+                make_clip(evt)
+            SEEN.add(p)
+        time.sleep(1)
+
+if __name__=="__main__":
+    main()
+EOF
+sudo chmod +x /opt/v2x/watch_and_broadcast.py
+
+
+워처 systemd 유닛
+
+sudo tee /etc/systemd/system/v2x-watcher.service >/dev/null <<'EOF'
+[Unit]
+Description=V2X Event Watcher (trigger broadcast + clip)
+After=v2x-recorder.service network-online.target
+Wants=v2x-recorder.service
+
+[Service]
+WorkingDirectory=/opt/v2x
+ExecStart=/usr/bin/python3 /opt/v2x/watch_and_broadcast.py
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now v2x-watcher.service
+journalctl -u v2x-watcher.service -f
+
+
+테스트 이벤트 드롭(감지기 흉내)
+
+sudo tee /opt/v2x/events/test_collision.json >/dev/null <<'EOF'
+{"ts": '"$(date +%s)"', "type":"collision", "severity":"high",
+ "lat":37.12, "lon":127.12, "road":"segment_A", "distance_m":500, "clip_hint":true}
+EOF
+
+
+기대 결과:
+
+차량 쪽 journalctl -u v2x-alert-client.service -f 에서 [RECV] ... 로그가 즉시 보임
+
+서버 쪽 /var/archive/accident_<ts>.mp4 가 잠시 후 생성
+
+4-4) 감지기(Detection/Classification)와 연결하는 방법
+
+가장 간단한 방법: 감지기가 사고 확정 시 위 JSON 포맷으로 /opt/v2x/events/<어떤이름>.json 한 줄 쓰기
+
+{"ts": 1737930000.123, "type":"fire", "severity":"critical",
+ "lat":37.12, "lon":127.12, "road":"segment_B", "distance_m":300, "clip_hint":true}
+
+
+감지기가 Python이면:
+
+import json, time, uuid, pathlib
+evt={"ts":time.time(),"type":"collision","severity":"high","lat":37.12,"lon":127.12,"road":"A","distance_m":500,"clip_hint":True}
+pathlib.Path(f"/opt/v2x/events/{uuid.uuid4().hex}.json").write_text(json.dumps(evt))
+
+4-5) 자주 발생하는 문제 & 체크
+
+/var/rec가 비어있다 → v2x-recorder.service 로그 확인(카메라 URL/권한/코덱)
+
+클립이 안 만들어진다 → make_clip.py를 수동 실행해서 에러 확인
+
+방송은 되는데 차량이 안 받는다 → AP의 멀티캐스트/IGMP 설정, --iface 명시, 방화벽 확인
+
+방송이 너무 잦다 → 서버 --repeat 대신 워처에서 단발로 호출하도록 바꿔도 됨(필요시 수정해 줄게)
+
+좋아, 4-4(감지기 ↔ 이벤트 JSON 드롭 연동) 는 “사고가 확정되면 /opt/v2x/events/*.json 파일을 하나 쓰는 것”만 하면 끝이에요.
+아래 둘 중 편한 쪽으로 바로 진행하면 됩니다.
+
+옵션 A) 가장 쉬운 방법 — 이벤트 발사기(더미/수동)
+
+감지기가 아직 없어도 워처가 제대로 작동하는지 검증 가능.
+
+파일 생성기 스크립트(서버):
+
+sudo tee /opt/v2x/emit_event.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import json, time, uuid, pathlib, argparse
+p = argparse.ArgumentParser()
+p.add_argument("--type", default="collision", choices=["collision","fire","rollover","blockage","unknown"])
+p.add_argument("--severity", default="high")
+p.add_argument("--lat", type=float, default=37.12345)
+p.add_argument("--lon", type=float, default=127.12345)
+p.add_argument("--road", default="segment_A")
+p.add_argument("--distance-m", type=float, default=500)
+p.add_argument("--ts", type=float, default=time.time())
+p.add_argument("--clip-hint", action="store_true")
+args = p.parse_args()
+
+evt = {
+  "ts": args.ts,
+  "type": args.type,
+  "severity": args.severity,
+  "lat": args.lat, "lon": args.lon,
+  "road": args.road,
+  "distance_m": args.distance_m,
+  "clip_hint": bool(args.clip_hint),
+}
+out = pathlib.Path("/opt/v2x/events") / f"{uuid.uuid4().hex}.json"
+out.write_text(json.dumps(evt))
+print("wrote", out)
+EOF
+sudo chmod +x /opt/v2x/emit_event.py
+
+
+발사(테스트):
+
+python3 /opt/v2x/emit_event.py --type collision --severity high --clip-hint
+
+
+기대 결과:
+
+차량 로그에 [RECV] ... 바로 표시
+
+서버 /var/archive/accident_<ts>.mp4 생성(녹화가 돌고 있다면)
+
+옵션 B) 간단 감지기 스텁(카메라/영상 입력 → 규칙 기반 → 이벤트 드롭)
+
+실제 감지기 붙이기 전, OpenCV로 “연속 정지/연기 색상” 같은 간단 규칙으로 이벤트를 만드는 예.
+
+sudo tee /opt/v2x/detector_stub.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import cv2, time, json, uuid, pathlib, argparse, numpy as np
+
+EVENT_DIR = pathlib.Path("/opt/v2x/events"); EVENT_DIR.mkdir(parents=True, exist_ok=True)
+
+def drop_event(evt:dict):
+    p = EVENT_DIR / f"{uuid.uuid4().hex}.json"
+    evt.setdefault("ts", time.time())
+    p.write_text(json.dumps(evt))
+    print("[EVENT]", evt)
+
+def main():
+    a = argparse.ArgumentParser()
+    a.add_argument("--src", default=0, help="camera index or video path or rtsp url")
+    a.add_argument("--road", default="segment_A")
+    a.add_argument("--lat", type=float, default=37.12345)
+    a.add_argument("--lon", type=float, default=127.12345)
+    a.add_argument("--distance-m", type=float, default=500)
+    args = a.parse_args()
+
+    cap = cv2.VideoCapture(args.src)
+    if not cap.isOpened():
+        raise SystemExit(f"cannot open src={args.src}")
+
+    # 간단 모션/정지 판단 변수
+    prev = None
+    still_frames = 0
+    FIRE_COUNT = 0
+
+    while True:
+        ok, frame = cap.read()
+        if not ok: break
+
+        # --- 간단 화재 힌트(붉은색 많은 프레임 누적) ---
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        mask_red = cv2.inRange(hsv, (0,70,50), (10,255,255)) + cv2.inRange(hsv, (170,70,50), (180,255,255))
+        red_ratio = (mask_red>0).mean()
+        if red_ratio > 0.20:   # 프레임의 20% 이상이 붉은 계열이면 힌트
+            FIRE_COUNT += 1
+        else:
+            FIRE_COUNT = max(0, FIRE_COUNT-1)
+        if FIRE_COUNT >= 10:   # 약 10프레임 지속(≈0.3s~0.5s) 시 이벤트
+            drop_event({
+              "type":"fire","severity":"high",
+              "lat":args.lat,"lon":args.lon,"road":args.road,
+              "distance_m":args.distance_m,"clip_hint":True
+            })
+            FIRE_COUNT = 0
+
+        # --- 간단 충돌/정지 힌트(프레임 차이 거의 없음이 지속) ---
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (5,5), 0)
+        if prev is not None:
+            diff = cv2.absdiff(prev, gray)
+            motion = (diff>25).mean()
+            if motion < 0.005:   # 모션 픽셀 비율이 매우 낮으면 '정지'로 간주
+                still_frames += 1
+            else:
+                still_frames = 0
+            # 3초 가량 정지 지속되면 'blockage/collision 의심' 이벤트
+            if still_frames >= 90:
+                drop_event({
+                  "type":"collision","severity":"medium",
+                  "lat":args.lat,"lon":args.lon,"road":args.road,
+                  "distance_m":args.distance_m,"clip_hint":True
+                })
+                still_frames = 0
+        prev = gray
+
+        # 키 종료(테스트 환경에서만)
+        if cv2.waitKey(1) & 0xFF == 27:  # ESC
+            break
+
+    cap.release()
+EOF
+sudo chmod +x /opt/v2x/detector_stub.py
+
+
+실행:
+
+# 웹캠이면
+python3 /opt/v2x/detector_stub.py --src 0
+# 파일/RTSP면
+# python3 /opt/v2x/detector_stub.py --src /path/to/video.mp4
+# python3 /opt/v2x/detector_stub.py --src "rtsp://user:pass@CAM_IP/stream"
+
+
+프레임에 붉은 영역이 큰 비율로 지속되면 fire,
+
+모션이 거의 없으면 몇 초 후 collision 의심 이벤트를 /opt/v2x/events/에 드롭 → 워처가 브로드캐스트 + 10분 클립 처리.
+
+실제 감지기로 대체할 때(요지)
+
+네가 쓰는 Detection/Classification 코드(예: YOLO/TensorRT/ONNX Runtime)에서 “사고 확정” 시점에 딱 한 줄:
+
+import json, time, uuid, pathlib
+evt={"ts":time.time(),"type":"collision","severity":"high",
+     "lat":37.12,"lon":127.12,"road":"A","distance_m":500,"clip_hint":True}
+pathlib.Path(f"/opt/v2x/events/{uuid.uuid4().hex}.json").write_text(json.dumps(evt))
+
+
+이 한 줄이 4-3의 워처를 트리거합니다.
+
+체크리스트
+
+/opt/v2x/watch_and_broadcast.py 서비스가 활성인지 확인:
+
+systemctl status v2x-watcher.service
+journalctl -u v2x-watcher.service -f
+
+
+이벤트가 떨어지면 차량 콘솔에 [RECV] ...가 즉시 나오고, /var/archive/accident_<ts>.mp4가 생성되는지 확인.
+
+좋습니다 👍 에러 메시지를 보면 원인은 아주 단순해요:
+
+PermissionError: [Errno 13] Permission denied: '/opt/v2x/events/...json'
+
+
+즉, 지금 로그인한 계정(putty에서 쓰는 계정)이 /opt/v2x/events/ 디렉토리에 쓸 권한이 없다는 겁니다.
+
+해결 방법 2가지
+방법 1) 디렉토리 권한을 열어주기 (가장 간단)
+sudo mkdir -p /opt/v2x/events
+sudo chown -R $USER:$USER /opt/v2x/events
+sudo chmod 755 /opt/v2x/events
+
+
+→ 이렇게 하면 현재 계정이 /opt/v2x/events/에 파일을 자유롭게 쓸 수 있습니다.
+그 다음 다시 실행:
+
+python3 /opt/v2x/emit_event.py --type collision --severity high --clip-hint
+
+방법 2) 그대로 root 계정으로 실행
+sudo python3 /opt/v2x/emit_event.py --type collision --severity high --clip-hint
+
+
+→ 이렇게 하면 PermissionError 없이 JSON이 /opt/v2x/events/에 만들어집니다.
+
+추천
+
+개발/테스트 중이라면 **방법 1 (권한 변경)**이 편합니다.
+
+운영환경에서 systemd 서비스로 감지기를 돌릴 예정이면 → Service 안에서 User=를 명시하거나, root 권한으로 실행하는 구조로 가는 게 일반적이에요.
