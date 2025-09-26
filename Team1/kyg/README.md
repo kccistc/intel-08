@@ -63,7 +63,7 @@ python3 v2x_alert_client.py --ros2 \
 --hz           반복 주기 Hz (기본: 2.0) \
 --src-id       헤더 소스 ID (기본: rsu_server_01) \
 --hmac-key     HMAC 키(무결성용, 옵션) \
---ttl-s        메시지 유효시간 초 (기본: 10.0) \
+--ttl-s        메시지 유효시간 초 (기본: 10.0) 
 
 --type         사고 유형 (collision|fire|rollover|blockage|unknown) \
 --severity     심각도 (low|medium|high|critical) \
@@ -71,7 +71,7 @@ python3 v2x_alert_client.py --ros2 \
 --road         도로/세그먼트 이름 \
 --lat --lon    사고 위치 좌표 \
 --suggest      조치 권고 (slow_down|stop|detour|caution) \
---message      자유 텍스트 메시지 \
+--message      자유 텍스트 메시지 
 
 ### 클라이언트 옵션(v2x_alert_client.py)
 --mcast        멀티캐스트 그룹 (기본: 239.20.20.20) \
