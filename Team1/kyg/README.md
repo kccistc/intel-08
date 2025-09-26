@@ -27,27 +27,27 @@ python3 v2x_alert_server.py --repeat \
 
 두쪽에 같은 키를 지정하세요:
 
-export V2X_KEY="mysecret"
-python3 v2x_alert_server.py --repeat --hmac-key "$V2X_KEY"
-python3 v2x_alert_client.py --hmac-key "$V2X_KEY"
+export V2X_KEY="mysecret" \
+python3 v2x_alert_server.py --repeat --hmac-key "$V2X_KEY" \
+python3 v2x_alert_client.py --hmac-key "$V2X_KEY" \
 
 ### 4) (선택) ROS2 퍼블리시(차량)
-python3 v2x_alert_client.py --ros2
+python3 v2x_alert_client.py --ros2 \
 토픽: /v2x/alert (std_msgs/String, payload는 JSON 문자열)
 
 ### 메시지 포맷(JSON)
 {
-  "hdr": {"ver":1,"src":"rsu_server_01","seq":42,"ts":1690000000.0},
-  "accident": {
-    "type":"collision",        // collision | fire | rollover | blockage | unknown
-    "severity":"high",         // low | medium | high | critical
-    "distance_m":500.0,
-    "road":"segment_A",
-    "lat":37.12345, "lon":127.12345
-  },
-  "advice": {"message":"", "suggest":"slow_down"}, // slow_down | stop | detour | caution
-  "ttl_s":10.0,                                     // 메시지 유효시간(초)
-  "sig": {"alg":"hmac-sha256","value":"..."}        // (HMAC 사용 시)
+  "hdr": {"ver":1,"src":"rsu_server_01","seq":42,"ts":1690000000.0}, \
+  "accident": {  \
+    "type":"collision",        // collision | fire | rollover | blockage | unknown \
+    "severity":"high",         // low | medium | high | critical \
+    "distance_m":500.0, \
+    "road":"segment_A", \
+    "lat":37.12345, "lon":127.12345 \
+  }, \
+  "advice": {"message":"", "suggest":"slow_down"}, // slow_down | stop | detour | caution \
+  "ttl_s":10.0,                                     // 메시지 유효시간(초) \
+  "sig": {"alg":"hmac-sha256","value":"..."}        // (HMAC 사용 시) \
 }
 
 
@@ -56,30 +56,30 @@ python3 v2x_alert_client.py --ros2
 서버는 --repeat --hz 2.0 등으로 반복 송신하여 누락 대비 권장.
 
 ### 서버 옵션(v2x_alert_server.py)
---mcast        멀티캐스트 그룹 (기본: 239.20.20.20)
---port         포트 (기본: 5520)
---iface        송신 인터페이스 IPv4(옵션)
---repeat       반복 송신 (미지정 시 3회 원샷)
---hz           반복 주기 Hz (기본: 2.0)
---src-id       헤더 소스 ID (기본: rsu_server_01)
---hmac-key     HMAC 키(무결성용, 옵션)
---ttl-s        메시지 유효시간 초 (기본: 10.0)
+--mcast        멀티캐스트 그룹 (기본: 239.20.20.20) \
+--port         포트 (기본: 5520) \
+--iface        송신 인터페이스 IPv4(옵션) \
+--repeat       반복 송신 (미지정 시 3회 원샷) \
+--hz           반복 주기 Hz (기본: 2.0) \
+--src-id       헤더 소스 ID (기본: rsu_server_01) \
+--hmac-key     HMAC 키(무결성용, 옵션) \
+--ttl-s        메시지 유효시간 초 (기본: 10.0) \
 
---type         사고 유형 (collision|fire|rollover|blockage|unknown)
---severity     심각도 (low|medium|high|critical)
---distance-m   차량군 기준 거리(미터)
---road         도로/세그먼트 이름
---lat --lon    사고 위치 좌표
---suggest      조치 권고 (slow_down|stop|detour|caution)
---message      자유 텍스트 메시지
+--type         사고 유형 (collision|fire|rollover|blockage|unknown) \
+--severity     심각도 (low|medium|high|critical) \
+--distance-m   차량군 기준 거리(미터) \
+--road         도로/세그먼트 이름 \
+--lat --lon    사고 위치 좌표 \
+--suggest      조치 권고 (slow_down|stop|detour|caution) \
+--message      자유 텍스트 메시지 \
 
 ### 클라이언트 옵션(v2x_alert_client.py)
---mcast        멀티캐스트 그룹 (기본: 239.20.20.20)
---port         포트 (기본: 5520)
---iface        가입 인터페이스 IPv4(옵션)
---hmac-key     수신 HMAC 검증 키(옵션)
---log          CSV 로그 파일 경로(옵션)
---ros2         ROS2 토픽(/v2x/alert) 퍼블리시 활성화
+--mcast        멀티캐스트 그룹 (기본: 239.20.20.20) \
+--port         포트 (기본: 5520) \
+--iface        가입 인터페이스 IPv4(옵션) \
+--hmac-key     수신 HMAC 검증 키(옵션) \
+--log          CSV 로그 파일 경로(옵션) \
+--ros2         ROS2 토픽(/v2x/alert) 퍼블리시 활성화 \
 
 
 ### CSV 컬럼:
