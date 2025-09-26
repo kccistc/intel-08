@@ -29,7 +29,7 @@ python3 v2x_alert_server.py --repeat \
 
 export V2X_KEY="mysecret" \
 python3 v2x_alert_server.py --repeat --hmac-key "$V2X_KEY" \
-python3 v2x_alert_client.py --hmac-key "$V2X_KEY" \
+python3 v2x_alert_client.py --hmac-key "$V2X_KEY" 
 
 ### 4) (선택) ROS2 퍼블리시(차량)
 python3 v2x_alert_client.py --ros2 \
@@ -79,7 +79,7 @@ python3 v2x_alert_client.py --ros2 \
 --iface        가입 인터페이스 IPv4(옵션) \
 --hmac-key     수신 HMAC 검증 키(옵션) \
 --log          CSV 로그 파일 경로(옵션) \
---ros2         ROS2 토픽(/v2x/alert) 퍼블리시 활성화 \
+--ros2         ROS2 토픽(/v2x/alert) 퍼블리시 활성화 
 
 
 ### CSV 컬럼:
