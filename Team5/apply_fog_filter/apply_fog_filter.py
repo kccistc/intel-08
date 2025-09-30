@@ -51,10 +51,10 @@ def light_rays(mask, light_pos, ray_length=200, ray_decay=0.95, blur_ksize=25):
 # ---------- 볼류메트릭 안개 ----------
 def apply_volumetric_fog(image_bgr,
                          strength=0.55,
-                         fog_color=(242, 244, 245),
-                         height_bias=0.35,
+                         fog_color=(245, 248, 250),
+                         height_bias=0.1,
                          height_falloff=1.8,
-                         noise_scale=0.85,
+                         noise_scale=0.5,
                          noise_octaves=4,
                          desaturate=0.65,
                          contrast_fade=0.45,
