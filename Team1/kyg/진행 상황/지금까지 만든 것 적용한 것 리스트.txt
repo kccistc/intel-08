@@ -1,0 +1,108 @@
+📋 지금까지 만든 것 & 적용한 것 리스트
+🔹 통신 파트 (서버 ↔ 클라이언트)
+
+v2x-alert-server.py
+
+사고 이벤트를 UDP 멀티캐스트로 브로드캐스트하는 서버 스크립트.
+
+v2x-alert-client.py
+
+차량 측에서 브로드캐스트를 수신, 콘솔/로그/ROS2 토픽에 출력하는 클라이언트 스크립트.
+
+언버퍼 모드 적용해서 journalctl에 실시간 로그 확인 가능.
+
+시스템 서비스
+
+v2x-alert-server.service
+
+v2x-alert-client.service
+
+자동 실행 및 로그 확인 가능하도록 systemd 유닛 구성.
+
+하트비트 브로드캐스터
+
+heartbeat_tx.py (10초 주기)
+
+v2x-heartbeat.service (systemd 자동 실행)
+
+서버에서 heartbeat 송신, 클라에서 정상 수신 확인.
+
+🔹 이벤트 감지/처리 파이프라인
+
+emit_event.py
+
+테스트용 이벤트 JSON 생성기 (collision, fire 등).
+
+/opt/v2x/events/ 폴더
+
+emit_event가 이벤트 JSON을 드롭 → 워처가 감지.
+
+watch_and_broadcast.py
+
+이벤트 JSON 감지 →
+
+브로드캐스트(server.py 호출)
+
+영상 클립 생성(make_clip.py 호출)
+
+DB 인덱싱(db_index.py 호출)
+
+v2x-watcher.service 로 자동 실행.
+
+메시지 스키마
+
+hdr / accident / advice / sig 구조 확정
+
+HMAC 키 검증 가능.
+
+🔹 영상 녹화 & 아카이브
+
+v2x-recorder.service
+
+ffmpeg로 10초 단위 세그먼트 생성 (/var/rec/seg_%%s.mp4).
+
+systemd % 이스케이프 문제 해결(%%s로 수정).
+
+USB 웹캠(YUYV422) 입력, h264 인코딩으로 정상 동작 확인.
+
+make_clip.py
+
+전후 N분 세그먼트 합쳐 /var/archive/accident_<ts>.mp4 저장.
+
+옵션 추가: --pre, --post, --out-dir 지원.
+
+권한 문제 해결(/var/archive 권한 조정).
+
+🔹 데이터베이스 (메타데이터 인덱싱)
+
+db_index.py
+
+이벤트 메타데이터를 SQLite DB(/opt/v2x/v2x_index.sqlite3)에 기록.
+
+type, severity, road, lat/lon, distance_m, clip 경로 등 저장.
+
+v2x_db_cli.py
+
+최근 이벤트 조회/출력 CLI.
+
+--recent N, --since timestamp 지원.
+
+🔹 테스트 & 시나리오 자동화
+
+scenario_collision_mix.sh
+
+① collision 반복 송신(30초) → ② 중지 → ③ 단발 이벤트 2개 발사.
+
+클라이언트 로그와 DB 기록, 클립 생성이 동시에 확인됨.
+
+✅ 현재 상태
+
+서버 ↔ 클라 간 heartbeat / collision 이벤트 송수신 정상 작동
+
+systemd 자동 실행으로 부팅 시 서비스들 자동 동작
+
+녹화 세그먼트 정상 생성(/var/rec/seg_*.mp4)
+
+클립 생성 정상 동작(/var/archive/accident_<ts>.mp4)
+
+DB 기록 정상 (v2x_db_cli.py 조회 가능)

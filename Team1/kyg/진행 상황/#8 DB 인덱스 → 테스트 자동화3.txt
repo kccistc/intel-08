@@ -1,0 +1,67 @@
+원인 확정: v2x-recorder.service의 입력이 아직 RTSP_URL_HERE(자리표시자) 로 되어 있어서 ffmpeg가 영상을 못 열고 즉시 죽습니다.
+
+바로 고치는 3가지 방법 중 하나를 선택하세요.
+
+방법 A) 실제 RTSP URL로 교체 (CCTV/네트워크 캠일 때)
+
+유닛 파일 열어 ExecStart 수정:
+
+sudo sed -i 's|"RTSP_URL_HERE"|"rtsp://user:pass@CAM_IP:554/stream"|g' /etc/systemd/system/v2x-recorder.service
+
+
+URL은 실제 카메라 주소로 바꿔주세요. (예: rtsp://admin:1234@192.168.0.50:554/h264)
+
+반영/재시작/확인:
+
+sudo systemctl daemon-reload
+sudo systemctl restart v2x-recorder.service
+journalctl -u v2x-recorder.service -f
+# 몇십 초 뒤
+ls -lh /var/rec | tail   # seg_*.mp4가 10초 간격으로 생겨야 정상
+
+방법 B) USB 웹캠으로 테스트 (장치가 /dev/video0인 경우)
+
+유닛의 ExecStart를 웹캠 입력으로 교체:
+
+sudo sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/ffmpeg -nostdin -y -f v4l2 -i /dev/video0 -c:v libx264 -preset veryfast -crf 23 -f segment -segment_time 10 -strftime 1 -reset_timestamps 1 /var/rec/seg_%s.mp4|' /etc/systemd/system/v2x-recorder.service
+
+
+반영/재시작/확인:
+
+sudo systemctl daemon-reload
+sudo systemctl restart v2x-recorder.service
+journalctl -u v2x-recorder.service -f
+ls -lh /var/rec | tail
+
+방법 C) 더미 영상으로 먼저 파이프라인 점검 (카메라 없을 때 추천)
+
+ExecStart를 testsrc로 교체:
+
+sudo sed -i 's|^ExecStart=.*|ExecStart=/usr/bin/ffmpeg -nostdin -y -f lavfi -i testsrc=size=640x360:rate=30 -f segment -segment_time 10 -strftime 1 -reset_timestamps 1 /var/rec/seg_%s.mp4|' /etc/systemd/system/v2x-recorder.service
+
+
+반영/재시작/확인:
+
+sudo systemctl daemon-reload
+sudo systemctl restart v2x-recorder.service
+journalctl -u v2x-recorder.service -f
+ls -lh /var/rec | tail
+
+클립 생성 재확인
+
+세그먼트가 쌓이기 시작하면(최소 수 분) 아래로 클립이 저장되는지 확인:
+
+python3 /opt/v2x/emit_event.py --type collision --severity high --clip-hint
+# 또는 수동:
+python3 /opt/v2x/make_clip.py $(date +%s)
+ls -lh /var/archive | tail
+
+참고 체크
+
+ffmpeg 설치: which ffmpeg (없으면 sudo apt-get install -y ffmpeg)
+
+권한: sudo mkdir -p /var/rec /var/archive && sudo chmod 755 /var/rec /var/archive
+
+CPU 부담 크면 -preset veryfast 유지 또는 해상도/프레임 낮추기
+
+원하면, 네 환경(카메라 종류/URL, 웹캠 유무)에 맞춘 완성된 v2x-recorder.service 내용을 그대로 만들어 줄게.
