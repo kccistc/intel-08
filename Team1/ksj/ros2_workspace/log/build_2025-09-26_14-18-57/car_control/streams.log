@@ -1,0 +1,35 @@
+[0.796s] Invoking command in '/home/ksj/ros2_workspace/src/car_control': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_control build --build-base /home/ksj/ros2_workspace/build/car_control/build install --record /home/ksj/ros2_workspace/build/car_control/install.log --single-version-externally-managed install_data
+[1.000s] running egg_info
+[1.000s] creating ../../build/car_control/car_control.egg-info
+[1.014s] writing ../../build/car_control/car_control.egg-info/PKG-INFO
+[1.015s] writing dependency_links to ../../build/car_control/car_control.egg-info/dependency_links.txt
+[1.015s] writing requirements to ../../build/car_control/car_control.egg-info/requires.txt
+[1.015s] writing top-level names to ../../build/car_control/car_control.egg-info/top_level.txt
+[1.015s] writing manifest file '../../build/car_control/car_control.egg-info/SOURCES.txt'
+[1.046s] reading manifest file '../../build/car_control/car_control.egg-info/SOURCES.txt'
+[1.046s] writing manifest file '../../build/car_control/car_control.egg-info/SOURCES.txt'
+[1.046s] running build
+[1.046s] running build_py
+[1.046s] creating /home/ksj/ros2_workspace/build/car_control/build
+[1.047s] creating /home/ksj/ros2_workspace/build/car_control/build/lib
+[1.047s] creating /home/ksj/ros2_workspace/build/car_control/build/lib/car_control
+[1.047s] copying car_control/motor_controller_node.py -> /home/ksj/ros2_workspace/build/car_control/build/lib/car_control
+[1.047s] copying car_control/__init__.py -> /home/ksj/ros2_workspace/build/car_control/build/lib/car_control
+[1.047s] running install
+[1.052s] running install_lib
+[1.067s] creating /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control
+[1.067s] copying /home/ksj/ros2_workspace/build/car_control/build/lib/car_control/motor_controller_node.py -> /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control
+[1.067s] copying /home/ksj/ros2_workspace/build/car_control/build/lib/car_control/__init__.py -> /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control
+[1.067s] byte-compiling /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control/motor_controller_node.py to motor_controller_node.cpython-312.pyc
+[1.068s] byte-compiling /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control/__init__.py to __init__.cpython-312.pyc
+[1.068s] running install_data
+[1.068s] creating /home/ksj/ros2_workspace/install/car_control/share/ament_index
+[1.068s] creating /home/ksj/ros2_workspace/install/car_control/share/ament_index/resource_index
+[1.068s] creating /home/ksj/ros2_workspace/install/car_control/share/ament_index/resource_index/packages
+[1.068s] copying resource/car_control -> /home/ksj/ros2_workspace/install/car_control/share/ament_index/resource_index/packages
+[1.068s] copying package.xml -> /home/ksj/ros2_workspace/install/car_control/share/car_control
+[1.068s] running install_egg_info
+[1.084s] Copying ../../build/car_control/car_control.egg-info to /home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages/car_control-0.0.0-py3.12.egg-info
+[1.084s] running install_scripts
+[1.181s] writing list of installed files to '/home/ksj/ros2_workspace/build/car_control/install.log'
+[1.210s] Invoked command in '/home/ksj/ros2_workspace/src/car_control' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_control build --build-base /home/ksj/ros2_workspace/build/car_control/build install --record /home/ksj/ros2_workspace/build/car_control/install.log --single-version-externally-managed install_data

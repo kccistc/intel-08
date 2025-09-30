@@ -1,0 +1,2 @@
+[console_scripts]
+lane_detector_node = vision_pkg.lane_detector_node:main

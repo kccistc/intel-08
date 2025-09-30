@@ -1,0 +1,22 @@
+[0.652s] Invoking command in '/home/ksj/ros2_workspace/src/car_comms': AMENT_PREFIX_PATH=/home/ksj/ros2_workspace/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_workspace/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_workspace/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/ksj/ros2_workspace/build/car_comms/build install --record /home/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data
+[0.813s] running egg_info
+[0.826s] writing ../../build/car_comms/car_comms.egg-info/PKG-INFO
+[0.826s] writing dependency_links to ../../build/car_comms/car_comms.egg-info/dependency_links.txt
+[0.827s] writing requirements to ../../build/car_comms/car_comms.egg-info/requires.txt
+[0.827s] writing top-level names to ../../build/car_comms/car_comms.egg-info/top_level.txt
+[0.852s] reading manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+[0.852s] writing manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+[0.852s] running build
+[0.852s] running build_py
+[0.852s] copying car_comms/v2x_subscriber.py -> /home/ksj/ros2_workspace/build/car_comms/build/lib/car_comms
+[0.852s] running install
+[0.856s] running install_lib
+[0.868s] copying /home/ksj/ros2_workspace/build/car_comms/build/lib/car_comms/v2x_subscriber.py -> /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms
+[0.869s] byte-compiling /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms/v2x_subscriber.py to v2x_subscriber.cpython-312.pyc
+[0.869s] running install_data
+[0.869s] running install_egg_info
+[0.882s] removing '/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info' (and everything under it)
+[0.882s] Copying ../../build/car_comms/car_comms.egg-info to /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info
+[0.882s] running install_scripts
+[0.961s] writing list of installed files to '/home/ksj/ros2_workspace/build/car_comms/install.log'
+[0.975s] Invoked command in '/home/ksj/ros2_workspace/src/car_comms' returned '0': AMENT_PREFIX_PATH=/home/ksj/ros2_workspace/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_workspace/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_workspace/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/ksj/ros2_workspace/build/car_comms/build install --record /home/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data

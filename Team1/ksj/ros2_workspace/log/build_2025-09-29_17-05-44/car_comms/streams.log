@@ -1,0 +1,24 @@
+[0.501s] Invoking command in '/home/ksj/ros2_workspace/src/car_comms': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/ksj/ros2_workspace/build/car_comms/build install --record /home/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data
+[0.670s] running egg_info
+[0.682s] writing ../../build/car_comms/car_comms.egg-info/PKG-INFO
+[0.682s] writing dependency_links to ../../build/car_comms/car_comms.egg-info/dependency_links.txt
+[0.683s] writing entry points to ../../build/car_comms/car_comms.egg-info/entry_points.txt
+[0.683s] writing requirements to ../../build/car_comms/car_comms.egg-info/requires.txt
+[0.683s] writing top-level names to ../../build/car_comms/car_comms.egg-info/top_level.txt
+[0.707s] reading manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+[0.707s] writing manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+[0.708s] running build
+[0.708s] running build_py
+[0.708s] copying car_comms/v2x_subscriber.py -> /home/ksj/ros2_workspace/build/car_comms/build/lib/car_comms
+[0.708s] running install
+[0.712s] running install_lib
+[0.726s] copying /home/ksj/ros2_workspace/build/car_comms/build/lib/car_comms/v2x_subscriber.py -> /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms
+[0.726s] byte-compiling /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms/v2x_subscriber.py to v2x_subscriber.cpython-312.pyc
+[0.727s] running install_data
+[0.727s] running install_egg_info
+[0.740s] removing '/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info' (and everything under it)
+[0.740s] Copying ../../build/car_comms/car_comms.egg-info to /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info
+[0.741s] running install_scripts
+[0.825s] Installing v2x_sub script to /home/ksj/ros2_workspace/install/car_comms/lib/car_comms
+[0.825s] writing list of installed files to '/home/ksj/ros2_workspace/build/car_comms/install.log'
+[0.841s] Invoked command in '/home/ksj/ros2_workspace/src/car_comms' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/ksj/ros2_workspace/build/car_comms/build install --record /home/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data

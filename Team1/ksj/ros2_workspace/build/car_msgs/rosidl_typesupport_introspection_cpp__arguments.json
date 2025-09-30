@@ -1,0 +1,21 @@
+{
+  "package_name": "car_msgs",
+  "output_dir": "/home/ksj/ros2_workspace/build/car_msgs/rosidl_typesupport_introspection_cpp/car_msgs",
+  "template_dir": "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource",
+  "idl_tuples": [
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/LaneInfo.idl",
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/V2VAlert.idl"
+  ],
+  "target_dependencies": [
+    "/opt/ros/jazzy/lib/rosidl_typesupport_introspection_cpp/rosidl_typesupport_introspection_cpp",
+    "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_typesupport_introspection_cpp/__init__.py",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/idl__rosidl_typesupport_introspection_cpp.hpp.em",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/idl__type_support.cpp.em",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/msg__rosidl_typesupport_introspection_cpp.hpp.em",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/msg__type_support.cpp.em",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/srv__rosidl_typesupport_introspection_cpp.hpp.em",
+    "/opt/ros/jazzy/share/rosidl_typesupport_introspection_cpp/resource/srv__type_support.cpp.em",
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs/msg/LaneInfo.idl",
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs/msg/V2VAlert.idl"
+  ]
+}

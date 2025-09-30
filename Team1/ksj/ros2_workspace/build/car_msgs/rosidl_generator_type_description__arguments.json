@@ -1,0 +1,8 @@
+{
+  "package_name": "car_msgs",
+  "output_dir": "/home/ksj/ros2_workspace/build/car_msgs/rosidl_generator_type_description/car_msgs",
+  "idl_tuples": [
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/LaneInfo.idl",
+    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/V2VAlert.idl"
+  ]
+}

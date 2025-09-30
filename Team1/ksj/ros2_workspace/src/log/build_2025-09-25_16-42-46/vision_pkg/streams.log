@@ -1,0 +1,37 @@
+[0.665s] Invoking command in '/home/ksj/ros2_workspace/src/vision_pkg': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/src/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/vision_pkg build --build-base /home/ksj/ros2_workspace/src/build/vision_pkg/build install --record /home/ksj/ros2_workspace/src/build/vision_pkg/install.log --single-version-externally-managed install_data
+[0.831s] running egg_info
+[0.832s] creating ../build/vision_pkg/vision_pkg.egg-info
+[0.843s] writing ../build/vision_pkg/vision_pkg.egg-info/PKG-INFO
+[0.843s] writing dependency_links to ../build/vision_pkg/vision_pkg.egg-info/dependency_links.txt
+[0.844s] writing entry points to ../build/vision_pkg/vision_pkg.egg-info/entry_points.txt
+[0.844s] writing requirements to ../build/vision_pkg/vision_pkg.egg-info/requires.txt
+[0.844s] writing top-level names to ../build/vision_pkg/vision_pkg.egg-info/top_level.txt
+[0.844s] writing manifest file '../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.870s] reading manifest file '../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.871s] writing manifest file '../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.871s] running build
+[0.871s] running build_py
+[0.871s] creating /home/ksj/ros2_workspace/src/build/vision_pkg/build
+[0.871s] creating /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib
+[0.871s] creating /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib/vision_pkg
+[0.871s] copying vision_pkg/lane_detector_node.py -> /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib/vision_pkg
+[0.871s] copying vision_pkg/__init__.py -> /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib/vision_pkg
+[0.871s] running install
+[0.875s] running install_lib
+[0.887s] creating /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.888s] copying /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib/vision_pkg/lane_detector_node.py -> /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.888s] copying /home/ksj/ros2_workspace/src/build/vision_pkg/build/lib/vision_pkg/__init__.py -> /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.888s] byte-compiling /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg/lane_detector_node.py to lane_detector_node.cpython-312.pyc
+[0.888s] byte-compiling /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg/__init__.py to __init__.cpython-312.pyc
+[0.888s] running install_data
+[0.888s] creating /home/ksj/ros2_workspace/src/install/vision_pkg/share/ament_index
+[0.888s] creating /home/ksj/ros2_workspace/src/install/vision_pkg/share/ament_index/resource_index
+[0.888s] creating /home/ksj/ros2_workspace/src/install/vision_pkg/share/ament_index/resource_index/packages
+[0.888s] copying resource/vision_pkg -> /home/ksj/ros2_workspace/src/install/vision_pkg/share/ament_index/resource_index/packages
+[0.889s] copying package.xml -> /home/ksj/ros2_workspace/src/install/vision_pkg/share/vision_pkg
+[0.889s] running install_egg_info
+[0.902s] Copying ../build/vision_pkg/vision_pkg.egg-info to /home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages/vision_pkg-0.0.0-py3.12.egg-info
+[0.902s] running install_scripts
+[0.982s] Installing lane_detector_node script to /home/ksj/ros2_workspace/src/install/vision_pkg/lib/vision_pkg
+[0.982s] writing list of installed files to '/home/ksj/ros2_workspace/src/build/vision_pkg/install.log'
+[1.000s] Invoked command in '/home/ksj/ros2_workspace/src/vision_pkg' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/ksj/ros2_workspace/src/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_workspace/src/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/vision_pkg build --build-base /home/ksj/ros2_workspace/src/build/vision_pkg/build install --record /home/ksj/ros2_workspace/src/build/vision_pkg/install.log --single-version-externally-managed install_data

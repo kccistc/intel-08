@@ -1,0 +1,19 @@
+running egg_info
+writing ../../build/car_comms/car_comms.egg-info/PKG-INFO
+writing dependency_links to ../../build/car_comms/car_comms.egg-info/dependency_links.txt
+writing entry points to ../../build/car_comms/car_comms.egg-info/entry_points.txt
+writing requirements to ../../build/car_comms/car_comms.egg-info/requires.txt
+writing top-level names to ../../build/car_comms/car_comms.egg-info/top_level.txt
+reading manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+writing manifest file '../../build/car_comms/car_comms.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info' (and everything under it)
+Copying ../../build/car_comms/car_comms.egg-info to /home/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.0-py3.12.egg-info
+running install_scripts
+Installing v2x_sub script to /home/ksj/ros2_workspace/install/car_comms/lib/car_comms
+writing list of installed files to '/home/ksj/ros2_workspace/build/car_comms/install.log'
