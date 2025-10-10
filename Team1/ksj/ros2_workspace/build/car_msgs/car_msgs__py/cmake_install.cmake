@@ -1,8 +1,8 @@
-# Install script for directory: /home/ksj/ros2_workspace/build/car_msgs/car_msgs__py
+# Install script for directory: /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/car_msgs__py
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/ksj/ros2_workspace/install/car_msgs")
+  set(CMAKE_INSTALL_PREFIX "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

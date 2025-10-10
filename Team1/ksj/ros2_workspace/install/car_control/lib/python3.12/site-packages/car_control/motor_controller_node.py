@@ -1,49 +1,37 @@
-# motor_controller_node.py
+# motor_controller_node.py (CARLA 없이 테스트하기 위한 임시 "Dummy" 버전)
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-import serial
-import time
+# import carla # CARLA 라이브러리를 사용하지 않음
 
 class MotorControllerNode(Node):
     def __init__(self):
         super().__init__('motor_controller_node')
+        
+        # CARLA 접속 코드를 모두 제거하고, 노드가 시작되었다는 로그만 남김
+        self.get_logger().info('Dummy Motor Controller Node has been started.')
+        self.get_logger().info('Subscribing to /cmd_vel topic...')
 
-        # Subscriber 설정
-        self.cmd_sub = self.create_subscription(Twist, '/cmd_vel', self.cmd_callback, 10)
+        # Subscriber: decision_maker가 발행하는 제어 명령을 구독하는 것은 동일
+        self.cmd_sub = self.create_subscription(
+            Twist,
+            '/cmd_vel',
+            self.cmd_callback,
+            10)
 
-        # 시리얼 포트 설정
-        try:
-            # 자신의 STM32 시리얼 포트에 맞게 수정! (예: /dev/ttyACM0)
-            self.serial_port = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-            self.get_logger().info('Serial port opened successfully.')
-            time.sleep(2) # 포트 안정화를 위한 대기 시간
-        except Exception as e:
-            self.get_logger().error(f'Failed to open serial port: {e}')
-            self.serial_port = None
-
-    def cmd_callback(self, msg):
-        if self.serial_port is None:
-            return
-
-        # Twist 메시지를 STM32로 보낼 프로토콜로 변환
-        # 예시: 선속도(linear.x)는 속력, 각속도(angular.z)는 방향으로 변환
-
-        speed = int(msg.linear.x * 100) # 0.0 ~ 1.0 -> 0 ~ 100
-        direction = int(msg.angular.z * 50) + 50 # -1.0 ~ 1.0 -> 0 ~ 100
-
-        # 예시 프로토콜: "S,속력,방향\n"
-        command = f"S,{speed},{direction}\n"
-
-        try:
-            self.serial_port.write(command.encode())
-            self.get_logger().info(f'Sent to STM32: {command.strip()}')
-        except Exception as e:
-            self.get_logger().error(f'Failed to send serial data: {e}')
+    def cmd_callback(self, msg: Twist):
+        """
+        /cmd_vel 토픽을 받아서 CARLA에 보내는 대신, 터미널에 로그로 출력합니다.
+        """
+        # 받은 Twist 메시지의 내용을 터미널에 INFO 레벨로 출력
+        self.get_logger().info(
+            f'Received command: [Linear Velocity: x={msg.linear.x:.2f}], [Angular Velocity: z={msg.angular.z:.2f}]'
+        )
 
 def main(args=None):
     rclpy.init(args=args)
     node = MotorControllerNode()
+    # CARLA 접속 여부와 상관없이 항상 실행
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'v2x_sub = car_comms.v2x_subscriber:main',
+            'v2x_subscriber = car_comms.v2x_subscriber:main',
+            'decision_maker = car_planning.decision_maker:main',
+            
         ],
     },
 )

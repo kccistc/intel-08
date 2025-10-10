@@ -60,7 +60,7 @@ add_library(car_msgs::car_msgs__rosidl_typesupport_fastrtps_cpp SHARED IMPORTED)
 
 set_target_properties(car_msgs::car_msgs__rosidl_typesupport_fastrtps_cpp PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include/car_msgs"
-  INTERFACE_LINK_LIBRARIES "fastcdr;rmw::rmw;rosidl_runtime_c::rosidl_runtime_c;rosidl_runtime_cpp::rosidl_runtime_cpp;rosidl_typesupport_interface::rosidl_typesupport_interface;rosidl_typesupport_fastrtps_cpp::rosidl_typesupport_fastrtps_cpp;car_msgs::car_msgs__rosidl_generator_c;car_msgs::car_msgs__rosidl_generator_cpp"
+  INTERFACE_LINK_LIBRARIES "fastcdr;rmw::rmw;rosidl_runtime_c::rosidl_runtime_c;rosidl_runtime_cpp::rosidl_runtime_cpp;rosidl_typesupport_interface::rosidl_typesupport_interface;rosidl_typesupport_fastrtps_cpp::rosidl_typesupport_fastrtps_cpp;std_msgs::std_msgs__rosidl_typesupport_fastrtps_cpp;builtin_interfaces::builtin_interfaces__rosidl_typesupport_fastrtps_cpp;geometry_msgs::geometry_msgs__rosidl_typesupport_fastrtps_cpp;car_msgs::car_msgs__rosidl_generator_c;car_msgs::car_msgs__rosidl_generator_cpp"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)

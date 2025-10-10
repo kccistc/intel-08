@@ -1,0 +1,35 @@
+[0.757s] Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_vision build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/install.log --single-version-externally-managed install_data
+[0.922s] running egg_info
+[0.922s] creating ../../build/car_vision/car_vision.egg-info
+[0.934s] writing ../../build/car_vision/car_vision.egg-info/PKG-INFO
+[0.934s] writing dependency_links to ../../build/car_vision/car_vision.egg-info/dependency_links.txt
+[0.934s] writing requirements to ../../build/car_vision/car_vision.egg-info/requires.txt
+[0.934s] writing top-level names to ../../build/car_vision/car_vision.egg-info/top_level.txt
+[0.934s] writing manifest file '../../build/car_vision/car_vision.egg-info/SOURCES.txt'
+[0.958s] reading manifest file '../../build/car_vision/car_vision.egg-info/SOURCES.txt'
+[0.959s] writing manifest file '../../build/car_vision/car_vision.egg-info/SOURCES.txt'
+[0.959s] running build
+[0.959s] running build_py
+[0.959s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build
+[0.959s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib
+[0.959s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib/car_vision
+[0.959s] copying car_vision/lane_detector.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib/car_vision
+[0.959s] copying car_vision/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib/car_vision
+[0.959s] running install
+[0.963s] running install_lib
+[0.976s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision
+[0.976s] copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib/car_vision/lane_detector.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision
+[0.976s] copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build/lib/car_vision/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision
+[0.976s] byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision/lane_detector.py to lane_detector.cpython-312.pyc
+[0.976s] byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision/__init__.py to __init__.cpython-312.pyc
+[0.976s] running install_data
+[0.976s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/ament_index
+[0.977s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/ament_index/resource_index
+[0.977s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/ament_index/resource_index/packages
+[0.977s] copying resource/car_vision -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/ament_index/resource_index/packages
+[0.977s] copying package.xml -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision
+[0.977s] running install_egg_info
+[0.990s] Copying ../../build/car_vision/car_vision.egg-info to /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages/car_vision-0.0.0-py3.12.egg-info
+[0.990s] running install_scripts
+[1.071s] writing list of installed files to '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/install.log'
+[1.095s] Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_vision build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/install.log --single-version-externally-managed install_data

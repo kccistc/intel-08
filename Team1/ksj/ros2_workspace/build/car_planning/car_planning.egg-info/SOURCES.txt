@@ -4,6 +4,7 @@ setup.py
 ../../build/car_planning/car_planning.egg-info/PKG-INFO
 ../../build/car_planning/car_planning.egg-info/SOURCES.txt
 ../../build/car_planning/car_planning.egg-info/dependency_links.txt
+../../build/car_planning/car_planning.egg-info/entry_points.txt
 ../../build/car_planning/car_planning.egg-info/requires.txt
 ../../build/car_planning/car_planning.egg-info/top_level.txt
 ../../build/car_planning/car_planning.egg-info/zip-safe

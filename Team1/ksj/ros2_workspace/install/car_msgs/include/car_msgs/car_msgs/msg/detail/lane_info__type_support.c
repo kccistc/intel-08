@@ -4,10 +4,10 @@
 
 #include <string.h>
 
-#include "car_msgs/msg/detail/lane_info__type_support.h"
 #include "car_msgs/msg/detail/lane_info__struct.h"
-#include "rosidl_typesupport_interface/macros.h"
 #include "car_msgs/msg/detail/lane_info__functions.h"
+#include "rosidl_typesupport_interface/macros.h"
+#include "car_msgs/msg/detail/lane_info__type_support.h"
 
 #ifdef __cplusplus
 extern "C"

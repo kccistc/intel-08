@@ -1,8 +1,13 @@
 {
   "package_name": "car_msgs",
-  "output_dir": "/home/ksj/ros2_workspace/build/car_msgs/rosidl_generator_type_description/car_msgs",
+  "output_dir": "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/rosidl_generator_type_description/car_msgs",
   "idl_tuples": [
-    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/LaneInfo.idl",
-    "/home/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/V2VAlert.idl"
+    "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/EmergencyEvent.idl",
+    "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/rosidl_adapter/car_msgs:msg/LaneInfo.idl"
+  ],
+  "include_paths": [
+    "std_msgs:/opt/ros/jazzy/share/std_msgs",
+    "builtin_interfaces:/opt/ros/jazzy/share/builtin_interfaces",
+    "geometry_msgs:/opt/ros/jazzy/share/geometry_msgs"
   ]
 }

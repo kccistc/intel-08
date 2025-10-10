@@ -1,67 +1,47 @@
 # decision_maker_node.py
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String       # VLM 토픽용
-from geometry_msgs.msg import Twist # 제어 명령 토픽용
-from car_msgs.msg import LaneInfo   # 차선 정보 토픽용 (가정)
-# from car_msgs.msg import V2CInfo    # V2V 정보 토픽용 (가정)
+from rclpy.duration import Duration
+from geometry_msgs.msg import Twist
+from car_msgs.msg import EmergencyEvent
 
 class DecisionMakerNode(Node):
     def __init__(self):
         super().__init__('decision_maker_node')
-
-        # Subscriber 설정 (각 담당자가 발행할 토픽들)
-        # self.lane_sub = self.create_subscription(LaneInfo, '/vision/lane_info', self.lane_callback, 10)
-        self.vlm_sub = self.create_subscription(String, '/vlm/description', self.vlm_callback, 10)
-        self.v2x_sub = self.create_subscription(String, '/v2x/alert', self.v2x_callback, 10)
-
-        # Publisher 설정 (motor_controller_node로 보낼 제어 명령)
+        self.is_emergency_stop_active = False; self.stop_start_time = None
+        self.v2x_sub = self.create_subscription(EmergencyEvent, '/v2x/emergency_event', self.v2x_event_callback, 10)
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.decision_timer = self.create_timer(0.05, self.update_decision)
+        self.get_logger().info('Decision Maker Node has been started (v2).')
 
-        # 변수 초기화
-        self.last_lane_info = None
-        self.last_vlm_info = None
-        self.last_v2x_alert = None
+    def v2x_event_callback(self, msg: EmergencyEvent):
+        pos_x = msg.position.x
+        pos_y = msg.position.y
+        self.get_logger().info(
+            f"Received V2X Event from '{msg.vehicle_id}', Type: {msg.msg_type}, "
+            f"Confidence: {msg.confidence_score:.2f}, Position: ({pos_x:.2f}, {pos_y:.2f})"
+        )
+        if not self.is_emergency_stop_active:
+            # --- string 비교 대신, 정수형 상수(enum)로 조건을 확인 ---
+            if msg.msg_type == EmergencyEvent.MSG_TYPE_EMERGENCY_BRAKE and msg.confidence_score > 0.8:
+                self.get_logger().warn(f'EMERGENCY BRAKE triggered by V2X from {msg.vehicle_id}! Stopping for 5 seconds.')
+                self.is_emergency_stop_active = True
+                self.stop_start_time = self.get_clock().now()
 
-    def lane_callback(self, msg):
-        self.last_lane_info = msg
-        self.make_decision()
-
-    def vlm_callback(self, msg):
-        self.last_vlm_info = msg
-        self.get_logger().info(f'VLM says: "{msg.data}"')
-        self.make_decision()
-
-    def v2x_callback(self, msg):
-        self.last_v2x_alert = msg
-        self.get_logger().info(f'V2X Alert: "{msg.data}"')
-        self.make_decision()
-
-    def make_decision(self):
-        # 🧠 TO-DO: 핵심 주행 로직 구현
-        # 이 함수에서 self.last_lane_info, self.last_vlm_info 등을 종합하여
-        # 최종 주행 명령을 결정합니다.
-
+    def update_decision(self):
         cmd_msg = Twist()
-
-        # 예시 로직: VLM이 "stop"이라는 단어를 포함하면 정지
-        if self.last_vlm_info and "stop" in self.last_vlm_info.data:
-            cmd_msg.linear.x = 0.0
-            cmd_msg.angular.z = 0.0
-            self.get_logger().warn('STOP command from VLM!')
+        if self.is_emergency_stop_active:
+            cmd_msg.linear.x = 0.0; cmd_msg.angular.z = 0.0
+            elapsed_time = self.get_clock().now() - self.stop_start_time
+            if elapsed_time >= Duration(seconds=5):
+                self.get_logger().info('5 seconds passed. Resuming normal driving.')
+                self.is_emergency_stop_active = False; self.stop_start_time = None
         else:
-            # 기본 차선 유지 주행 로직 (lane_info 기반)
-            cmd_msg.linear.x = 0.2  # 0.2m/s로 직진
-            cmd_msg.angular.z = 0.0 # 회전 없음
-
+            cmd_msg.linear.x = 10.0; cmd_msg.angular.z = 0.0
         self.cmd_pub.publish(cmd_msg)
 
 def main(args=None):
-    rclpy.init(args=args)
-    node = DecisionMakerNode()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    rclpy.init(args=args); node = DecisionMakerNode(); rclpy.spin(node); node.destroy_node(); rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

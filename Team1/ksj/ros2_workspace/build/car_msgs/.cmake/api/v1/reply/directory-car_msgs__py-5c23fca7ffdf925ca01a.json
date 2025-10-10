@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "car_msgs__py",
+		"source" : "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/car_msgs__py"
+	}
+}

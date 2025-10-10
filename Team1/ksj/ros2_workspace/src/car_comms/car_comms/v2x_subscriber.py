@@ -8,10 +8,12 @@ import struct
 import threading
 import hmac
 import hashlib
+from car_msgs.msg import EmergencyEvent
+from geometry_msgs.msg import Point
 
 def verify_hmac(raw_wo_sig:bytes, key:str, sig_hex:str)->bool:
     """HMAC-SHA256 서명을 검증하는 함수"""
-    calc = hmac.new(key.encode("utf-8"), raw_wo_sig, hashlib.sha256).hexdigest()
+    calc = hmac.new(key.encode("utf-8"), raw_wo_sig, hashzlib.sha256).hexdigest()
     return hmac.compare_digest(calc, sig_hex)
 
 def v2x_listener_thread(node: Node):
@@ -37,8 +39,8 @@ def v2x_listener_thread(node: Node):
     mreq = struct.pack("4sl", socket.inet_aton(mcast_group), socket.INADDR_ANY)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
     
-    publisher = node.create_publisher(String, '/v2x/alert', 10)
-    node.get_logger().info(f'V2X listener thread started, listening on {mcast_group}:{mcast_port}')
+    publisher = node.create_publisher(EmergencyEvent, '/v2x/emergency_event', 10)
+    node.get_logger().info(f'V2X listener thread started, publishing to /v2x/emergency_event')
 
     while rclpy.ok():
         try:
@@ -59,9 +61,23 @@ def v2x_listener_thread(node: Node):
                         node.get_logger().warn(f"HMAC verification failed for message from {addr[0]}. Dropping.")
                         continue # 서명 검증 실패 시 메시지 무시
                 
-                # 검증 통과 또는 검증 비활성화 시 메시지 발행
-                msg = String()
-                msg.data = raw_data.decode('utf-8')
+                # EmergencyEvent 메시지 생성
+                msg = EmergencyEvent()
+                msg.msg_type = alert_obj.get('msg_type', 0)
+                msg.vehicle_id = alert_obj.get('vehicle_id', '')
+                msg.confidence_score = float(alert_obj.get('confidence', 0.0))
+
+                point_msg = Point()
+                point_msg.x = float(alert_obj.get('coordinateX', 0.0))
+                point_msg.y = float(alert_obj.get('coordinateY', 0.0))
+                point_msg.z = 0.0  # z 좌표는 사용하지 않으므로 0.0으로 설정
+
+                msg.position = point_msg
+                
+                msg.header.stamp = node.get_clock().now().to_msg()
+                msg.header.frame_id = 'v2x'
+
+                node.get_logger().info(f'Publishing EmergencyEvent from {msg.vehicle_id}')
                 publisher.publish(msg)
 
             except json.JSONDecodeError:

@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = -DROSIDL_GENERATOR_C_BUILDING_DLL_car_msgs -DROS_PACKAGE_NAME=\"car_msgs\"
 
-C_INCLUDES = -I/home/ksj/ros2_workspace/build/car_msgs/rosidl_generator_c -isystem /opt/ros/jazzy/include/rosidl_runtime_c -isystem /opt/ros/jazzy/include/rcutils -isystem /opt/ros/jazzy/include/rosidl_typesupport_interface
+C_INCLUDES = -I/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs/rosidl_generator_c -isystem /opt/ros/jazzy/include/std_msgs -isystem /opt/ros/jazzy/include/builtin_interfaces -isystem /opt/ros/jazzy/include/rosidl_runtime_c -isystem /opt/ros/jazzy/include/rcutils -isystem /opt/ros/jazzy/include/rosidl_typesupport_interface -isystem /opt/ros/jazzy/include/geometry_msgs
 
 C_FLAGS = -std=gnu11 -fPIC -Wall
 
