@@ -16,6 +16,8 @@ class Outputs(IntEnum):
 
     CONVEYOR_EN = 8
     CONVEYOR_PWM = 9
+    
+    LED = 14
 
 
 class Inputs(IntEnum):
