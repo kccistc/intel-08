@@ -42,7 +42,7 @@ class PyDuino:
         self.__stop_requested = False  # to support graceful exit
         self.__force_stop = False
         self.__watcher = {}
-        self.__values = [1] * 14  # Pin status
+        self.__values = [1] * 70  # Pin status
         for idx in (0, 1):
             self.__values[idx] = 0xff  # NC
 

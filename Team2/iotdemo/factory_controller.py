@@ -9,9 +9,9 @@ from time import sleep
 from typing import Optional, Union
 
 from iotdemo.common.debounce import debounce
-from iotdemo.factory_controller.pins import Inputs, Outputs
-from iotdemo.factory_controller.pyduino import PyDuino
-from iotdemo.factory_controller.pyft232 import PyFt232
+from .pins import Inputs, Outputs
+from .pyduino import PyDuino
+from .pyft232 import PyFt232
 
 __all__ = ('FactoryController', )
 
@@ -56,6 +56,8 @@ class FactoryController:
             self.red = False
             self.orange = True
             self.green = False
+            
+            self.led = False
 
             self.defect_sensor_status = False
             self.color_sensor_status = False
@@ -193,6 +195,14 @@ class FactoryController:
         self.__led(Outputs.BEACON_GREEN, on)
 
     @property
+    def led(self):
+        return bool(self.__get(Outputs.LED))
+
+    @led.setter
+    def led(self, on):
+        self.__led(Outputs.LED, on)
+
+    @property
     def conveyor(self):
         return bool(self.__get(Outputs.CONVEYOR_EN))
 
@@ -228,7 +238,7 @@ class FactoryController:
             self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
             self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
         else:
-            self.red = False
+            self.red = True
             self.green = True
             self.conveyor = True
 
