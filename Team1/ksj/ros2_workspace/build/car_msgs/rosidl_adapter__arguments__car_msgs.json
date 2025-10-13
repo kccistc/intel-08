@@ -1,0 +1,7 @@
+{
+  "package_name": "car_msgs",
+  "non_idl_tuples": [
+    "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs:msg/EmergencyEvent.msg",
+    "/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs:msg/LaneInfo.msg"
+  ]
+}

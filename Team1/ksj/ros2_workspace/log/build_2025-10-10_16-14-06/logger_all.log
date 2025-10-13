@@ -1,0 +1,374 @@
+[0.059s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.059s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=16, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x796d398028d0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x796d399cc470>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x796d399cc470>>)
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.081s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extensions ['ignore', 'ignore_ament_install']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extension 'ignore'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extension 'ignore_ament_install'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extensions ['colcon_pkg']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extension 'colcon_pkg'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extensions ['colcon_meta']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extension 'colcon_meta'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extensions ['ros']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_comms) by extension 'ros'
+[0.100s] DEBUG:colcon.colcon_core.package_identification:Package 'src/car_comms' with type 'ros.ament_python' and name 'car_comms'
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extensions ['ignore', 'ignore_ament_install']
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extension 'ignore'
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extension 'ignore_ament_install'
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extensions ['colcon_pkg']
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extension 'colcon_pkg'
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extensions ['colcon_meta']
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extension 'colcon_meta'
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extensions ['ros']
+[0.100s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_control) by extension 'ros'
+[0.101s] DEBUG:colcon.colcon_core.package_identification:Package 'src/car_control' with type 'ros.ament_python' and name 'car_control'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extension 'ignore'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extension 'ignore_ament_install'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extensions ['colcon_pkg']
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extension 'colcon_pkg'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extensions ['colcon_meta']
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extension 'colcon_meta'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extensions ['ros']
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_msgs) by extension 'ros'
+[0.101s] DEBUG:colcon.colcon_core.package_identification:Package 'src/car_msgs' with type 'ros.ament_cmake' and name 'car_msgs'
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extensions ['ignore', 'ignore_ament_install']
+[0.101s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extension 'ignore'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extension 'ignore_ament_install'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extensions ['colcon_pkg']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extension 'colcon_pkg'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extensions ['colcon_meta']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extension 'colcon_meta'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extensions ['ros']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_planning) by extension 'ros'
+[0.102s] DEBUG:colcon.colcon_core.package_identification:Package 'src/car_planning' with type 'ros.ament_python' and name 'car_planning'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extensions ['ignore', 'ignore_ament_install']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extension 'ignore'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extension 'ignore_ament_install'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extensions ['colcon_pkg']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extension 'colcon_pkg'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extensions ['colcon_meta']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extension 'colcon_meta'
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extensions ['ros']
+[0.102s] Level 1:colcon.colcon_core.package_identification:_identify(src/car_vision) by extension 'ros'
+[0.103s] DEBUG:colcon.colcon_core.package_identification:Package 'src/car_vision' with type 'ros.ament_python' and name 'car_vision'
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extensions ['ignore', 'ignore_ament_install']
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extension 'ignore'
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extension 'ignore_ament_install'
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extensions ['colcon_pkg']
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extension 'colcon_pkg'
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extensions ['colcon_meta']
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extension 'colcon_meta'
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extensions ['ros']
+[0.103s] Level 1:colcon.colcon_core.package_identification:_identify(src/vision_pkg) by extension 'ros'
+[0.103s] DEBUG:colcon.colcon_core.package_identification:Package 'src/vision_pkg' with type 'ros.ament_python' and name 'vision_pkg'
+[0.103s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.103s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.103s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.103s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.103s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.114s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_args' from command line to 'None'
+[0.114s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_target' from command line to 'None'
+[0.114s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_clean_cache' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_clean_first' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'cmake_force_configure' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'ament_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'catkin_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_control' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.115s] DEBUG:colcon.colcon_core.verb:Building package 'car_control' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_control', 'symlink_install': False, 'test_result_base': None}
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_target' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.115s] DEBUG:colcon.colcon_core.verb:Building package 'car_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs', 'symlink_install': False, 'test_result_base': None}
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_target' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_clean_cache' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_clean_first' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'cmake_force_configure' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'ament_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'catkin_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'vision_pkg' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.115s] DEBUG:colcon.colcon_core.verb:Building package 'vision_pkg' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg', 'symlink_install': False, 'test_result_base': None}
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_target' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_clean_cache' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_clean_first' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'cmake_force_configure' from command line to 'False'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'ament_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'catkin_cmake_args' from command line to 'None'
+[0.115s] Level 5:colcon.colcon_core.verb:set package 'car_comms' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.115s] DEBUG:colcon.colcon_core.verb:Building package 'car_comms' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_comms', 'symlink_install': False, 'test_result_base': None}
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_target' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_clean_cache' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_clean_first' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'cmake_force_configure' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'ament_cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'catkin_cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_planning' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.116s] DEBUG:colcon.colcon_core.verb:Building package 'car_planning' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_planning', 'symlink_install': False, 'test_result_base': None}
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_target' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_clean_cache' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_clean_first' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'cmake_force_configure' from command line to 'False'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'ament_cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'catkin_cmake_args' from command line to 'None'
+[0.116s] Level 5:colcon.colcon_core.verb:set package 'car_vision' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.116s] DEBUG:colcon.colcon_core.verb:Building package 'car_vision' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision', 'merge_install': False, 'path': '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision', 'symlink_install': False, 'test_result_base': None}
+[0.116s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.116s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.117s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs' with build type 'ament_cmake'
+[0.117s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs'
+[0.118s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.118s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.118s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.118s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.118s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.118s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.118s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.119s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.119s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.121s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_control' with build type 'ament_python'
+[0.121s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_control', 'ament_prefix_path')
+[0.121s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/hook/ament_prefix_path.dsv'
+[0.121s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/hook/ament_prefix_path.sh'
+[0.122s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.123s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg' with build type 'ament_python'
+[0.123s] Level 1:colcon.colcon_core.shell:create_environment_hook('vision_pkg', 'ament_prefix_path')
+[0.123s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/hook/ament_prefix_path.dsv'
+[0.124s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/hook/ament_prefix_path.sh'
+[0.124s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.128s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs -DCMAKE_INSTALL_PREFIX=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs
+[0.262s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_control'
+[0.263s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.398s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg'
+[0.398s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.765s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_control': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_control build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/install.log --single-version-externally-managed install_data
+[0.766s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_pkg build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/install.log --single-version-externally-managed install_data
+[1.104s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_control' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_control build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_control/install.log --single-version-externally-managed install_data
+[1.106s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control' for CMake module files
+[1.106s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control' for CMake config files
+[1.106s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/lib'
+[1.106s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/bin'
+[1.106s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/lib/pkgconfig/car_control.pc'
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/lib/python3.12/site-packages'
+[1.107s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_control', 'pythonpath')
+[1.107s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/hook/pythonpath.dsv'
+[1.107s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/hook/pythonpath.sh'
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/bin'
+[1.107s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_control)
+[1.107s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/package.dsv'
+[1.108s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/package.sh'
+[1.109s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/package.bash'
+[1.109s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/car_control/package.zsh'
+[1.109s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control/share/colcon-core/packages/car_control)
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg' for CMake module files
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg' for CMake config files
+[1.110s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_pkg build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/install.log --single-version-externally-managed install_data
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib'
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/bin'
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/pkgconfig/vision_pkg.pc'
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages'
+[1.111s] Level 1:colcon.colcon_core.shell:create_environment_hook('vision_pkg', 'pythonpath')
+[1.111s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/hook/pythonpath.dsv'
+[1.111s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/hook/pythonpath.sh'
+[1.112s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/bin'
+[1.112s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(vision_pkg)
+[1.112s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/package.dsv'
+[1.112s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/package.sh'
+[1.112s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/package.bash'
+[1.112s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg/package.zsh'
+[1.112s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/colcon-core/packages/vision_pkg)
+[2.235s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_msgs -DCMAKE_INSTALL_PREFIX=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs
+[2.236s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs -- -j16 -l16
+[3.873s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs -- -j16 -l16
+[3.878s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs
+[3.923s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_msgs)
+[3.923s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' for CMake module files
+[3.923s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_control:/home/jeongseon/ros2_ws/install/my_first_package:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_msgs
+[3.923s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' for CMake config files
+[3.923s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'cmake_prefix_path')
+[3.924s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/cmake_prefix_path.dsv'
+[3.924s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/cmake_prefix_path.sh'
+[3.924s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib'
+[3.924s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'ld_library_path_lib')
+[3.924s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/ld_library_path_lib.dsv'
+[3.924s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/ld_library_path_lib.sh'
+[3.925s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/bin'
+[3.925s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib/pkgconfig/car_msgs.pc'
+[3.925s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages'
+[3.925s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'pythonpath')
+[3.925s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/pythonpath.dsv'
+[3.925s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/pythonpath.sh'
+[3.925s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/bin'
+[3.925s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.dsv'
+[3.926s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.sh'
+[3.926s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.bash'
+[3.926s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.zsh'
+[3.926s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/colcon-core/packages/car_msgs)
+[3.927s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_msgs)
+[3.927s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' for CMake module files
+[3.927s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs' for CMake config files
+[3.927s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'cmake_prefix_path')
+[3.927s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/cmake_prefix_path.dsv'
+[3.927s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/cmake_prefix_path.sh'
+[3.928s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib'
+[3.928s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'ld_library_path_lib')
+[3.928s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/ld_library_path_lib.dsv'
+[3.928s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/ld_library_path_lib.sh'
+[3.928s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/bin'
+[3.928s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib/pkgconfig/car_msgs.pc'
+[3.928s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/lib/python3.12/site-packages'
+[3.929s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_msgs', 'pythonpath')
+[3.929s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/pythonpath.dsv'
+[3.929s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/hook/pythonpath.sh'
+[3.929s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/bin'
+[3.929s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.dsv'
+[3.929s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.sh'
+[3.930s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.bash'
+[3.930s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/car_msgs/package.zsh'
+[3.930s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_msgs/share/colcon-core/packages/car_msgs)
+[3.930s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_comms' with build type 'ament_python'
+[3.930s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_comms', 'ament_prefix_path')
+[3.930s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/hook/ament_prefix_path.dsv'
+[3.931s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/hook/ament_prefix_path.sh'
+[3.931s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.933s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_planning' with build type 'ament_python'
+[3.933s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_planning', 'ament_prefix_path')
+[3.933s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/hook/ament_prefix_path.dsv'
+[3.934s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/hook/ament_prefix_path.sh'
+[3.934s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.936s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision' with build type 'ament_python'
+[3.936s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_vision', 'ament_prefix_path')
+[3.936s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/hook/ament_prefix_path.dsv'
+[3.936s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/hook/ament_prefix_path.sh'
+[3.936s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.066s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_comms'
+[4.066s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.195s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_planning'
+[4.195s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.323s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision'
+[4.324s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.692s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_planning': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_planning build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/install.log --single-version-externally-managed install_data
+[4.693s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_vision build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/install.log --single-version-externally-managed install_data
+[4.695s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_comms': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data
+[5.031s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision' for CMake module files
+[5.031s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_vision' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_vision build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_vision/install.log --single-version-externally-managed install_data
+[5.032s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision' for CMake config files
+[5.032s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib'
+[5.032s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/bin'
+[5.032s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/pkgconfig/car_vision.pc'
+[5.032s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/lib/python3.12/site-packages'
+[5.032s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_vision', 'pythonpath')
+[5.032s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/hook/pythonpath.dsv'
+[5.033s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/hook/pythonpath.sh'
+[5.033s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/bin'
+[5.033s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_vision)
+[5.033s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/package.dsv'
+[5.033s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/package.sh'
+[5.034s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/package.bash'
+[5.034s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/car_vision/package.zsh'
+[5.034s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_vision/share/colcon-core/packages/car_vision)
+[5.035s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms' for CMake module files
+[5.035s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_comms' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_comms build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_comms/install.log --single-version-externally-managed install_data
+[5.035s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms' for CMake config files
+[5.035s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/lib'
+[5.035s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/bin'
+[5.036s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/lib/pkgconfig/car_comms.pc'
+[5.036s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/lib/python3.12/site-packages'
+[5.036s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_comms', 'pythonpath')
+[5.036s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/hook/pythonpath.dsv'
+[5.036s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/hook/pythonpath.sh'
+[5.036s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/bin'
+[5.036s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_comms)
+[5.036s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/package.dsv'
+[5.037s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/package.sh'
+[5.037s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/package.bash'
+[5.037s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/car_comms/package.zsh'
+[5.037s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_comms/share/colcon-core/packages/car_comms)
+[5.038s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning' for CMake module files
+[5.038s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/car_planning' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/car_planning build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/install.log --single-version-externally-managed install_data
+[5.038s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning' for CMake config files
+[5.038s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib'
+[5.038s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/bin'
+[5.038s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/pkgconfig/car_planning.pc'
+[5.039s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages'
+[5.039s] Level 1:colcon.colcon_core.shell:create_environment_hook('car_planning', 'pythonpath')
+[5.039s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/hook/pythonpath.dsv'
+[5.039s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/hook/pythonpath.sh'
+[5.039s] Level 1:colcon.colcon_core.environment:checking '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/bin'
+[5.039s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(car_planning)
+[5.039s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/package.dsv'
+[5.040s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/package.sh'
+[5.040s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/package.bash'
+[5.040s] INFO:colcon.colcon_core.shell:Creating package script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning/package.zsh'
+[5.040s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/colcon-core/packages/car_planning)
+[5.040s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[5.041s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[5.041s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[5.041s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[5.044s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[5.044s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[5.044s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[5.052s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[5.052s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/local_setup.sh'
+[5.053s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/_local_setup_util_sh.py'
+[5.053s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/setup.sh'
+[5.054s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/local_setup.bash'
+[5.054s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/setup.bash'
+[5.055s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/local_setup.zsh'
+[5.055s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/setup.zsh'

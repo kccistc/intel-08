@@ -1,0 +1,35 @@
+running egg_info
+creating ../../build/car_planning/car_planning.egg-info
+writing ../../build/car_planning/car_planning.egg-info/PKG-INFO
+writing dependency_links to ../../build/car_planning/car_planning.egg-info/dependency_links.txt
+writing entry points to ../../build/car_planning/car_planning.egg-info/entry_points.txt
+writing requirements to ../../build/car_planning/car_planning.egg-info/requires.txt
+writing top-level names to ../../build/car_planning/car_planning.egg-info/top_level.txt
+writing manifest file '../../build/car_planning/car_planning.egg-info/SOURCES.txt'
+reading manifest file '../../build/car_planning/car_planning.egg-info/SOURCES.txt'
+writing manifest file '../../build/car_planning/car_planning.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib/car_planning
+copying car_planning/decision_maker.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib/car_planning
+copying car_planning/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib/car_planning
+running install
+running install_lib
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning
+copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib/car_planning/decision_maker.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning
+copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/build/lib/car_planning/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning
+byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning/decision_maker.py to decision_maker.cpython-312.pyc
+byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/ament_index
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/ament_index/resource_index
+creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/ament_index/resource_index/packages
+copying resource/car_planning -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/ament_index/resource_index/packages
+copying package.xml -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/share/car_planning
+running install_egg_info
+Copying ../../build/car_planning/car_planning.egg-info to /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/python3.12/site-packages/car_planning-0.0.0-py3.12.egg-info
+running install_scripts
+Installing decision_maker script to /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/car_planning/lib/car_planning
+writing list of installed files to '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/car_planning/install.log'

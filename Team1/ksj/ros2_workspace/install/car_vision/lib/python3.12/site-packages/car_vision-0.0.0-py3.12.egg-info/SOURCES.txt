@@ -1,0 +1,15 @@
+package.xml
+setup.cfg
+setup.py
+../../build/car_vision/car_vision.egg-info/PKG-INFO
+../../build/car_vision/car_vision.egg-info/SOURCES.txt
+../../build/car_vision/car_vision.egg-info/dependency_links.txt
+../../build/car_vision/car_vision.egg-info/requires.txt
+../../build/car_vision/car_vision.egg-info/top_level.txt
+../../build/car_vision/car_vision.egg-info/zip-safe
+car_vision/__init__.py
+car_vision/lane_detector.py
+resource/car_vision
+test/test_copyright.py
+test/test_flake8.py
+test/test_pep257.py

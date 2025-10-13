@@ -1,0 +1,37 @@
+[0.643s] Invoking command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_pkg build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/install.log --single-version-externally-managed install_data
+[0.810s] running egg_info
+[0.810s] creating ../../build/vision_pkg/vision_pkg.egg-info
+[0.822s] writing ../../build/vision_pkg/vision_pkg.egg-info/PKG-INFO
+[0.822s] writing dependency_links to ../../build/vision_pkg/vision_pkg.egg-info/dependency_links.txt
+[0.822s] writing entry points to ../../build/vision_pkg/vision_pkg.egg-info/entry_points.txt
+[0.822s] writing requirements to ../../build/vision_pkg/vision_pkg.egg-info/requires.txt
+[0.822s] writing top-level names to ../../build/vision_pkg/vision_pkg.egg-info/top_level.txt
+[0.822s] writing manifest file '../../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.846s] reading manifest file '../../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.846s] writing manifest file '../../build/vision_pkg/vision_pkg.egg-info/SOURCES.txt'
+[0.846s] running build
+[0.846s] running build_py
+[0.847s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build
+[0.847s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib
+[0.847s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib/vision_pkg
+[0.847s] copying vision_pkg/lane_detector_node.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib/vision_pkg
+[0.847s] copying vision_pkg/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib/vision_pkg
+[0.847s] running install
+[0.851s] running install_lib
+[0.864s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.864s] copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib/vision_pkg/lane_detector_node.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.864s] copying /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build/lib/vision_pkg/__init__.py -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg
+[0.864s] byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg/lane_detector_node.py to lane_detector_node.cpython-312.pyc
+[0.864s] byte-compiling /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg/__init__.py to __init__.cpython-312.pyc
+[0.864s] running install_data
+[0.864s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/ament_index
+[0.864s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/ament_index/resource_index
+[0.864s] creating /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/ament_index/resource_index/packages
+[0.865s] copying resource/vision_pkg -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/ament_index/resource_index/packages
+[0.865s] copying package.xml -> /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/share/vision_pkg
+[0.865s] running install_egg_info
+[0.878s] Copying ../../build/vision_pkg/vision_pkg.egg-info to /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages/vision_pkg-0.0.0-py3.12.egg-info
+[0.878s] running install_scripts
+[0.959s] Installing lane_detector_node script to /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/vision_pkg
+[0.959s] writing list of installed files to '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/install.log'
+[0.987s] Invoked command in '/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/src/vision_pkg' returned '0': CONDA_PROMPT_MODIFIER=(conda_ros2) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_pkg build --build-base /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/build install --record /home/jeongseon/workspace/intel-08/Team1/ksj/ros2_workspace/build/vision_pkg/install.log --single-version-externally-managed install_data

@@ -1,0 +1,214 @@
+좋지! 그럼 (3) DB 인덱스 → (6) 테스트 자동화 순서로 바로 붙일게. (ROS2 불필요)
+
+3) DB 인덱스(SQLite) 추가
+3-1. 인덱서 스크립트 설치
+
+이 스크립트는 이벤트를 SQLite에 저장해요(하트비트는 제외).
+
+sudo tee /opt/v2x/db_index.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import sqlite3, json, sys, os, time
+DB="/opt/v2x/v2x_index.sqlite3"
+
+SCHEMA="""
+CREATE TABLE IF NOT EXISTS events(
+  id INTEGER PRIMARY KEY,
+  ts REAL NOT NULL,
+  type TEXT NOT NULL,
+  severity TEXT,
+  lat REAL, lon REAL, road TEXT,
+  distance_m REAL,
+  src TEXT,
+  clip TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
+"""
+
+def ensure_db():
+    os.makedirs(os.path.dirname(DB), exist_ok=True)
+    conn=sqlite3.connect(DB)
+    conn.executescript(SCHEMA)
+    return conn
+
+def main():
+    evt=json.loads(sys.stdin.read())
+    if evt.get("type")=="heartbeat" or evt.get("accident","").get("type")=="heartbeat":
+        return  # 하트비트는 인덱싱 제외
+    conn=ensure_db()
+    acc = evt.get("accident", evt)  # evt가 평면이든 스키마형이든 대응
+    src = evt.get("hdr",{}).get("src", "")
+    ts  = float(evt.get("ts", acc.get("ts", time.time())))
+    conn.execute("""INSERT INTO events(ts,type,severity,lat,lon,road,distance_m,src,clip)
+                    VALUES (?,?,?,?,?,?,?,?,?)""", (
+        ts,
+        acc.get("type","unknown"),
+        acc.get("severity"),
+        acc.get("lat"), acc.get("lon"),
+        acc.get("road"),
+        acc.get("distance_m"),
+        src,
+        evt.get("clip","")
+    ))
+    conn.commit(); conn.close()
+
+if __name__=="__main__": main()
+EOF
+sudo chmod +x /opt/v2x/db_index.py
+
+3-2. 워처에 DB 기록 연동
+
+watch_and_broadcast.py 를 DB 인덱싱하도록 바꿔치기(전체 교체).
+
+sudo tee /opt/v2x/watch_and_broadcast.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import time, json, subprocess, os
+from pathlib import Path
+
+EVENT_DIR = Path("/opt/v2x/events")
+SERVER    = ["/usr/bin/python3","/opt/v2x/server.py","--repeat"]
+CLIPPER   = ["/usr/bin/python3","/opt/v2x/make_clip.py"]
+INDEXER   = ["/usr/bin/python3","/opt/v2x/db_index.py"]
+SEEN=set()
+
+def broadcast(evt):
+    cmd = SERVER + [
+        "--type", evt.get("type","unknown"),
+        "--severity", evt.get("severity","high"),
+        "--distance-m", str(evt.get("distance_m",500)),
+        "--road", evt.get("road","segment_A"),
+        "--lat", str(evt.get("lat",0.0)),
+        "--lon", str(evt.get("lon",0.0)),
+        "--ttl-s","10.0"
+    ]
+    if os.environ.get("V2X_KEY"):
+        cmd += ["--hmac-key", os.environ["V2X_KEY"]]
+    subprocess.Popen(cmd)
+
+def make_clip(ts):
+    subprocess.Popen(CLIPPER + [str(ts)])
+
+def index_event(evt, clip_path=""):
+    # watcher 생성 형태(evt는 평면) → 인덱서가 기대하는 구조로 래핑
+    wrapped = {
+        "ts": evt.get("ts", time.time()),
+        "hdr": {"src": "watcher"},
+        "accident": {
+            "type": evt.get("type","unknown"),
+            "severity": evt.get("severity",""),
+            "lat": evt.get("lat"), "lon": evt.get("lon"),
+            "road": evt.get("road"),
+            "distance_m": evt.get("distance_m"),
+        },
+        "clip": clip_path
+    }
+    p = subprocess.Popen(INDEXER, stdin=subprocess.PIPE)
+    p.communicate(json.dumps(wrapped).encode())
+
+def main():
+    EVENT_DIR.mkdir(parents=True, exist_ok=True)
+    while True:
+        for p in EVENT_DIR.glob("*.json"):
+            if p in SEEN: continue
+            try:
+                evt=json.loads(p.read_text())
+            except Exception as e:
+                print("[WARN] bad json:", p, e); SEEN.add(p); continue
+
+            ts = float(evt.get("ts", time.time()))
+            # 1) 방송
+            broadcast(evt)
+            # 2) 클립 생성
+            if evt.get("clip_hint", True):
+                make_clip(ts)
+                clip_path = f"/var/archive/accident_{int(ts)}.mp4"
+            else:
+                clip_path = ""
+            # 3) DB 인덱스 기록
+            index_event(evt, clip_path)
+            SEEN.add(p)
+        time.sleep(1)
+
+if __name__=="__main__": main()
+EOF
+
+sudo systemctl restart v2x-watcher.service
+
+3-3. 조회 CLI (최근 N개/기간)
+sudo tee /opt/v2x/v2x_db_cli.py >/dev/null <<'EOF'
+#!/usr/bin/env python3
+import sqlite3, argparse, time
+DB="/opt/v2x/v2x_index.sqlite3"
+ap=argparse.ArgumentParser()
+ap.add_argument("--recent", type=int, default=10, help="show last N")
+ap.add_argument("--since", type=float, default=0.0, help="min timestamp (epoch)")
+args=ap.parse_args()
+conn=sqlite3.connect(DB); c=conn.cursor()
+if args.since>0:
+    rows=c.execute("SELECT ts,type,severity,road,distance_m,clip FROM events WHERE ts>=? ORDER BY ts DESC LIMIT ?",
+                   (args.since,args.recent)).fetchall()
+else:
+    rows=c.execute("SELECT ts,type,severity,road,distance_m,clip FROM events ORDER BY ts DESC LIMIT ?",
+                   (args.recent,)).fetchall()
+for r in rows:
+    ts,typ,sev,road,dist,clip=r
+    print(time.strftime("%F %T", time.localtime(ts)), typ, sev or "", f"{road or ''}", f"{dist or ''}m", clip or "")
+EOF
+sudo chmod +x /opt/v2x/v2x_db_cli.py
+
+테스트
+
+이벤트 하나 쏘고 DB에서 확인:
+
+python3 /opt/v2x/emit_event.py --type collision --severity high --distance-m 420 --clip-hint
+python3 /opt/v2x/v2x_db_cli.py --recent 5
+
+6) 테스트 자동화 스크립트
+6-1. 시나리오: ① collision 30초 반복 → ② 중지 → ③ 단발 이벤트 2회
+sudo tee /opt/v2x/scenario_collision_mix.sh >/dev/null <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+export V2X_KEY="${V2X_KEY:-mysecret}"
+
+echo "[1/3] start collision repeater (30s)"
+python3 /opt/v2x/server.py --repeat --hz 1 \
+  --hmac-key "$V2X_KEY" \
+  --type collision --severity high --distance-m 400 --suggest slow_down \
+  --ttl-s 30 &
+PID=$!
+
+sleep 30
+echo "[2/3] stop repeater"
+kill $PID || true
+sleep 2
+pkill -f "python3 .*server.py" || true
+
+echo "[3/3] emit two single events"
+python3 /opt/v2x/emit_event.py --type collision --severity medium --distance-m 350 --clip-hint
+sleep 3
+python3 /opt/v2x/emit_event.py --type fire --severity high --distance-m 300 --clip-hint
+echo "done."
+EOF
+sudo chmod +x /opt/v2x/scenario_collision_mix.sh
+
+실행
+
+서버에서:
+
+/opt/v2x/scenario_collision_mix.sh
+
+
+클라이언트에서 journalctl -u v2x-alert-client.service -f 로 섞여 들어오는 로그 확인
+
+서버에서 python3 /opt/v2x/v2x_db_cli.py --recent 10 로 DB 기록 확인
+
+클립 파일 /var/archive/accident_<ts>.mp4 생성 확인
+
+문제 생기면 빠른 체크
+
+DB 파일 권한: ls -l /opt/v2x/v2x_index.sqlite3 (필요시 sudo chown $USER:$USER로 조정)
+
+워처 로그: journalctl -u v2x-watcher.service -f
+
+클립 생성 실패 시 /opt/v2x/make_clip.py 수동 실행 에러 확인
+
+AP/네트워크 동일 그룹/포트: MCAST/PORT 일치 재확인

@@ -1,0 +1,197 @@
+0) 목표 그림 (한 줄 요약)
+
+CCTV → (서버) 사고 감지/분류 → 알림 브로드캐스트(멀티캐스트) → (차량) 수신/표시/ROS2 퍼블리시 + (서버) 사고 전/후 5분 영상 저장
+
+1) 네트워크/서비스 고도화 (15–60분)
+
+ 고정 멀티캐스트 그룹/포트 확정: 239.20.20.20:5520 유지
+
+ 서버/차량 모두 systemd 서비스로 등록(부팅 자동 시작)
+
+ExecStart=/usr/bin/python3 /opt/v2x/v2x_alert_server.py --repeat ...
+
+Restart=always / WantedBy=multi-user.target
+
+ AP 설정 점검: IGMP snooping, 멀티캐스트 허용, 5GHz 사용
+
+2) “사고 감지/분류 → 알림 발사” 트리거 연결 (2–4시간)
+
+두 방법 중 하나 선택(빠른 건 A):
+
+A. 파일워처 방식(간단/빠름)
+
+감지기가 events/ 폴더에 JSON(한 줄) 드롭:
+
+{"type":"collision","severity":"high","lat":37.12,"lon":127.12,"road":"A","distance_m":500}
+
+
+파일워처가 감지 즉시 서버 스크립트 실행:
+
+python3 v2x_alert_server.py --repeat --type collision --severity high --distance-m 500 --road A --lat 37.12 --lon 127.12
+
+
+B. Webhook/MQTT 방식(확장성 좋음)
+
+감지기가 POST /alert 또는 MQTT topic: v2x/alert로 publish
+
+서버에서 수신해 subprocess.run([...v2x_alert_server.py...]) 호출
+
+처음엔 A 방식으로 붙이고, 나중에 B로 갈아타는 걸 추천.
+
+3) “사고 전/후 5분(총 10분) 영상 저장” 구현 (2–6시간)
+
+FFmpeg 순환 버퍼(세그먼트) → 이벤트 시 필요한 구간만 추출이 가장 안정적.
+
+3.1 순환 녹화(서버에서 상시 실행)
+
+RTSP/USB 입력을 10초 조각으로 계속 저장, 목록 크기 120개(= 20분) 유지:
+
+ffmpeg -y -rtsp_transport tcp -i "<RTSP or /dev/video0>" \
+  -c copy -f segment -segment_time 10 -reset_timestamps 1 \
+  -segment_list /var/rec/playlist.m3u8 -segment_list_size 120 \
+  /var/rec/seg_%05d.mp4
+
+
+이렇게 하면 항상 최근 20분이 롤링 저장됨(용량 관리 쉬움).
+
+3.2 이벤트 시 전/후 5분 클립 합치기
+
+이벤트 시각 T0를 기준으로, 직전 5분(30개 세그먼트) + 이후 5분(30개) 파일 경로를 수집 → concat으로 묶기:
+
+# 추출 대상 세그먼트 목록 파일 생성 (concat.txt)
+printf "file '%s'\n" /var/rec/seg_00098.mp4 ... /var/rec/seg_00128.mp4 > /tmp/concat.txt
+
+# 무재인코딩(가능하면)으로 합치기
+ffmpeg -f concat -safe 0 -i /tmp/concat.txt -c copy /var/archive/accident_$(date +%Y%m%d_%H%M%S).mp4
+
+
+감지기에서 “이벤트 타임스탬프”만 넘겨주면, FFmpeg 세그먼트 인덱스로 변환해 자동화 가능.
+
+팁: 코덱이 copy 불가하면 -c:v libx264 -crf 23 -preset veryfast로 재인코딩.
+
+4) 감지/분류 파이프라인 연결 (0.5–2일)
+
+ 검출기: YOLOv8n/5n(ONNX Runtime or TensorRT)로 vehicle/person/fire/smoke 최소 클래스
+
+ 분류기: 충돌(collision) vs 화재(fire) 등 사고 타입 클래시파이어(또는 규칙 기반: smoke/fire 픽셀 + 차량 급정지/접촉)
+
+ 스레싱/히스테리시스: 2–3 프레임 연속 조건 충족 시 ‘사고’ 확정 → 단발 알림(중복 방지)
+
+ JSON 이벤트 출력(파일/웹훅/MQTT) → 2번 트리거가 받음
+
+최소 JSON 스키마(감지기 → 트리거)
+
+{
+  "ts": 1737930000.123, 
+  "type": "collision",     // collision, fire, blockage, rollover, unknown
+  "severity": "high",      // low, medium, high, critical
+  "lat": 37.12345, "lon": 127.12345,
+  "road": "segment_A",
+  "distance_m": 500,       // 차량군 기준 or RSU 기준 거리 추정
+  "clip_hint": true        // 클립 저장 요청 플래그
+}
+
+5) 차량 측 연동 (0.5–1일)
+
+ 수신 로그 CSV 확인 (alerts.csv)
+
+ (선택) ROS2 퍼블리시 옵션 켜서 /v2x/alert로 내보내기
+
+ 간단 정책 노드: /v2x/alert 구독 → accident.type/distance_m에 따라 /cmd_vel 감속/정지(시연용)
+
+간단 정책 예시(의사 코드)
+
+if type in ["collision","fire"] and distance_m <= 500:
+    target_speed = min(current_speed, 0.5)  # 감속
+if type=="blockage" and distance_m <= 200:
+    target_speed = 0.0  # 정지
+
+6) 신뢰성/보안/운영 (0.5–1일)
+
+ HMAC 활성화(서버/차량 동일 키)
+
+ TTL 필터링(이미 구현) + 중복 억제(seq 기준)
+
+ 헬스체크/메트릭: 서버에서 10초마다 heartbeat 멀티캐스트(별 type) → 차량이 “최근 N초 알림 수신 OK”를 상태로 표시
+
+ 로그 롤링: alerts.csv / archive/*.mp4 용량 관리(주기적 삭제, 최대 개수 유지)
+
+7) 수용 기준(간단 KPI)
+
+알림 지연: 감지 확정 → 차량 콘솔 출력까지 ≤ 500 ms(동일 AP)
+
+누락률: 60초 동안 2 Hz 반복 방송 시 차량 수신율 ≥ 99%
+
+클립 완전성: 이벤트 전후 각각 5분 구간이 연속 영상으로 저장되는지
+
+오탐/미탐: 테스트 시나리오 10건 중, 오탐 ≤ 1, 미탐 ≤ 1 (초기 기준)
+
+8) 바로 쓸 만한 “Glue Script” 뼈대 (파일워처 예)
+
+이건 감지기(JSON 드롭) → 알림 발사 → 영상 추출까지 잇는 스텁이야. (서버 쪽에서 실행)
+
+#!/usr/bin/env python3
+# watch_and_broadcast.py
+import time, json, subprocess, glob, os
+from pathlib import Path
+
+EVENT_DIR = Path("/opt/v2x/events")
+REC_DIR   = Path("/var/rec")
+OUT_DIR   = Path("/var/archive")
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+def nearest_segments(t0, seg_seconds=10, pre_sec=300, post_sec=300):
+    # playlist.m3u8 의 최신 seg_*.mp4 리스트 기준으로 근사 선택
+    segs = sorted(glob.glob(str(REC_DIR / "seg_*.mp4")))
+    # 실제로는 세그먼트 타임스탬프를 함께 기록해두면 더 정확함
+    # 여기서는 가장 최근 것들 중에서 개수로 근사
+    need = (pre_sec + post_sec) // seg_seconds
+    return segs[-need:]
+
+def concat_segments(seg_paths, out_path):
+    tmp = "/tmp/concat.txt"
+    with open(tmp, "w") as f:
+        for p in seg_paths:
+            f.write(f"file '{p}'\n")
+    subprocess.run([
+        "ffmpeg","-y","-f","concat","-safe","0","-i",tmp,"-c","copy",str(out_path)
+    ], check=False)
+
+def broadcast_alert(evt):
+    # evt: dict loaded from JSON
+    cmd = [
+        "python3","/opt/v2x/v2x_alert_server.py","--repeat",
+        "--type", evt.get("type","unknown"),
+        "--severity", evt.get("severity","high"),
+        "--distance-m", str(evt.get("distance_m",500)),
+        "--road", evt.get("road","segment_A"),
+        "--lat", str(evt.get("lat",0.0)),
+        "--lon", str(evt.get("lon",0.0)),
+        "--ttl-s","10.0"
+    ]
+    subprocess.Popen(cmd)
+
+def main():
+    seen = set()
+    EVENT_DIR.mkdir(parents=True, exist_ok=True)
+    while True:
+        for p in EVENT_DIR.glob("*.json"):
+            if p in seen: 
+                continue
+            try:
+                evt = json.loads(p.read_text())
+            except Exception:
+                continue
+            broadcast_alert(evt)
+            if evt.get("clip_hint", True):
+                segs = nearest_segments(evt.get("ts", time.time()))
+                out = OUT_DIR / f"accident_{int(time.time())}.mp4"
+                concat_segments(segs, out)
+            seen.add(p)
+        time.sleep(1)
+
+if __name__ == "__main__":
+    main()
+
+
+실제 적용 시 세그먼트 타임스탬프 매핑을 로그로 남겨 더 정확하게 구간을 자르도록 개선하면 좋아.

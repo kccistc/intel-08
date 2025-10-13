@@ -1,0 +1,4 @@
+source;share/car_control/hook/pythonpath.dsv
+source;share/car_control/hook/pythonpath.sh
+source;share/car_control/hook/ament_prefix_path.dsv
+source;share/car_control/hook/ament_prefix_path.sh

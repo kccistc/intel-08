@@ -1,0 +1,231 @@
+좋아—**“지금 당장 뭘 하면 되는지”**를 정말 차근차근, 실행 가능한 순서로 안내할게.
+(서버=PC/RSU, 차량=Jetson 또는 라즈베리. 이미 v2x_alert_server.py / v2x_alert_client.py는 준비됐다고 가정)
+
+1) 스모크 테스트(필수 확인, 10분)
+
+차량(수신)에서 실행
+
+python3 v2x_alert_client.py --log alerts.csv
+# 여러 NIC가 있으면: --iface <차량 IP> 추가
+
+
+서버(송신)에서 실행
+
+python3 v2x_alert_server.py --repeat \
+  --type collision --severity high --distance-m 500 \
+  --suggest slow_down --road segment_A \
+  --lat 37.12345 --lon 127.12345
+
+
+기대한 화면(차량)
+
+[RECV] ... seq=1 src=rsu_server_01 type=collision sev=high dist=500.0m suggest=slow_down
+
+
+안 나오면: 같은 AP(5GHz 권장)인지 확인, 방화벽에서 UDP 5520 허용, --iface 양쪽 모두 지정, sudo tcpdump -i wlan0 udp port 5520로 패킷 감시.
+
+2) 주소/그룹 고정 & HMAC 켜기(15분)
+
+멀티캐스트 그룹: 239.20.20.20:5520 고정
+
+무결성 위해 같은 키 사용:
+
+export V2X_KEY="mysecret"
+# 서버
+python3 v2x_alert_server.py --repeat --hmac-key "$V2X_KEY"
+# 차량
+python3 v2x_alert_client.py --hmac-key "$V2X_KEY"
+
+3) 서비스 자동 실행(systemd) 설정(선택·권장, 20분)
+서버(PC/RSU)
+
+/etc/systemd/system/v2x-alert-server.service
+
+[Unit]
+Description=V2X Alert Broadcaster (RSU)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/v2x/v2x_alert_server.py --repeat \
+  --type collision --severity high --distance-m 500 --suggest slow_down
+Restart=always
+User=%i
+WorkingDirectory=/opt/v2x
+
+[Install]
+WantedBy=multi-user.target
+
+차량(Jetson/RPi)
+
+/etc/systemd/system/v2x-alert-client.service
+
+[Unit]
+Description=V2X Alert Client (Vehicle)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/v2x/v2x_alert_client.py --log /var/log/alerts.csv
+Restart=always
+User=%i
+WorkingDirectory=/opt/v2x
+
+[Install]
+WantedBy=multi-user.target
+
+
+활성화:
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now v2x-alert-server.service   # 서버에서
+sudo systemctl enable --now v2x-alert-client.service   # 차량에서
+
+4) “사고 이벤트 → 브로드캐스트” 트리거(파일워처로 빠르게, 30~60분)
+
+디렉터리 준비(서버)
+
+sudo mkdir -p /opt/v2x/events
+
+
+파일워처 스크립트 저장(서버: /opt/v2x/watch_and_broadcast.py)
+
+#!/usr/bin/env python3
+import time, json, subprocess, os
+from pathlib import Path
+EVENT_DIR = Path("/opt/v2x/events")
+EVENT_DIR.mkdir(parents=True, exist_ok=True)
+SEEN=set()
+
+def broadcast(evt:dict):
+    cmd = [
+        "python3","/opt/v2x/v2x_alert_server.py","--repeat",
+        "--type", evt.get("type","unknown"),
+        "--severity", evt.get("severity","high"),
+        "--distance-m", str(evt.get("distance_m",500)),
+        "--road", evt.get("road","segment_A"),
+        "--lat", str(evt.get("lat",0.0)),
+        "--lon", str(evt.get("lon",0.0)),
+        "--ttl-s","10.0"
+    ]
+    subprocess.Popen(cmd)
+
+def main():
+    while True:
+        for p in EVENT_DIR.glob("*.json"):
+            if p in SEEN: continue
+            try:
+                evt=json.loads(p.read_text())
+            except Exception:
+                continue
+            broadcast(evt)
+            SEEN.add(p)
+        time.sleep(1)
+
+if __name__=="__main__":
+    main()
+
+
+테스트 이벤트 드롭
+
+cat > /opt/v2x/events/test_collision.json << 'EOF'
+{"ts": 1737930000.0, "type":"collision", "severity":"high",
+ "lat":37.12, "lon":127.12, "road":"A", "distance_m":500, "clip_hint":true}
+EOF
+
+
+→ 차량 콘솔에 즉시 수신 로그가 찍히면 OK.
+
+(원하면 이 워처도 systemd 서비스로 돌리면 됩니다.)
+
+5) “사고 전/후 5분 영상” 저장 파이프라인(60~120분)
+5-1) 순환 녹화(세그먼트, 파일명에 epoch 사용)
+
+RTSP 예:
+
+sudo mkdir -p /var/rec
+ffmpeg -y -rtsp_transport tcp -i "<RTSP_URL>" \
+  -c copy -f segment -segment_time 10 -strftime 1 -reset_timestamps 1 \
+  /var/rec/seg_%s.mp4
+
+
+USB 웹캠 예:
+
+ffmpeg -y -f v4l2 -i /dev/video0 \
+  -c:v libx264 -preset veryfast -crf 23 \
+  -f segment -segment_time 10 -strftime 1 /var/rec/seg_%s.mp4
+
+
+seg_1695712340.mp4 같이 파일명에 UNIX epoch가 박히므로, 나중에 T0±300초 범위 파일을 고르기 쉬워집니다.
+
+5-2) 이벤트 시 클립 합치기 스크립트(서버: /opt/v2x/make_clip.py)
+#!/usr/bin/env python3
+import sys, os, glob, time, subprocess, math
+REC_DIR="/var/rec"
+OUT_DIR="/var/archive"; os.makedirs(OUT_DIR, exist_ok=True)
+def pick_segments(t0, pre=300, post=300, segdur=10):
+    lo = int(math.floor((t0-pre)/segdur)*segdur)
+    hi = int(math.ceil((t0+post)/segdur)*segdur)
+    files=[]
+    for ts in range(lo, hi, segdur):
+        p = f"{REC_DIR}/seg_{ts}.mp4"
+        if os.path.exists(p): files.append(p)
+    return files
+def concat(files, out):
+    tmp="/tmp/concat.txt"
+    with open(tmp,"w") as f:
+        for p in files: f.write(f"file '{p}'\n")
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",tmp,"-c","copy",out])
+if __name__=="__main__":
+    t0=float(sys.argv[1]) if len(sys.argv)>1 else time.time()
+    files=pick_segments(t0)
+    out=f"{OUT_DIR}/accident_{int(t0)}.mp4"
+    concat(files, out)
+    print("saved:", out)
+
+
+테스트:
+
+sudo mkdir -p /var/archive
+python3 /opt/v2x/make_clip.py 1737930000
+
+
+이후에는 감지기가 JSON의 ts를 같이 넘기면, 워처가 make_clip.py <ts>를 호출하게 연결하면 됩니다.
+
+6) 감지/분류 파이프라인 붙이기(1~2일 – 기본형)
+
+최소구성(빠르게):
+
+검출: YOLOv8n/YOLOv5n (COCO)로 vehicle/person
+
+분류:
+
+collision(추돌): 동일 프레임에서 차량 bbox들이 근접/중첩 + 상대 속도 급감(연속 프레임 위치 변화량↓)
+
+fire: ‘불/연기’ 전용 경량 분류기 1개 추가(없으면 색/채도/플리커 규칙으로 임시)
+
+감지기가 확정 이벤트를 JSON으로 /opt/v2x/events/*.json 드롭 → 위 워처가 즉시 방송 + 클립 생성.
+
+7) 차량 반응(0.5일)
+
+지금 클라이언트에 --ros2가 있어 /v2x/alert(String JSON)로 퍼블리시됨.
+
+정책 노드(간단)에서 구독 → /cmd_vel 감속/정지.
+
+예: distance_m<=500 & type in {collision,fire} → 감속, <=200 & blockage → 정지.
+
+8) 운영 안정화(0.5일)
+
+HMAC 항상 켜기, ttl_s 유지, seq 중복 억제(이미 hdr.seq 포함).
+
+alerts.csv//var/archive 용량 롤링(최대 개수 유지) 스크립트 추가.
+
+서버에서 heartbeat(예: 10초에 1번) 방송하여 차량 상태 표시(선택).
+
+다음에 같이 하자(선택)
+
+워처 + 클립 생성을 하나의 systemd 서비스로 묶어줄까?
+
+아니면 Webhook/FastAPI로 감지기로부터 HTTP POST를 받아 자동 처리하게 바꿔줄까?
+
+또는 차량 측 ROS2 정책 노드 스켈레톤(수신→감속/정지)을 바로 써줄까?

@@ -1,0 +1,38 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from car_msgs/msg/EmergencyEvent.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Point.idl"
+#include "std_msgs/msg/Header.idl"
+
+module car_msgs {
+  module msg {
+    module EmergencyEvent_Constants {
+      const uint8 MSG_TYPE_EMERGENCY_BRAKE = 0;
+      const uint8 MSG_TYPE_OBSTACLE_AHEAD = 1;
+      const uint8 MSG_TYPE_RECKLESS_DRIVING = 2;
+      const uint8 MSG_TYPE_UNKNOWN = 255;
+    };
+    struct EmergencyEvent {
+      @verbatim (language="comment", text=
+        "메시지의 타임스탬프와 프레임 ID")
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "메시지 종류 (위의 타입 상수 중 하나)")
+      uint8 msg_type;
+
+      @verbatim (language="comment", text=
+        "정보를 보낸 차량의 ID")
+      string vehicle_id;
+
+      @verbatim (language="comment", text=
+        "이벤트 발생 지점 좌표 (geometry_msgs/Point 타입 사용)")
+      geometry_msgs::msg::Point position;
+
+      @verbatim (language="comment", text=
+        "메시지의 신뢰도 (0.0 ~ 1.0)")
+      float confidence_score;
+    };
+  };
+};

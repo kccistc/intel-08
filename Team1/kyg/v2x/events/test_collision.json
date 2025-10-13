@@ -1,0 +1,2 @@
+{"ts": '"$(date +%s)"', "type":"collision", "severity":"high",
+ "lat":37.12, "lon":127.12, "road":"segment_A", "distance_m":500, "clip_hint":true}

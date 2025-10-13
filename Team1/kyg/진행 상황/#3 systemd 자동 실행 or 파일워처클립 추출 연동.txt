@@ -1,0 +1,145 @@
+좋아 — #3: systemd 자동 실행으로 바로 갑니다.
+(부팅 시 자동 시작 + 크래시 시 자동 재시작)
+
+A) 공통: 파일 위치 정리
+
+서버/차량 모두에서(각 장비에 맞게):
+
+sudo mkdir -p /opt/v2x
+sudo cp v2x_alert_server.py /opt/v2x/ 2>/dev/null || true
+sudo cp v2x_alert_client.py /opt/v2x/ 2>/dev/null || true
+sudo chmod +x /opt/v2x/*.py
+
+
+서버엔 v2x_alert_server.py만 있어도 OK, 차량엔 v2x_alert_client.py만 있어도 OK.
+
+B) 서버(PC/RSU) 유닛 파일
+
+환경 파일(키·옵션을 한곳에)
+
+sudo tee /opt/v2x/server.env >/dev/null <<'EOF'
+V2X_KEY=mysecret
+MCAST=239.20.20.20
+PORT=5520
+HZ=2.0
+TYPE=collision
+SEVERITY=high
+DIST=500
+SUGGEST=slow_down
+ROAD=segment_A
+LAT=37.12345
+LON=127.12345
+# IFACE=192.168.0.10   # 필요 시 주석 해제
+EOF
+
+
+서비스 파일
+
+sudo tee /etc/systemd/system/v2x-alert-server.service >/dev/null <<'EOF'
+[Unit]
+Description=V2X Alert Broadcaster (RSU)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=/opt/v2x/server.env
+WorkingDirectory=/opt/v2x
+ExecStart=/usr/bin/python3 /opt/v2x/v2x_alert_server.py --repeat \
+  --hmac-key ${V2X_KEY} \
+  --mcast ${MCAST} --port ${PORT} --hz ${HZ} \
+  --type ${TYPE} --severity ${SEVERITY} --distance-m ${DIST} \
+  --suggest ${SUGGEST} --road ${ROAD} --lat ${LAT} --lon ${LON} \
+  $([ -n "${IFACE}" ] && echo --iface ${IFACE})
+Restart=always
+RestartSec=2
+
+# 필요 시 권한 지정 (예: User=ubuntu)
+# User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+적용/시작
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now v2x-alert-server.service
+
+
+확인
+
+systemctl status v2x-alert-server.service
+journalctl -u v2x-alert-server.service -f
+
+C) 차량(Jetson/RPi) 유닛 파일
+
+환경 파일
+
+sudo tee /opt/v2x/client.env >/dev/null <<'EOF'
+V2X_KEY=mysecret
+MCAST=239.20.20.20
+PORT=5520
+LOG=/var/log/alerts.csv
+# IFACE=192.168.0.23   # 필요 시 주석 해제
+# ROS2=1               # ROS2 퍼블리시 사용 시 주석 해제
+EOF
+
+
+로그 디렉터리
+
+sudo mkdir -p /var/log
+sudo touch /var/log/alerts.csv
+sudo chmod 666 /var/log/alerts.csv
+
+
+서비스 파일
+
+sudo tee /etc/systemd/system/v2x-alert-client.service >/dev/null <<'EOF'
+[Unit]
+Description=V2X Alert Client (Vehicle)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=/opt/v2x/client.env
+WorkingDirectory=/opt/v2x
+ExecStart=/usr/bin/python3 /opt/v2x/v2x_alert_client.py \
+  --hmac-key ${V2X_KEY} --mcast ${MCAST} --port ${PORT} --log ${LOG} \
+  $([ -n "${IFACE}" ] && echo --iface ${IFACE}) \
+  $([ -n "${ROS2}" ] && echo --ros2)
+Restart=always
+RestartSec=2
+
+# 필요 시 권한 지정 (예: User=jetson)
+# User=jetson
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+적용/시작
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now v2x-alert-client.service
+
+
+확인
+
+systemctl status v2x-alert-client.service
+journalctl -u v2x-alert-client.service -f
+
+D) 자주 쓰는 운영 팁
+
+설정 변경 후 재시작:
+
+sudo systemctl restart v2x-alert-server.service
+sudo systemctl restart v2x-alert-client.service
+
+
+환경값 수정: /opt/v2x/*.env 수정 → daemon-reload 불필요, restart만 하면 반영.
+
+인터페이스 고정 필요하면 IFACE= 값을 채워 넣고 재시작.
+
+ROS2 퍼블리시는 차량의 /opt/v2x/client.env에서 ROS2=1 주석 해제.
