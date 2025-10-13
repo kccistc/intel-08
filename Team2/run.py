@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# 서정
+
 """
 통합 앱: Dual Camera GUI (Tkinter) + ONNXRuntime Det/Seg 파이프라인(캠1에 적용)
 - 환경변수로 모델/옵션을 설정하세요:
