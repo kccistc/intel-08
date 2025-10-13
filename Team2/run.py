@@ -1,441 +1,343 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Industrial-style relay panel (8 toggles) + 4 sensor indicators + 2 camera previews
-- No HTML; pure Python GUI using tkinter
-- Integrates with iotdemo.FactoryController (Arduino or FT232)
-- Safe to run even without hardware (dummy mode)
-- Camera previews for /dev/video0 and /dev/video2 on the right side
+run.py — Intel Geti 스타일: Detection -> ROI Segmentation (OpenVINO) + FactoryController 결합
+- 시작 시 컨베이어만 True, 나머지(red/orange/green/led)는 False
+- 카메라 프리뷰 + 디텍션 박스 + ROI 세그 오버레이(vivid)
+- 다양한 Detection 출력 형식(SSD / YOLOX / 5+cls / 임의 NxK)에 자동 대응
 """
 
-import sys
-import threading
-import time
-import traceback
-from dataclasses import dataclass
-from typing import Optional, Dict
+import argparse, time, warnings
+import cv2, numpy as np
 
-try:
-    # Local package layout (as provided by the user)
-    from iotdemo import FactoryController, Inputs, Outputs, PyDuino, PyFt232
-except Exception as e:
-    print("Failed to import iotdemo modules:", e, file=sys.stderr)
-    traceback.print_exc()
-    sys.exit(1)
+# OpenVINO
+from openvino.runtime import Core
 
-import tkinter as tk
-from tkinter import ttk
+# 프로젝트 하드웨어 컨트롤러
+from iotdemo import FactoryController
 
-# Optional: OpenCV + PIL for camera preview
-_cv2 = None
-_ImageTk = None
-_Image = None
-try:
-    import cv2 as _cv2  # type: ignore
-    from PIL import Image as _Image
-    from PIL import ImageTk as _ImageTk
-except Exception as _e:
-    print("Camera preview dependencies missing or failed to import:", _e, file=sys.stderr)
-    _cv2 = None
-    _Image = None
-    _ImageTk = None
+# ---------- UI ----------
+PINK  = (203, 80, 165)   # bbox color
+WHITE = (255,255,255)
 
+def letterbox(im, size, color=(114,114,114)):
+    h, w = im.shape[:2]
+    r = min(size/h, size/w)
+    nh, nw = int(round(h*r)), int(round(w*r))
+    resized = cv2.resize(im, (nw, nh), interpolation=cv2.INTER_LINEAR)
+    canvas = np.full((size, size, 3), color, dtype=im.dtype)
+    top  = (size-nh)//2; left = (size-nw)//2
+    canvas[top:top+nh, left:left+nw] = resized
+    return canvas, r, left, top
 
-# --------------------------------------------------------------------------------------
-# Hardware Abstraction
-# --------------------------------------------------------------------------------------
+def put_fps(img, fps):
+    cv2.putText(img, f"FPS: {fps:.1f}", (12,28), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2, cv2.LINE_AA)
 
-@dataclass
-class RelaySpec:
-    name: str
-    # When using Arduino: direct pin (Outputs.*)
-    arduino_pin: Optional[int] = None
-    # FT232 mapping: ('cmd', value_on, value_off) or a callable(controller, on)
-    ft232_map: Optional[object] = None
+def _rounded_rect(img, pt1, pt2, color, thickness=2, r=8):
+    x1,y1 = pt1; x2,y2 = pt2
+    if r<=0:
+        cv2.rectangle(img, pt1, pt2, color, thickness)
+        return
+    cv2.line(img,(x1+r,y1),(x2-r,y1),color,thickness)
+    cv2.line(img,(x1+r,y2),(x2-r,y2),color,thickness)
+    cv2.line(img,(x1,y1+r),(x1,y2-r),color,thickness)
+    cv2.line(img,(x2,y1+r),(x2,y2-r),color,thickness)
+    cv2.ellipse(img,(x1+r,y1+r),(r,r),180,0,90,color,thickness)
+    cv2.ellipse(img,(x2-r,y1+r),(r,r),270,0,90,color,thickness)
+    cv2.ellipse(img,(x1+r,y2-r),(r,r),90 ,0,90,color,thickness)
+    cv2.ellipse(img,(x2-r,y2-r),(r,r),0  ,0,90,color,thickness)
 
+def _label_badge(img, x, y, text, bg, fg=WHITE):
+    font = cv2.FONT_HERSHEY_SIMPLEX; scale=0.55; thick=2; pad=6; r=6
+    (tw,th), _ = cv2.getTextSize(text, font, scale, thick)
+    bx1,by1 = x, max(0, y - th - 2*pad - 6)
+    bx2,by2 = bx1 + tw + 2*pad + 2*r, by1 + th + 2*pad
+    cv2.rectangle(img,(bx1,by1),(bx2,by2),bg,-1)
+    _rounded_rect(img,(bx1,by1),(bx2,by2),bg,2,r)
+    cv2.putText(img, text, (bx1+pad+r//2, by2-pad), font, scale, fg, thick, cv2.LINE_AA)
 
-class HW:
+def draw_box(frame, x1,y1,x2,y2, score, cls, labels, color=PINK):
+    _rounded_rect(frame, (x1,y1), (x2,y2), color, 2, r=8)
+    name = labels[int(cls)] if 0 <= int(cls) < len(labels) else str(int(cls))
+    _label_badge(frame, x1, y1, f"{name} {int(score*100+0.5)}%", bg=color, fg=WHITE)
+
+# ---------- Detection decoders ----------
+_GRID_CACHE={}
+def _build_grids(size, strides=(8,16,32)):
+    grids, s_all = [], []
+    for s in strides:
+        ny, nx = size//s, size//s
+        yv, xv = np.meshgrid(np.arange(ny), np.arange(nx), indexing="ij")
+        g = np.stack([xv, yv], -1).reshape(-1,2).astype(np.float32)
+        grids.append(g); s_all.append(np.full((g.shape[0],1), s, np.float32))
+    return np.concatenate(grids,0), np.concatenate(s_all,0)
+
+def _sig(x): return 1/(1+np.exp(-x))
+
+def decode_yolox_raw(pred, size, conf=0.35, num_classes=None):
+    C5,N = pred.shape
+    if num_classes is None: num_classes = C5-5
+    if size not in _GRID_CACHE: _GRID_CACHE[size] = _build_grids(size)
+    grid, strides = _GRID_CACHE[size]
+    if grid.shape[0] != N:
+        M=min(N,grid.shape[0]); pred=pred[:,:M]; N=M
+    px,py,pw,ph = pred[0],pred[1],pred[2],pred[3]
+    pobj=_sig(pred[4]); pcls=_sig(pred[5:5+num_classes])
+    grid=grid[:N]; s=strides[:N,0]
+    cx=(_sig(px)+grid[:,0])*s; cy=(_sig(py)+grid[:,1])*s
+    w=np.exp(pw)*s; h=np.exp(ph)*s
+    x1,y1,x2,y2 = cx-w/2, cy-h/2, cx+w/2, cy+h/2
+    cls_idx=np.argmax(pcls,0); scores=pcls[cls_idx,np.arange(N)]*pobj
+    keep=scores>=conf
+    if not np.any(keep): return np.zeros((0,6),np.float32)
+    return np.stack([x1[keep],y1[keep],x2[keep],y2[keep],scores[keep],cls_idx[keep].astype(np.float32)],1)
+
+def decode_detection_output(arr, img_size, conf=0.35):
+    boxes = arr.reshape(-1,7); dets=[]
+    for image_id,label,score,x_min,y_min,x_max,y_max in boxes:
+        if score < conf: continue
+        dets.append([x_min*img_size,y_min*img_size,x_max*img_size,y_max*img_size,score,label])
+    return np.array(dets,np.float32) if dets else np.zeros((0,6),np.float32)
+
+def decode_box5_plus_cls(out0, out1, size, conf=0.35):
+    B,N,C = out0.shape; assert B==1 and C==5
+    boxes = out0[0].astype(np.float32)
+    clsid = out1[0].astype(np.float32) if (out1.ndim==2 and out1.shape[1]==N) else np.zeros((N,),np.float32)
+    if np.all((boxes[:,:4]>=0)&(boxes[:,:4]<=1.5)): boxes[:,:4]*=size
+    keep = boxes[:,4] >= conf
+    if not np.any(keep): return np.zeros((0,6),np.float32)
+    b=boxes[keep]; c=clsid[keep]
+    return np.concatenate([b[:,:4], b[:,4:5], c[:,None]],1)
+
+def brute_try_any(arr, size, conf=0.1, topk=5):
+    A=arr
+    if A.ndim==3 and A.shape[0]==1: A=A[0]
+    if A.ndim!=2 or A.shape[1]<4 or A.shape[1]>7: return np.zeros((0,6),np.float32)
+    X=A.astype(np.float32)
+    if np.all((X[:,:4]>=0)&(X[:,:4]<=1.5)): X[:,:4]*=size
+    if A.shape[1]==4:
+        score=np.ones((X.shape[0],1),np.float32); cls=np.zeros((X.shape[0],1),np.float32)
+        X=np.concatenate([X[:,:4],score,cls],1)
+    elif A.shape[1]>=5:
+        score=X[:,4:5]; cls=X[:,5:6] if A.shape[1]>=6 else np.zeros((X.shape[0],1),np.float32)
+        X=np.concatenate([X[:,:4],score,cls],1)
+    idx=np.argsort(-X[:,4])[:topk]; Y=X[idx]
+    return Y[Y[:,4]>=conf] if np.any(Y[:,4]>=conf) else Y
+
+# ---------- Seg helpers (vivid style) ----------
+def softmax(x, axis=1):
+    x = x - np.max(x, axis=axis, keepdims=True)
+    e = np.exp(x)
+    return e / np.sum(e, axis=axis, keepdims=True)
+
+# vivid palette (배경 0, 예: 1=sticker, 2=stain)
+SEG_STYLE = {
+    1: {"fill":(0,255,255),  "alpha":0.45, "edge":(60,220,60),  "badge":(40,180,40),  "name":"sticker"},
+    2: {"fill":(255,120,0),  "alpha":0.45, "edge":(255,210,120),"badge":(200,160,80), "name":"stain"},
+}
+
+def draw_seg_on_roi(roi_bgr, mask_uint8, labels):
+    """Draw vivid fill + contour + small badge per class (skip background=0)."""
+    h,w = mask_uint8.shape
+    out = roi_bgr.copy()
+
+    for cid in SEG_STYLE.keys():
+        m = (mask_uint8 == cid).astype(np.uint8)
+        if m.sum() == 0: continue
+
+        # fill
+        color = SEG_STYLE[cid]["fill"]; alpha = SEG_STYLE[cid]["alpha"]
+        overlay = out.copy()
+        overlay[m>0] = color
+        cv2.addWeighted(overlay, alpha, out, 1-alpha, 0, out)
+
+        # contour
+        contours, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if len(contours) == 0: 
+            continue
+        cv2.drawContours(out, contours, -1, SEG_STYLE[cid]["edge"], 2)
+
+        # badge at largest contour centroid
+        areas = [cv2.contourArea(c) for c in contours]
+        if len(areas):
+            c = contours[int(np.argmax(areas))]
+            M = cv2.moments(c)
+            if M["m00"] != 0:
+                cx = int(M["m10"]/M["m00"]); cy = int(M["m01"]/M["m00"])
+                # label name
+                name = SEG_STYLE[cid]["name"] if cid < len(labels) else labels[cid] if cid < len(labels) else str(cid)
+                bg  = SEG_STYLE[cid]["badge"]
+                txt = f"{name}"
+                font=cv2.FONT_HERSHEY_SIMPLEX; scale=0.5; thick=1; pad=4
+                (tw,th), _ = cv2.getTextSize(txt, font, scale, thick)
+                bx1,by1 = max(0, cx-tw//2-pad), max(0, cy- th//2 - pad - 12)
+                bx2,by2 = min(w-1, bx1 + tw + 2*pad), min(h-1, by1 + th + 2*pad)
+                cv2.rectangle(out,(bx1,by1),(bx2,by2),bg,-1)
+                cv2.putText(out, txt, (bx1+pad, by2-pad), font, scale, WHITE, 1, cv2.LINE_AA)
+
+    return out
+
+# ---------- Factory Controller ----------
+def init_hardware_states(ctrl: FactoryController):
     """
-    Thin wrapper over FactoryController to present 8 relays as toggles
-    and read 4 sensors. Tries to handle both Arduino and FT232.
+    요구사항:
+      - 시작 시 conveyor True
+      - 나머지(red/orange/green/led) False
     """
-    def __init__(self, port: Optional[str] = None, debug: bool = True):
-        self.ctrl = FactoryController(port=port, debug=debug)
-        # Name-mangled internals we may need to poke carefully
-        self._device = getattr(self.ctrl, "_FactoryController__device", None)
-        self._device_name = getattr(self.ctrl, "_FactoryController__device_name", None)
-        self.is_dummy = self.ctrl.is_dummy
-
-        # active-low semantics for Arduino (per FactoryController)
-        self.DEV_ON = getattr(FactoryController, "DEV_ON", False)
-        self.DEV_OFF = getattr(FactoryController, "DEV_OFF", True)
-
-        # Relay definitions (8 slots)
-        self.relays: Dict[int, RelaySpec] = {
-            1: RelaySpec("Beacon Red",     arduino_pin=Outputs.BEACON_RED),
-            2: RelaySpec("Beacon Orange",  arduino_pin=Outputs.BEACON_ORANGE),
-            3: RelaySpec("Beacon Green",   arduino_pin=Outputs.BEACON_GREEN),
-            4: RelaySpec("Buzzer",         arduino_pin=Outputs.BEACON_BUZZER),
-            5: RelaySpec("LED",            arduino_pin=Outputs.LED),
-            6: RelaySpec("Conveyor",       arduino_pin=Outputs.CONVEYOR_EN,
-                         ft232_map=("start", 1, 0)),
-            7: RelaySpec("Actuator 1",     arduino_pin=Outputs.ACTUATOR_1,
-                         ft232_map=("detect", 1, 0)),
-            8: RelaySpec("Actuator 2",     arduino_pin=Outputs.ACTUATOR_2,
-                         ft232_map=("detect", 2, 0)),
-        }
-
-        # Maintain software state for toggles (since some HW may be momentary)
-        self.state: Dict[int, bool] = {i: False for i in range(1, 9)}
-
-    # ----------------------------- Relay control helpers ------------------------------
-
-    def _arduino_set(self, pin: int, on: bool):
-        if self.is_dummy or self._device is None:
-            return
-
-        # Special-case: some kits wire CONVEYOR_EN "active-high" relative to others.
-        # User reported "Conveyor runs when OFF" -> invert logic for this pin.
-        if pin == Outputs.CONVEYOR_EN:
-            # Invert ON/OFF mapping explicitly for conveyor enable
-            level = self.DEV_OFF if on else self.DEV_ON
-            self._device.set(pin, level)
-            # PWM for visibility
-            self._device.set(Outputs.CONVEYOR_PWM, 255 if on else 0)
-            return
-
-        # Default: active-low
-        self._device.set(pin, self.DEV_ON if on else self.DEV_OFF)
-
-        # Conveyor PWM guard (if someone toggles PWM pin directly in future)
-        if pin == Outputs.CONVEYOR_EN:
-            self._device.set(Outputs.CONVEYOR_PWM, 255 if on else 0)
-
-    def _ft232_set(self, spec: RelaySpec, on: bool):
-        if self.is_dummy or self._device is None or spec.ft232_map is None:
-            return
-
-        kind, val_on, val_off = spec.ft232_map
-        if kind == "start":
-            cmd = PyFt232.PKT_CMD_START
-            v = PyFt232.PKT_CMD_START_START if on else PyFt232.PKT_CMD_START_STOP
-            self._device.set(cmd, v)
-            if on:
-                for _ in range(3):
-                    self._device.set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
-        elif kind == "detect":
-            cmd = PyFt232.PKT_CMD_DETECTION
-            v = int(val_on) if on else PyFt232.PKT_CMD_DETECTION_0
-            self._device.set(cmd, v)
-
-    def set_relay(self, idx: int, on: bool):
-        self.state[idx] = on
-        spec = self.relays[idx]
-
-        if self._device_name == "arduino":
-            if spec.arduino_pin is not None:
-                self._arduino_set(int(spec.arduino_pin), on)
-        elif self._device_name == "ft232":
-            self._ft232_set(spec, on)
-
-    def get_sensor_states(self):
-        """
-        Returns dict with 4 sensor booleans:
-          - start_button (pressed = True)
-          - stop_button (pressed = True)
-          - sensor_1 (blocked = True)
-          - sensor_2 (blocked = True)
-        """
-        res = {"start_button": False, "stop_button": False, "sensor_1": False, "sensor_2": False}
-
-        # Arduino path: we can read inputs
-        if self._device_name == "arduino" and self._device is not None:
-            try:
-                res["start_button"] = (self._device.get(Inputs.START_BUTTON) == 0)
-                res["stop_button"]  = (self._device.get(Inputs.STOP_BUTTON) == 0)
-                res["sensor_1"]     = (self._device.get(Inputs.PHOTOELECTRIC_SENSOR_1) == 0)
-                res["sensor_2"]     = (self._device.get(Inputs.PHOTOELECTRIC_SENSOR_2) == 0)
-            except Exception:
-                pass
-        else:
-            # Best-effort for FT232/dummy
-            try:
-                res["sensor_1"] = bool(getattr(self.ctrl, "defect_sensor_status", False))
-                res["sensor_2"] = bool(getattr(self.ctrl, "color_sensor_status", False))
-            except Exception:
-                pass
-
-        return res
-
-    def close(self):
-        try:
-            self.ctrl.close()
-        except Exception:
-            pass
-
-
-# --------------------------------------------------------------------------------------
-# GUI
-# --------------------------------------------------------------------------------------
-
-class App(tk.Tk):
-    def __init__(self, hw: HW):
-        super().__init__()
-        self.title("Factory Relay Panel")
-        self.geometry("1080x640")
-        self.minsize(900, 560)
-
-        self.hw = hw
-
-        # Styles
-        self.style = ttk.Style(self)
-        try:
-            self.style.theme_use("clam")
-        except Exception:
-            pass
-
-        # Layout: left control panel, right camera stack
-        self.container = ttk.Frame(self, padding=6)
-        self.container.pack(fill=tk.BOTH, expand=True)
-        self.container.columnconfigure(0, weight=2)  # left
-        self.container.columnconfigure(1, weight=3)  # right
-
-        self._build_left_panel(self.container)
-        self._build_right_cameras(self.container)
-
-        self._poll_sensors()
-        self.protocol("WM_DELETE_WINDOW", self._on_close)
-
-    # ----------------------------- Left Panel (Controls) ------------------------------
-
-    def _build_left_panel(self, parent):
-        left = ttk.Frame(parent)
-        left.grid(row=0, column=0, sticky="nsew")
-        left.rowconfigure(1, weight=1)
-        left.columnconfigure(0, weight=1)
-
-        # Top: device status
-        top = ttk.Frame(left, padding=6)
-        top.grid(row=0, column=0, sticky="ew")
-        dev_label = f"Device: {'Dummy' if self.hw.is_dummy else (self.hw._device_name or 'Unknown')}"
-        ttk.Label(top, text=dev_label, font=("Arial", 12, "bold")).pack(side=tk.LEFT)
-
-        # Middle: 8 relay toggles (4x2 grid)
-        mid = ttk.Frame(left, padding=6)
-        mid.grid(row=1, column=0, sticky="nsew")
-        self.relay_vars: Dict[int, tk.BooleanVar] = {}
-        self.relay_buttons: Dict[int, tk.Button] = {}
-        self.relay_lamps: Dict[int, tk.Canvas] = {}
-
-        grid_cfg = [(0,0),(0,1),(0,2),(0,3),
-                    (1,0),(1,1),(1,2),(1,3)]
-
-        for idx in range(1, 9):
-            frm = ttk.Labelframe(mid, text=f"Relay {idx}: {self.hw.relays[idx].name}", padding=8)
-            r, c = grid_cfg[idx-1]
-            frm.grid(row=r, column=c, padx=6, pady=6, sticky="nsew")
-
-            var = tk.BooleanVar(value=self.hw.state[idx])
-            self.relay_vars[idx] = var
-
-            # Status lamp
-            lamp = tk.Canvas(frm, width=26, height=26, highlightthickness=0)
-            lamp.grid(row=0, column=0, padx=6, pady=6, sticky="w")
-            self.relay_lamps[idx] = lamp
-
-            # Toggle button
-            btn = tk.Button(frm, text="OFF", relief=tk.RAISED, font=("Arial", 12, "bold"),
-                            command=lambda i=idx: self._toggle(i))
-            btn.grid(row=0, column=1, padx=6, pady=6, sticky="ew")
-            self.relay_buttons[idx] = btn
-
-            frm.columnconfigure(1, weight=1)
-            self._refresh_relay_visual(idx)
-
-        for i in range(2):
-            mid.rowconfigure(i, weight=1)
-        for j in range(4):
-            mid.columnconfigure(j, weight=1)
-
-        # Bottom: sensors + master start/stop
-        bottom = ttk.Frame(left, padding=6)
-        bottom.grid(row=2, column=0, sticky="ew")
-
-        self.sensor_labels = {
-            "start_button": ttk.Label(bottom, text="START: -", width=16, anchor="center"),
-            "stop_button": ttk.Label(bottom, text="STOP: -", width=16, anchor="center"),
-            "sensor_1": ttk.Label(bottom, text="SENSOR1: -", width=16, anchor="center"),
-            "sensor_2": ttk.Label(bottom, text="SENSOR2: -", width=16, anchor="center"),
-        }
-        for key in ("start_button", "stop_button", "sensor_1", "sensor_2"):
-            self.sensor_labels[key].pack(side=tk.LEFT, padx=6)
-
-        ttk.Separator(bottom, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=8)
-        tk.Button(bottom, text="SYSTEM START", command=self._system_start).pack(side=tk.LEFT, padx=6)
-        tk.Button(bottom, text="SYSTEM STOP", command=self._system_stop).pack(side=tk.LEFT, padx=6)
-
-    # ----------------------------- Right Panel (Cameras) ------------------------------
-
-    def _build_right_cameras(self, parent):
-        right = ttk.Frame(parent)
-        right.grid(row=0, column=1, sticky="nsew")
-        right.rowconfigure(0, weight=1)
-        right.rowconfigure(1, weight=1)
-        right.columnconfigure(0, weight=1)
-
-        self._cams = []
-        if _cv2 is not None and _ImageTk is not None and _Image is not None:
-            self._cams = [
-                self._make_cam_widget(right, title="Camera 0 (/dev/video0)", device_index=0, row=0),
-                self._make_cam_widget(right, title="Camera 2 (/dev/video2)", device_index=2, row=1),
-            ]
-        else:
-            # Fallback text if cv2/PIL not available
-            ttk.Label(right, text="Camera preview unavailable (cv2/PIL missing).",
-                      anchor="center").grid(row=0, column=0, sticky="nsew", padx=8, pady=8)
-
-    def _make_cam_widget(self, parent, title: str, device_index: int, row: int):
-        frame = ttk.Labelframe(parent, text=title, padding=6)
-        frame.grid(row=row, column=0, sticky="nsew", padx=6, pady=6)
-        frame.rowconfigure(0, weight=1)
-        frame.columnconfigure(0, weight=1)
-
-        label = tk.Label(frame, text="Opening...", anchor="center")
-        label.grid(row=0, column=0, sticky="nsew")
-
-        cap = None
-        try:
-            cap = _cv2.VideoCapture(device_index)
-            if not cap.isOpened():
-                label.configure(text=f"Cannot open camera index {device_index}")
-                cap = None
-        except Exception as e:
-            label.configure(text=f"Camera {device_index} error: {e}")
-            cap = None
-
-        cam = {"cap": cap, "label": label, "last_frame_ts": 0.0}
-        # start periodic update
-        self.after(50, lambda: self._update_cam_frame(cam, device_index))
-        return cam
-
-    def _update_cam_frame(self, cam, device_index: int):
-        if _cv2 is None or _ImageTk is None or _Image is None:
-            return
-
-        cap = cam["cap"]
-        label = cam["label"]
-        if cap is None:
-            # no device, keep message
-            return
-
-        ret, frame = cap.read()
-        if not ret or frame is None:
-            label.configure(text=f"Camera {device_index}: no frame")
-            self.after(200, lambda: self._update_cam_frame(cam, device_index))
-            return
-
-        # Convert BGR->RGB, resize to fit label bounds roughly
-        rgb = _cv2.cvtColor(frame, _cv2.COLOR_BGR2RGB)
-        h, w = rgb.shape[:2]
-        # Keep a manageable preview size
-        max_w, max_h = 640, 300
-        scale = min(max_w / float(w), max_h / float(h))
-        if scale < 1.0:
-            new_size = (int(w * scale), int(h * scale))
-            rgb = _cv2.resize(rgb, new_size, interpolation=_cv2.INTER_AREA)
-
-        img = _Image.fromarray(rgb)
-        imgtk = _ImageTk.PhotoImage(image=img)
-        label.imgtk = imgtk  # keep reference
-        label.configure(image=imgtk, text="")
-
-        # schedule next frame
-        self.after(50, lambda: self._update_cam_frame(cam, device_index))
-
-    # ----------------------------- UI behavior ----------------------------------
-
-    def _toggle(self, idx: int):
-        new_state = not self.relay_vars[idx].get()
-        self.relay_vars[idx].set(new_state)
-        self.hw.set_relay(idx, new_state)
-        self._refresh_relay_visual(idx)
-
-    def _refresh_relay_visual(self, idx: int):
-        on = self.relay_vars[idx].get()
-
-        # Lamp color
-        lamp = self.relay_lamps[idx]
-        lamp.delete("all")
-        color = "#2ecc71" if on else "#7f8c8d"  # green / gray
-        lamp.create_oval(2, 2, 26, 26, fill=color, outline="black")
-
-        # Button look
-        btn = self.relay_buttons[idx]
-        btn.configure(text="ON" if on else "OFF")
-        btn.configure(relief=tk.SUNKEN if on else tk.RAISED)
-        btn.configure(bg="#a3e6b1" if on else "#eeeeee", activebackground="#d5f5e3" if on else "#f2f2f2")
-
-    def _system_start(self):
-        try:
-            self.hw.ctrl.system_start()
-        except Exception:
-            traceback.print_exc()
-
-    def _system_stop(self):
-        try:
-            self.hw.ctrl.system_stop()
-        except Exception:
-            traceback.print_exc()
-
-    def _poll_sensors(self):
-        try:
-            st = self.hw.get_sensor_states()
-            self._set_sensor_label("start_button", st["start_button"])
-            self._set_sensor_label("stop_button",  st["stop_button"])
-            self._set_sensor_label("sensor_1",     st["sensor_1"])
-            self._set_sensor_label("sensor_2",     st["sensor_2"])
-        except Exception:
-            traceback.print_exc()
-
-        # poll every 200 ms
-        self.after(200, self._poll_sensors)
-
-    def _set_sensor_label(self, key: str, active: bool):
-        lbl = self.sensor_labels[key]
-        lbl.configure(text=f"{key.upper().replace('_', ' ')}: {'ON' if active else 'OFF'}")
-        lbl.configure(background="#f5b7b1" if active else "#d5dbdb")
-
-    def _on_close(self):
-        # Release cameras
-        try:
-            if hasattr(self, "_cams"):
-                for cam in self._cams:
-                    cap = cam.get("cap")
-                    try:
-                        if cap is not None:
-                            cap.release()
-                    except Exception:
-                        pass
-        except Exception:
-            pass
-
-        try:
-            self.hw.close()
-        except Exception:
-            pass
-        self.destroy()
-
-
-# --------------------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------------------
-
+    try:
+        # 일부 디바이스에선 속성 미존재 가능 → best-effort
+        ctrl.red = False
+        ctrl.orange = False
+        ctrl.green = False
+        ctrl.led = False
+    except Exception:
+        pass
+    ctrl.conveyor = True
+
+# ---------- main ----------
 def main():
-    # Port auto-detection inside FactoryController will try /dev/ttyACM* on Linux.
-    hw = HW(port=None, debug=True)
-    app = App(hw)
-    app.mainloop()
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+    ap = argparse.ArgumentParser(description="Det -> ROI Seg (OpenVINO) + FactoryController")
+    # det
+    ap.add_argument("--det-xml", required=True, help="Detection IR .xml")
+    ap.add_argument("--det-bin", required=True, help="Detection IR .bin")
+    ap.add_argument("--det-size", type=int, default=640, help="Detection input size (square)")
+    ap.add_argument("--det-conf", type=float, default=0.35, help="Detection score threshold")
+    ap.add_argument("--det-labels", type=str, default="cap", help="Comma labels for detection classes")
+    # seg (ROI only)
+    ap.add_argument("--seg-xml", required=True, help="Segmentation IR .xml")
+    ap.add_argument("--seg-bin", required=True, help="Segmentation IR .bin")
+    ap.add_argument("--seg-size", type=int, default=512, help="Segmentation input size (square)")
+    ap.add_argument("--seg-labels", type=str, default="background,stain,sticker")
+    # common
+    ap.add_argument("--src", default="/dev/video0", help="Video source: index or path (e.g., /dev/video0)")
+    ap.add_argument("--device", default="AUTO", choices=["CPU","GPU","AUTO"], help="OpenVINO device")
+    ap.add_argument("--scale", type=float, default=255.0, help="Input scale (divide)")
+    ap.add_argument("--print-every", type=int, default=60)
+    args = ap.parse_args()
 
+    det_labels = [s.strip() for s in args.det_labels.split(",") if s.strip()]
+    seg_labels = [s.strip() for s in args.seg_labels.split(",") if s.strip()]
+
+    # ---- FactoryController 결합 ----
+    ctrl = FactoryController(debug=True)
+    try:
+        init_hardware_states(ctrl)   # 컨베이어 True, 나머지 False
+    except Exception as e:
+        print(f"[경고] 하드웨어 초기화 문제 (무시하고 계속 진행): {e}")
+
+    # ---- OpenVINO 준비 ----
+    ie = Core()
+    opts = {
+        "PERFORMANCE_HINT":"THROUGHPUT",
+        "INFERENCE_PRECISION_HINT":"f16",
+        "CACHE_DIR":"./ov_cache",
+        "NUM_STREAMS":"AUTO"
+    }
+    det_net = ie.compile_model(ie.read_model(args.det_xml,args.det_bin), args.device, opts)
+    seg_net = ie.compile_model(ie.read_model(args.seg_xml,args.seg_bin), args.device, opts)
+    det_outs=[det_net.output(i) for i in range(len(det_net.outputs))]
+    seg_out = seg_net.output(0)
+
+    # ---- Video ----
+    cap = cv2.VideoCapture(args.src if not str(args.src).isdigit() else int(args.src))
+    if not cap.isOpened():
+        raise RuntimeError(f"Cannot open source: {args.src}")
+
+    t0=time.time(); frames=0
+    try:
+        while True:
+            ok, frame = cap.read()
+            if not ok: break
+            H,W = frame.shape[:2]
+
+            # ---- DET ----
+            d_img, d_r, d_l, d_t = letterbox(frame, args.det_size)
+            d_rgb = cv2.cvtColor(d_img, cv2.COLOR_BGR2RGB)
+            d_ten = d_rgb.transpose(2,0,1)[None].astype(np.float32)
+            if args.scale: d_ten/=args.scale
+            d_res = det_net([d_ten]); d_arrs=[d_res[o] for o in det_outs]
+
+            det=None
+            # a) (boxes5, cls) 조합
+            if len(d_arrs)>=2:
+                a0,a1=d_arrs[0],d_arrs[1]
+                if a0.ndim==3 and a0.shape[0]==1 and a0.shape[2]==5 and a1.ndim==2 and a1.shape[0]==1:
+                    det=decode_box5_plus_cls(a0,a1,args.det_size,args.det_conf)
+                elif a1.ndim==3 and a1.shape[0]==1 and a1.shape[2]==5 and a0.ndim==2 and a0.shape[0]==1:
+                    det=decode_box5_plus_cls(a1,a0,args.det_size,args.det_conf)
+            # b) 직출 Nx6/7
+            if det is None or det.size==0:
+                for a in d_arrs:
+                    if (a.ndim==2 and a.shape[-1]>=6): det=a; break
+                    if (a.ndim==3 and a.shape[0]==1 and a.shape[-1]>=6): det=a[0]; break
+            # c) SSD (1,1,N,7)
+            if det is None or det.size==0:
+                for a in d_arrs:
+                    if a.ndim==4 and a.shape[-1]==7:
+                        det=decode_detection_output(a,args.det_size,args.det_conf); break
+            # d) YOLOX raw
+            if det is None or det.size==0:
+                for a in d_arrs:
+                    if a.ndim==3 and a.shape[0]==1 and (a.shape[1]>=6 or a.shape[2]>=6):
+                        raw=a[0]
+                        pred = raw if (raw.ndim==2 and raw.shape[0]>=6) else (raw.T if (raw.ndim==2 and raw.shape[1]>=6) else None)
+                        if pred is None and raw.ndim==3:
+                            tmp=raw.reshape(raw.shape[0],-1); pred=tmp if tmp.shape[0]>=6 else tmp.T
+                        if pred is not None:
+                            det=decode_yolox_raw(pred,args.det_size,args.det_conf); break
+            if det is None: det=np.zeros((0,6),np.float32)
+
+            # ---- ROI SEG + Draw ----
+            for x1,y1,x2,y2,score,cls in det:
+                # de-letterbox
+                gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
+                gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
+                if gx2<=gx1 or gy2<=gy1: continue
+
+                roi = frame[gy1:gy2, gx1:gx2]
+                if roi.size==0: continue
+
+                s_img, s_r, s_l, s_t = letterbox(roi, args.seg_size)
+                s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
+                s_ten = s_rgb.transpose(2,0,1)[None].astype(np.float32)
+                if args.scale: s_ten/=args.scale
+                s_res = seg_net([s_ten])[seg_out]  # [1,C,H,W] or [1,1,H,W]
+
+                if s_res.ndim==4 and s_res.shape[1]>1:
+                    prob = softmax(s_res, axis=1)[0]
+                    mask  = np.argmax(prob, axis=0).astype(np.uint8)
+                else:
+                    mask = (s_res[0,0]>0.5).astype(np.uint8)
+
+                # un-letterbox back to roi size
+                canvas = np.zeros((args.seg_size, args.seg_size), dtype=np.uint8)
+                nh = int(round(roi.shape[0]*s_r)); nw = int(round(roi.shape[1]*s_r))
+                top = (args.seg_size-nh)//2; left=(args.seg_size-nw)//2
+                mask_rs = cv2.resize(mask,(nw,nh),interpolation=cv2.INTER_NEAREST)
+                canvas[top:top+nh, left:left+nw] = mask_rs
+                mask_roi = cv2.resize(canvas,(roi.shape[1],roi.shape[0]),interpolation=cv2.INTER_NEAREST)
+
+                # vivid draw + bbox
+                frame[gy1:gy2, gx1:gx2] = draw_seg_on_roi(roi, mask_roi, seg_labels)
+                draw_box(frame, gx1, gy1, gx2, gy2, score, cls, det_labels, color=PINK)
+
+                # ---- (옵션) 액추에이터 트리거 예시: 필요 시 규칙 추가 ----
+                # if det_labels[int(cls)] == "defect" and score >= 0.6:
+                #     ctrl.pulse_actuator_1(120)   # 예: 120ms 펄스 (사용 환경에 맞게 구현)
+
+            # ---- UI ----
+            frames+=1; fps=frames/max(1e-6, time.time()-t0)
+            put_fps(frame, fps)
+            cv2.imshow("Det -> Seg (vivid)  (q to quit)", frame)
+            if cv2.waitKey(1)&0xFF==ord('q'): break
+
+    finally:
+        cap.release(); cv2.destroyAllWindows()
+        try:
+            ctrl.close()
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     main()
