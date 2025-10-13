@@ -54,7 +54,7 @@ class FactoryController:
 
             # Arduino beacon indicator
             self.red = False
-            self.orange = True
+            self.orange = False
             self.green = False
             
             self.led = False
@@ -238,9 +238,9 @@ class FactoryController:
             self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
             self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
         else:
-            self.red = True
-            self.green = True
-            self.conveyor = True
+            self.red = False
+            self.green = False
+            self.conveyor = False
 
     def system_stop(self) -> None:
         if self.debug:
