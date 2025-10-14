@@ -1,0 +1,19 @@
+
+v2x_avoidance_node:
+  ros__parameters:
+    near_distance_m: 30.0
+    mid_distance_m: 80.0
+    slow_speed: 0.5
+    evade_speed: 0.8
+    stop_speed: 0.0
+    evade_turn_rate: 0.6
+    cmd_hold_s: 2.0
+    decision_period_s: 0.3
+    default_direction: left
+    enable_twist: true
+    ttl_fallback_s: 2.5
+    drop_if_no_ttl: false
+    min_severity_for_stop: 4
+    topic_alert: /v2x/alert_struct
+    topic_cmd: /vehicle/cmd
+    topic_cmd_twist: /vehicle/cmd_twist
