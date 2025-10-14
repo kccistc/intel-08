@@ -18,3 +18,8 @@ Thumbs.db
 
 #
 .settings/
+*~
+*.swp
+.venv*/
+.vscode/
+__pycache__/
