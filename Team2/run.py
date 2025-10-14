@@ -2,25 +2,26 @@
 # -*- coding: utf-8 -*-
 
 """
-통합 앱: Dual Camera GUI (Tkinter) + ONNXRuntime Det/Seg 파이프라인(캠1에 적용)
-- 환경변수로 모델/옵션을 설정하세요:
-  DET_MODEL=/path/to/detection.onnx
-  SEG_MODEL=/path/to/segmentation.onnx
-  DET_SIZE=640
-  SEG_SIZE=512
-  DET_CONF=0.30
-  SEG_LABELS="background,sticker,stain"
-  SEG_MAP="0:0,1:2,2:1"   # 원본→표시 클래스 매핑
-  SCALE=255.0
-  CAP_DIAM=137
-  STAIN_ID=2
-  USE_HOUGH=0            # 1이면 허프원 검출로 중심/반경 조정
+통합 앱: Dual Camera GUI (Tkinter) + ONNXRuntime Det/Seg 파이프라인(오버레이 표시)
+- CAM1: stain%가 31~100%이고 포토센서1 감지되면 액츄에이터1 동작
+- CAM2: stain%가 1~30%  이고 포토센서2 감지되면 액츄에이터2 동작
+- stain%가 0%이면 동작 없음
+- 화면에는 마스크/박스/원/비율 텍스트를 **표시**함
 
-- 캠/DB/릴레이 관련 환경변수는 기존 GUI 코드의 것과 동일합니다.
+모델 기본경로:
+  DET_MODEL=~/dong/replace_detect.onnx
+  SEG_MODEL=~/dong/replace_seg.onnx
+기본 SEG_MAP은 원본->표시 매핑이며, 본 코드는 표시 ID로 자동 환산하여 stain% 계산합니다.
 """
 
-import os, time, warnings, argparse, threading
+import os, sys, time, warnings, threading
 from datetime import datetime, timedelta
+
+# iotdemo 경로 우선 추가 (사용자 제공 위치)
+try:
+    sys.path.append(os.path.expanduser('~/dong/iotdemo'))
+except Exception:
+    pass
 
 # ===== Optional deps (GUI/DB/IO) =====
 import tkinter as tk
@@ -102,8 +103,40 @@ def draw_box(frame, x1,y1,x2,y2, score, cls, labels, color=PINK):
     name = labels[int(cls)] if 0 <= int(cls) < len(labels) else str(int(cls))
     _label_badge(frame, x1, y1, f"{name} {int(score*100+0.5)}%", bg=color, fg=WHITE)
 
+def draw_seg_on_roi(roi_bgr, mask_uint8, labels, *, sticker_cid=1, stain_cid=2):
+    h,w = mask_uint8.shape
+    out = roi_bgr.copy()
+    class_plan = [
+        (sticker_cid, {"fill":(0,255,255),  "alpha":0.45, "edge":(60,220,60),   "badge":(40,180,40),  "fallback":"sticker"}),
+        (stain_cid,   {"fill":(255,120,0),  "alpha":0.45, "edge":(255,210,120), "badge":(200,160,80), "fallback":"stain"}),
+    ]
+    for cid, style in class_plan:
+        if cid < 0:
+            continue
+        m = (mask_uint8 == cid).astype(np.uint8)
+        if m.sum() == 0:
+            continue
+        overlay = out.copy()
+        overlay[m>0] = style["fill"]
+        cv2.addWeighted(overlay, style["alpha"], out, 1-style["alpha"], 0, out)
+        contours, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cv2.drawContours(out, contours, -1, style["edge"], 2)
+        if contours:
+            c = max(contours, key=cv2.contourArea)
+            M = cv2.moments(c)
+            if M["m00"] != 0:
+                cx = int(M["m10"]/M["m00"]); cy = int(M["m01"]/M["m00"])
+                name = labels[cid] if cid < len(labels) else style["fallback"]
+                font=cv2.FONT_HERSHEY_SIMPLEX; scale=0.5; thick=1; pad=4
+                (tw,th), _ = cv2.getTextSize(name, font, scale, thick)
+                bx1,by1 = max(0, cx-tw//2-pad), max(0, cy- th//2 - pad - 12)
+                bx2,by2 = min(w-1, bx1 + tw + 2*pad), min(h-1, by1 + th + 2*pad)
+                cv2.rectangle(out,(bx1,by1),(bx2,by2),style["badge"],-1)
+                cv2.putText(out, name, (bx1+pad, by2-pad), font, scale, WHITE, 1, cv2.LINE_AA)
+    return out
+
 # ---------- Detection decoders ----------
-_GRID_CACHE={}
+_GRID_CACHE = {}
 def _build_grids(size, strides=(8,16,32)):
     grids, s_all = [], []
     for s in strides:
@@ -150,26 +183,8 @@ def decode_box5_plus_cls(out0, out1, size, conf=0.35):
     b=boxes[keep]; c=clsid[keep]
     return np.concatenate([b[:,:4], b[:,4:5], c[:,None]],1)
 
-def brute_try_any(arr, size, conf=0.1, topk=5):
-    A=arr
-    if A.ndim==3 and A.shape[0]==1: A=A[0]
-    if A.ndim!=2 or A.shape[1]<4 or A.shape[1]>7: return np.zeros((0,6),np.float32)
-    X=A.astype(np.float32)
-    if np.all((X[:,:4]>=0)&(X[:,:4]<=1.5)): X[:,:4]*=size
-    if A.shape[1]==4:
-        score=np.ones((X.shape[0],1),np.float32); cls=np.zeros((X.shape[0],1),np.float32)
-        X=np.concatenate([X[:,:4],score,cls],1)
-    elif A.shape[1]>=5:
-        score=X[:,4:5]; cls=X[:,5:6] if A.shape[1]>=6 else np.zeros((X.shape[0],1),np.float32)
-        X=np.concatenate([X[:,:4],score,cls],1)
-    idx=np.argsort(-X[:,4])[:topk]; Y=X[idx]
-    return Y[Y[:,4]>=conf] if np.any(Y[:,4]>=conf) else Y
-
 def normalize_dets(arr, size):
-    """
-    어떤 형태로 나오든 (N,6) [x1,y1,x2,y2,score,cls] float32로 강제 변환.
-    (N,7) COCO 스타일 등 예외 케이스도 처리.
-    """
+    """(N,6) [x1,y1,x2,y2,score,cls] float32로 강제 변환."""
     if arr is None:
         return np.zeros((0,6), np.float32)
     X = np.asarray(arr)
@@ -177,7 +192,7 @@ def normalize_dets(arr, size):
         X = X[0]
     if X.ndim != 2:
         return np.zeros((0,6), np.float32)
-    if X.shape[1] >= 7:  # [image_id, label, score, x1,y1,x2,y2]
+    if X.shape[1] >= 7:  # [image_id,label,score,x1,y1,x2,y2]
         coords = np.stack([X[:,3], X[:,4], X[:,5], X[:,6]], 1).astype(np.float32)
         if np.all((coords >= 0.0) & (coords <= 1.5)):
             coords *= float(size)
@@ -206,38 +221,6 @@ def softmax(x, axis=1):
     x = x - np.max(x, axis=axis, keepdims=True)
     e = np.exp(x)
     return e / np.sum(e, axis=axis, keepdims=True)
-
-def draw_seg_on_roi(roi_bgr, mask_uint8, labels, *, sticker_cid=1, stain_cid=2):
-    h,w = mask_uint8.shape
-    out = roi_bgr.copy()
-    class_plan = [
-        (sticker_cid, {"fill":(0,255,255),  "alpha":0.45, "edge":(60,220,60),   "badge":(40,180,40),  "fallback":"sticker"}),
-        (stain_cid,   {"fill":(255,120,0),  "alpha":0.45, "edge":(255,210,120), "badge":(200,160,80), "fallback":"stain"}),
-    ]
-    for cid, style in class_plan:
-        if cid < 0:  # not used
-            continue
-        m = (mask_uint8 == cid).astype(np.uint8)
-        if m.sum() == 0:
-            continue
-        overlay = out.copy()
-        overlay[m>0] = style["fill"]
-        cv2.addWeighted(overlay, style["alpha"], out, 1-style["alpha"], 0, out)
-        contours, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(out, contours, -1, style["edge"], 2)
-        if contours:
-            c = max(contours, key=cv2.contourArea)
-            M = cv2.moments(c)
-            if M["m00"] != 0:
-                cx = int(M["m10"]/M["m00"]); cy = int(M["m01"]/M["m00"])
-                name = labels[cid] if cid < len(labels) else style["fallback"]
-                font=cv2.FONT_HERSHEY_SIMPLEX; scale=0.5; thick=1; pad=4
-                (tw,th), _ = cv2.getTextSize(name, font, scale, thick)
-                bx1,by1 = max(0, cx-tw//2-pad), max(0, cy- th//2 - pad - 12)
-                bx2,by2 = min(w-1, bx1 + tw + 2*pad), min(h-1, by1 + th + 2*pad)
-                cv2.rectangle(out,(bx1,by1),(bx2,by2),style["badge"],-1)
-                cv2.putText(out, name, (bx1+pad, by2-pad), font, scale, WHITE, 1, cv2.LINE_AA)
-    return out
 
 # ---------- ORT helpers ----------
 def ort_session(path: str):
@@ -318,16 +301,19 @@ def draw_cap_circle_and_ratio(frame, cx, cy, diameter_px, stain_mask_full, *, st
 # Detection Worker Thread
 # =========================
 class DetectionWorker(threading.Thread):
+    """
+    각 카메라 별로 stain% 계산 + 오버레이 프레임 생성
+    """
     def __init__(self, get_frame_fn, config):
         super().__init__(daemon=True)
         self.get_frame = get_frame_fn
         self.cfg = config
-        self.last_annot = None
         self._stop = threading.Event()
-        self._fps_t0 = time.time()
-        self._fps_n  = 0
+        self.last_ratio = None
+        self.last_time  = 0.0
+        self.last_annot = None
 
-        # init ORT sessions
+        # ORT sessions
         self.det_sess = ort_session(self.cfg['det_path'])
         self.seg_sess = ort_session(self.cfg['seg_path'])
         self.det_in_name = self.det_sess.get_inputs()[0].name
@@ -339,24 +325,30 @@ class DetectionWorker(threading.Thread):
         self.seg_labels = [s.strip() for s in self.cfg['seg_labels'].split(",") if s.strip()]
         self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))
 
+        # 원본 STAIN_ID를 표시 기준 ID로 환산해 저장 (SEG_MAP 원본->표시)
+        self.stain_disp_id   = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
+        self.sticker_disp_id = self.seg_map.get(1, 1)  # sticker 원본=1로 가정
+
+        self._fps_t0 = time.time()
+        self._fps_n  = 0
+
     def stop(self):
         self._stop.set()
 
     def run(self):
-        t0 = time.time()
-        frames = 0
         while not self._stop.is_set():
             frame = self.get_frame()
             if frame is None:
                 time.sleep(0.03)
                 continue
-            out = self.process_frame(frame)
-            self.last_annot = out
-            frames += 1
-            if frames % 120 == 0:
-                pass  # you can log something here
+            try:
+                out = self._process_frame(frame)
+                self.last_annot = out
+            except Exception:
+                self.last_annot = frame  # 실패 시라도 원본은 띄움
+            time.sleep(0.01)
 
-    def process_frame(self, frame):
+    def _process_frame(self, frame):
         H,W = frame.shape[:2]
         stain_mask_full = np.zeros((H,W), dtype=np.uint8)
 
@@ -397,59 +389,90 @@ class DetectionWorker(threading.Thread):
         if det is None: det=np.zeros((0,6),np.float32)
         det = normalize_dets(det, self.cfg['det_size'])
 
-        # ---- For each ROI: SEG & overlay ----
         out_frame = frame.copy()
-        for row in det:
-            if row.shape[0] < 6:
-                continue
-            x1,y1,x2,y2,score,cls = map(float, row[:6])
 
-            gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
-            gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
-            if gx2<=gx1 or gy2<=gy1: continue
+        if det.shape[0] == 0:
+            self.last_ratio = 0.0
+            self._tick_fps(out_frame)
+            return out_frame
 
-            roi = out_frame[gy1:gy2, gx1:gx2]
-            if roi.size==0: continue
+        # 최고 score 하나만 사용
+        row = det[np.argmax(det[:,4])]
+        x1,y1,x2,y2,score,cls = map(float, row[:6])
 
-            s_img, s_r, s_l, s_t = letterbox(roi, self.cfg['seg_size'])
-            s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
-            s_ten = s_rgb.transpose(2,0,1)[None].astype(np.float32)
-            if self.cfg['scale']: s_ten/=self.cfg['scale']
+        # 원본 좌표로 투영
+        gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
+        gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
+        if gx2<=gx1 or gy2<=gy1:
+            self.last_ratio = 0.0
+            self._tick_fps(out_frame)
+            return out_frame
 
-            s_res = ort_run(self.seg_sess, {self.seg_in_name: s_ten}, [self.seg_out_name])[0]  # [1,C,H,W] or [1,1,H,W]
-            if s_res.ndim==4 and s_res.shape[1]>1:
-                prob = softmax(s_res, axis=1)[0]     # [C,H,W]
-                mask  = np.argmax(prob, axis=0).astype(np.uint8)
-            else:
-                mask = (s_res[0,0]>0.5).astype(np.uint8)
+        roi = out_frame[gy1:gy2, gx1:gx2]
+        if roi.size==0:
+            self.last_ratio = 0.0
+            self._tick_fps(out_frame)
+            return out_frame
 
-            mask = remap_mask(mask, self.seg_map)
+        # ---- SEG ----
+        s_img, s_r, s_l, s_t = letterbox(roi, self.cfg['seg_size'])
+        s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
+        s_ten = s_rgb.transpose(2,0,1)[None].astype(np.float32)
+        if self.cfg['scale']: s_ten/=self.cfg['scale']
 
-            canvas = np.zeros((self.cfg['seg_size'], self.cfg['seg_size']), dtype=np.uint8)
-            nh = int(round(roi.shape[0]*s_r)); nw = int(round(roi.shape[1]*s_r))
-            top = (self.cfg['seg_size']-nh)//2; left=(self.cfg['seg_size']-nw)//2
-            mask_rs = cv2.resize(mask,(nw,nh),interpolation=cv2.INTER_NEAREST)
-            canvas[top:top+nh, left:left+nw] = mask_rs
-            mask_roi = cv2.resize(canvas,(roi.shape[1],roi.shape[0]),interpolation=cv2.INTER_NEAREST)
+        s_res = ort_run(self.seg_sess, {self.seg_in_name: s_ten}, [self.seg_out_name])[0]  # [1,C,H,W] or [1,1,H,W]
+        if s_res.ndim==4 and s_res.shape[1]>1:
+            prob = softmax(s_res, axis=1)[0]     # [C,H,W]
+            mask  = np.argmax(prob, axis=0).astype(np.uint8)
+        else:
+            mask = (s_res[0,0]>0.5).astype(np.uint8)
 
-            out_frame[gy1:gy2, gx1:gx2] = draw_seg_on_roi(
-                roi, mask_roi, self.seg_labels, sticker_cid=1, stain_cid=2
-            )
-            draw_box(out_frame, gx1, gy1, gx2, gy2, score, cls, self.det_labels, color=PINK)
+        # 원본->표시 매핑 적용
+        mask = remap_mask(mask, self.seg_map)
 
-            # 병합된 stain 마스크(전체 프레임)
-            stain_mask_full[gy1:gy2, gx1:gx2] = np.where(mask_roi==2, 2, stain_mask_full[gy1:gy2, gx1:gx2])
+        # letterbox 되돌리기(ROI 크기로)
+        canvas = np.zeros((self.cfg['seg_size'], self.cfg['seg_size']), dtype=np.uint8)
+        nh = int(round(roi.shape[0]*s_r)); nw = int(round(roi.shape[1]*s_r))
+        top = (self.cfg['seg_size']-nh)//2; left=(self.cfg['seg_size']-nw)//2
+        mask_rs = cv2.resize(mask,(nw,nh),interpolation=cv2.INTER_NEAREST)
+        canvas[top:top+nh, left:left+nw] = mask_rs
+        mask_roi = cv2.resize(canvas,(roi.shape[1],roi.shape[0]),interpolation=cv2.INTER_NEAREST)
 
-            # 원 중심/직경 표시 + stain 비율
-            cx, cy = (gx1+gx2)//2, (gy1+gy2)//2
-            if self.cfg['use_hough']:
-                hc = try_hough_circle(roi)
-                if hc is not None:
-                    rx, ry, rr = hc
-                    cx, cy = gx1 + rx, gy1 + ry
-            draw_cap_circle_and_ratio(out_frame, cx, cy, self.cfg['cap_diam'], stain_mask_full, stain_id=self.cfg['stain_id'])
+        # ROI에 마스크 오버레이
+        roi_vis = draw_seg_on_roi(
+            roi, mask_roi, self.seg_labels,
+            sticker_cid=self.sticker_disp_id,
+            stain_cid=self.stain_disp_id
+        )
+        out_frame[gy1:gy2, gx1:gx2] = roi_vis
+
+        # 병합된 stain 마스크(전체 프레임 기준)
+        stain_mask_full = np.zeros((H,W), dtype=np.uint8)
+        stain_mask_full[gy1:gy2, gx1:gx2] = np.where(mask_roi==self.stain_disp_id, self.stain_disp_id, 0)
+
+        # 박스/라벨
+        draw_box(out_frame, gx1, gy1, gx2, gy2, score, cls, self.det_labels, color=PINK)
+
+        # 원/비율 + 텍스트
+        cx, cy = (gx1+gx2)//2, (gy1+gy2)//2
+        if self.cfg['use_hough']:
+            hc = try_hough_circle(roi)
+            if hc is not None:
+                rx, ry, rr = hc
+                cx, cy = gx1 + rx, gy1 + ry
+        ratio, _, _ = draw_cap_circle_and_ratio(
+            out_frame, cx, cy, self.cfg['cap_diam'],
+            stain_mask_full, stain_id=self.stain_disp_id
+        )
+        ratio = float(np.clip(ratio, 0.0, 100.0))
+        self.last_ratio = ratio
+        self.last_time  = time.time()
 
         # FPS
+        self._tick_fps(out_frame)
+        return out_frame
+
+    def _tick_fps(self, out_frame):
         self._fps_n += 1
         dt = time.time() - self._fps_t0
         if dt >= 0.5:
@@ -457,8 +480,6 @@ class DetectionWorker(threading.Thread):
             put_fps(out_frame, fps)
             self._fps_t0 = time.time()
             self._fps_n = 0
-
-        return out_frame
 
 # =========================
 # Hardware / DB / Serial
@@ -567,9 +588,9 @@ class HW:
             pass
 
 # ==== Env / Config ====
-DB_HOST = os.getenv('DB_HOST', '10.10.14.17')
-DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASS', '2453.')
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_USER = os.getenv('DB_USER', 'iot')
+DB_PASS = os.getenv('DB_PASS', 'pwiot')
 DB_NAME = os.getenv('DB_NAME', 'iotdb')
 DB_CHARSET = 'utf8mb4'
 
@@ -729,30 +750,54 @@ class CameraThread(threading.Thread):
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Factory QC • Dual Camera + DB(6-cols) + Conveyor + Det/Seg")
+        self.title("Factory QC — Dual Camera + DB(6-cols) + Conveyor + Device Panel (overlay + delayed pulse)")
         self.geometry("1360x980")
 
+        # 신호등(비콘) 상태 추적
         self._last_beacon = 'none'
         self._beacon_after = None
 
+        # 하드웨어 컨트롤러
         self.hw = HW(port=os.getenv('SERIAL_PORT') or None, debug=True)
 
         # Top bar
         top = ttk.Frame(self); top.pack(fill='x', padx=8, pady=6)
-        self.btn_m1 = ttk.Button(top, text="Model 1 • RUN", command=lambda:self.on_run(1))
-        self.btn_m2 = ttk.Button(top, text="Model 2 • RUN", command=lambda:self.on_run(2))
+        try:
+            from PIL import Image, ImageTk  # Pillow (이미 설치돼 있을 가능성 높음)
+            logo_path = os.path.join(os.path.dirname(__file__), "logo.png")  # run.py와 같은 경로
+            if os.path.exists(logo_path):
+                logo_img = Image.open(logo_path).resize((42, 30))  # 크기 조절
+                self._logo_tk = ImageTk.PhotoImage(logo_img)
+                ttk.Label(top, image=self._logo_tk).pack(side="left", padx=(2, 10))
+            else:
+                ttk.Label(top, text="LOGO", font=("Arial", 12, "bold")).pack(side="left", padx=(2, 10))
+        except Exception as e:
+            print(f"[WARN] 로고 로드 실패: {e}")
+            ttk.Label(top, text="LOGO", font=("Arial", 12, "bold")).pack(side="left", padx=(2, 10))
+        self.btn_m1 = ttk.Button(top, text="Model 1 · RUN", command=lambda:self.on_run(1))
+        self.btn_m2 = ttk.Button(top, text="Model 2 · RUN", command=lambda:self.on_run(2))
         self.btn_stop = ttk.Button(top, text="STOP", command=self.on_stop)
         self.status_lbl = ttk.Label(top, text="대기")
-        ttk.Label(top, text="윈도우:").pack(side='left', padx=(0,6))
+        ttk.Label(top, text="RUN:").pack(side='left', padx=(0,6))
         self.win_var = tk.StringVar(value='5m')
         self.win_box = ttk.Combobox(top, textvariable=self.win_var, values=['5m','30m','1h','1d'], width=6, state='readonly')
         self.win_box.bind("<<ComboboxSelected>>", lambda e: self.refresh())
         self.btn_m1.pack(side='left', padx=4); self.btn_m2.pack(side='left', padx=4); self.btn_stop.pack(side='left', padx=4)
         self.win_box.pack(side='left'); ttk.Label(top, text="  상태:").pack(side='left', padx=(16,4)); self.status_lbl.pack(side='left')
 
+        # --- [ADMIN] Hidden toggle hotspot & keybinding ---
+        self._admin_visible = False
+        self._admin_win = None  # Toplevel 창 캐시
+        self._hidden_hotspot = tk.Label(top, text=" ", background=self.cget("bg"))
+        self._hidden_hotspot.place(relx=1.0, x=-2, y=2, anchor="ne")
+        self._hidden_hotspot.config(width=1, height=1)
+        self._hidden_hotspot.bind("<Button-1>", lambda e: self._toggle_admin_panel())
+        self.bind_all("<Control-Alt-a>", lambda e: self._toggle_admin_panel())
+
+        # 모델별 상태 라벨
         self.m1_state = tk.StringVar(value='대기')
         self.m2_state = tk.StringVar(value='대기')
-        ttk.Label(top, text=" | M1:").pack(side='left', padx=(14,2))
+        ttk.Label(top, text=" |    M1:").pack(side='left', padx=(14,2))
         ttk.Label(top, textvariable=self.m1_state).pack(side='left')
         ttk.Label(top, text="  M2:").pack(side='left', padx=(8,2))
         ttk.Label(top, textvariable=self.m2_state).pack(side='left')
@@ -761,22 +806,37 @@ class App(tk.Tk):
         root = ttk.Frame(self); root.pack(fill='both', expand=True, padx=8, pady=6)
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
-        root.grid_rowconfigure(0, weight=1)
-        root.grid_rowconfigure(1, weight=3)
-        root.grid_rowconfigure(2, weight=0)
+        root.grid_rowconfigure(0, weight=1)   # 카메라 영역
+        root.grid_rowconfigure(1, weight=3)   # 모델/최근(오른쪽) 크게
+        root.grid_rowconfigure(2, weight=1)   # 장치 패널
+
+        # --- KPI 확장용 변수 추가 ---
+        self.k_defw_abs = tk.StringVar(value='-')  # 불량(가중)
+        self.k_tput     = tk.StringVar(value='-')  # 처리속도
+        self.k_updated  = tk.StringVar(value='-')  # 업데이트 시각
+
+        # 오버레이에 같이 표기할 실시간 stain% 라벨
+        self.r1_var = tk.StringVar(value='CAM1: - %')
+        self.r2_var = tk.StringVar(value='CAM2: - %')
 
         # KPI
-        kpi = ttk.LabelFrame(root, text="실적 KPI (부분가중 30%)")
+        kpi = ttk.LabelFrame(root, text="통합 KPI")
         kpi.grid(row=0, column=0, sticky='nsew', padx=(0,6), pady=(0,6))
         self.var_total = tk.StringVar(value='-'); self.var_good = tk.StringVar(value='-')
         self.var_defw  = tk.StringVar(value='-'); self.var_rate = tk.StringVar(value='-')
         g = ttk.Frame(kpi); g.pack(fill='x', padx=8, pady=8)
-        self._row(g,0,"총 처리", self.var_total); self._row(g,1,"양품수", self.var_good)
-        self._row(g,2,"불량(가중)", self.var_defw); self._row(g,3,"불량률(가중)", self.var_rate)
+        self._row(g,0,"총 처리", self.var_total); self._row(g,1,"정상품", self.var_good)
+        self._row(g,2,"불량", self.var_defw); self._row(g,3,"불량률", self.var_rate)
+        self._row(g,4,"불량(가중)", self.k_defw_abs)
+        self._row(g,5,"처리속도",   self.k_tput)
+        self._row(g,6,"업데이트",   self.k_updated)
+        ttk.Label(kpi, textvariable=self.r1_var).pack(anchor="w", padx=10)
+        ttk.Label(kpi, textvariable=self.r2_var).pack(anchor="w", padx=10)
+
         self.pb = ttk.Progressbar(kpi, orient='horizontal', length=400, mode='determinate', maximum=100); self.pb.pack(padx=8, pady=(4,10))
 
-        # Cameras
-        camf = ttk.LabelFrame(root, text="USB 카메라 (Dual)")
+        # Cameras (overlay 표시)
+        camf = ttk.LabelFrame(root, text="USB 카메라 (Dual, overlay)")
         camf.grid(row=0, column=1, sticky='nsew', padx=(6,0), pady=(0,6))
         camgrid = ttk.Frame(camf); camgrid.pack(fill='both', expand=True, padx=6, pady=6)
         camgrid.grid_columnconfigure(0, weight=1); camgrid.grid_columnconfigure(1, weight=1)
@@ -794,10 +854,11 @@ class App(tk.Tk):
                                  fourcc=CAM2_FOURCC, backend=CAM2_BACKEND)
         self.cam1.start(); self.cam2.start()
 
-        # Detection worker (CAM1에 적용)
-        self.det_cfg = {
-            'det_path':  os.getenv('DET_MODEL',  'det.onnx'),
-            'seg_path':  os.getenv('SEG_MODEL',  'seg.onnx'),
+        # Detection workers: CAM1, CAM2 (오버레이+비율)
+        #  - DetectionWorker가 last_annot(오버레이된 프레임), last_ratio(stain%)를 제공한다고 가정
+        self.det_cfg_base = {
+            'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  '~/dong/replace_detect.onnx')),
+            'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  '~/dong/replace_seg.onnx')),
             'det_size':  int(os.getenv('DET_SIZE', '640')),
             'seg_size':  int(os.getenv('SEG_SIZE', '512')),
             'det_conf':  float(os.getenv('DET_CONF', '0.35')),
@@ -810,10 +871,11 @@ class App(tk.Tk):
             'use_hough':  bool(int(os.getenv('USE_HOUGH', '0'))),
         }
 
-        self.det_worker = None
-        self._start_detector_if_ready()
+        self.worker1 = None
+        self.worker2 = None
+        self._start_workers_if_ready()
 
-        # Models panel (간단 KPI표시)
+        # Models
         model_area = ttk.Frame(root); model_area.grid(row=1, column=0, sticky='nsew', padx=(0,6))
         model_area.grid_columnconfigure(0, weight=1); model_area.grid_columnconfigure(1, weight=1)
         self.m1_vars = {k: tk.StringVar(value='-') for k in ['good','sev','par','par_weight','def_weight','overall','rate']}
@@ -821,48 +883,68 @@ class App(tk.Tk):
         self._model_panel_simple(model_area, "Model 1", self.m1_vars).grid(row=0, column=0, sticky='nsew', padx=(0,6))
         self._model_panel_simple(model_area, "Model 2", self.m2_vars).grid(row=0, column=1, sticky='nsew', padx=(6,0))
 
-        # Recent (DB)
-        recent = ttk.LabelFrame(root, text="최근 입력 (DB: 6열)")
-        recent.grid(row=1, column=1, sticky='nsew', padx=(6,0))
+        # Recent — DB 전용
+        recent = ttk.LabelFrame(root, text="최근 50건")
+        recent.grid(row=1, column=1, rowspan=2, sticky='nsew', padx=(6,0), pady=(0,0))
         self.tree = ttk.Treeview(
             recent,
             columns=("ts","m1_good","m1_sev","m1_par","m2_good","m2_sev","m2_par"),
             show='headings', height=24
         )
-        headings = [("ts","TS",170),("m1_good","M1_G",70),("m1_sev","M1_S",70),("m1_par","M1_P",70),
-                    ("m2_good","M2_G",70),("m2_sev","M2_S",70),("m2_par","M2_P",70)]
-        for col, text, w in headings:
-            self.tree.heading(col, text=text); self.tree.column(col, width=w, anchor='center')
+        for col, text, w in [
+            ("ts","TS",170),("m1_good","M1_G",70),("m1_sev","M1_S",70),("m1_par","M1_P",70),
+            ("m2_good","M2_G",70),("m2_sev","M2_S",70),("m2_par","M2_P",70)
+        ]:
+            self.tree.heading(col, text=text)
+            self.tree.column(col, width=w, anchor='center')
         self.tree.pack(fill='both', expand=True, padx=6, pady=6)
 
-        # 장치 패널
+        # 장치 패널 — 가로 전체
         self._build_device_panel(root)
+
+        # === 액츄에이터 제어용: 디바운스 + 지연(arming) ===
+        self._act1_last = 0.0
+        self._act2_last = 0.0
+        self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.8'))  # 0.8초 디바운스
+        self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.5'))        # 0.5초 지연(감지 후)
+
+        self._prev_s1 = False
+        self._prev_s2 = False
+        self._pending1 = None
+        self._pending2 = None
 
         # timers
         self.after(120, self.update_camera)
         self.after(300, self.refresh)
         self.after(200, self._poll_device_panel)
+        self.after(180, self._logic_loop)  # stain% & 센서 연동 로직
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
-    # ---- detector starter ----
-    def _start_detector_if_ready(self):
+    # ---- worker starter ----
+    def _start_workers_if_ready(self):
         try:
-            if not (os.path.isfile(self.det_cfg['det_path']) and os.path.isfile(self.det_cfg['seg_path'])):
+            if not (os.path.isfile(self.det_cfg_base['det_path']) and os.path.isfile(self.det_cfg_base['seg_path'])):
                 self.status_lbl.config(text="모델 파일 없음(DET_MODEL/SEG_MODEL 확인)")
                 return
             if cv2 is None or not PIL_OK:
                 self.status_lbl.config(text="OpenCV/Pillow 필요")
                 return
-            if self.det_worker is None:
-                self.det_worker = DetectionWorker(self.cam1.get_frame, self.det_cfg)
-                self.det_worker.start()
-                self.status_lbl.config(text="Det/Seg 가동")
+            if self.worker1 is None:
+                cfg1 = dict(self.det_cfg_base)  # 동일 설정
+                self.worker1 = DetectionWorker(self.cam1.get_frame, cfg1)
+                self.worker1.start()
+            if self.worker2 is None:
+                cfg2 = dict(self.det_cfg_base)
+                self.worker2 = DetectionWorker(self.cam2.get_frame, cfg2)
+                self.worker2.start()
+            self.status_lbl.config(text="Det/Seg 가동(오버레이 표시)")
         except Exception as e:
-            self.status_lbl.config(text=f"Det 시작 실패: {e}")
+            self.status_lbl.config(text=f"Worker 시작 실패: {e}")
 
     def destroy(self):
         try:
-            if self.det_worker: self.det_worker.stop()
+            if self.worker1: self.worker1.stop()
+            if self.worker2: self.worker2.stop()
         except Exception: pass
         try: self.cam1.stop(); self.cam2.stop()
         except Exception: pass
@@ -878,7 +960,7 @@ class App(tk.Tk):
     def _model_panel_simple(self, parent, title, vars_dict):
         lf = ttk.LabelFrame(parent, text=title)
         g = ttk.Frame(lf); g.pack(fill='x', padx=8, pady=8)
-        items=[("양품수","good"),("심각불량","sev"),("30%불량","par"),
+        items=[("정상품","good"),("완전오염","sev"),("30%오염","par"),
                ("Partial 가중","par_weight"),("불량(가중)","def_weight"),
                ("총 처리","overall"),("가중 불량률","rate")]
         for i,(nm,key) in enumerate(items):
@@ -888,11 +970,11 @@ class App(tk.Tk):
 
     # === RUN/STOP ===
     def on_run(self, model_id:int):
-        self.status_lbl.config(text=f"Model {model_id} 실행중")
+        self.status_lbl.config(text=f"Model {model_id} 작동중")
         if model_id == 1:
-            self.m1_state.set("실행"); self.m2_state.set("대기")
+            self.m1_state.set("작동중"); self.m2_state.set("대기")
         else:
-            self.m1_state.set("대기"); self.m2_state.set("실행")
+            self.m1_state.set("대기"); self.m2_state.set("작동중")
 
         err = None
         try:
@@ -914,7 +996,7 @@ class App(tk.Tk):
         except Exception:
             pass
         if err:
-            messagebox.showwarning("오류 알림", f"시리얼/백엔드 오류: {err}")
+            messagebox.showwarning("제어 알림", f"장치/백엔드 알림 중 오류: {err}")
 
     def on_stop(self):
         self.status_lbl.config(text="대기")
@@ -939,9 +1021,9 @@ class App(tk.Tk):
         except Exception:
             pass
         if err:
-            messagebox.showwarning("오류 알림", f"시리얼/백엔드 오류: {err}")
+            messagebox.showwarning("제어 알림", f"장치/백엔드 알림 중 오류: {err}")
 
-    # === Camera update (dual) ===
+    # === Camera update (dual, overlay 우선) ===
     def update_camera(self):
         try:
             if cv2 is None or not PIL_OK:
@@ -950,21 +1032,24 @@ class App(tk.Tk):
             else:
                 resample = dict(LANCZOS=Image.LANCZOS, BILINEAR=Image.BILINEAR, BICUBIC=Image.BICUBIC).get(RESAMPLE.upper(), Image.LANCZOS)
 
-                # CAM1: detector 결과 있으면 그걸 사용
+                # CAM1: worker 오버레이가 있으면 우선 사용
                 f1 = None
-                if self.det_worker and self.det_worker.last_annot is not None:
-                    f1 = self.det_worker.last_annot
+                if self.worker1 and getattr(self.worker1, "last_annot", None) is not None:
+                    f1 = self.worker1.last_annot
                 else:
                     f1 = self.cam1.get_frame()
-
                 if f1 is not None:
                     rgb1 = cv2.cvtColor(f1, cv2.COLOR_BGR2RGB)
                     img1 = Image.fromarray(rgb1).resize((CAM_VIEW_W, CAM_VIEW_H), resample=resample).copy()
                     self._tk_img1 = ImageTk.PhotoImage(img1)
                     self.cam1_lbl.configure(image=self._tk_img1, text='')
 
-                # CAM2: 원본
-                f2 = self.cam2.get_frame()
+                # CAM2: worker 오버레이 우선
+                f2 = None
+                if self.worker2 and getattr(self.worker2, "last_annot", None) is not None:
+                    f2 = self.worker2.last_annot
+                else:
+                    f2 = self.cam2.get_frame()
                 if f2 is not None:
                     rgb2 = cv2.cvtColor(f2, cv2.COLOR_BGR2RGB)
                     img2 = Image.fromarray(rgb2).resize((CAM2_VIEW_W, CAM2_VIEW_H), resample=resample).copy()
@@ -976,33 +1061,74 @@ class App(tk.Tk):
         finally:
             self.after(90, self.update_camera)
 
-    # === DB 기반 KPI/Recent ===
+    # === 공통 갱신 로직(중복 제거) ===
+    def _apply_simple_node(self, node, vars_dict):
+        sev = int(node['sev']); par = int(node['par']); good = int(node['good'])
+        par_weight = round(par * PARTIAL_WEIGHT, 2)
+        def_weight = round(sev + par_weight, 2)
+        overall = good + sev + par
+        rate = round((def_weight/overall*100.0), 1) if overall>0 else 0.0
+        vars_dict['good'].set(good)
+        vars_dict['sev'].set(sev)
+        vars_dict['par'].set(par)
+        vars_dict['par_weight'].set(f"{par_weight:.2f}")
+        vars_dict['def_weight'].set(f"{def_weight:.2f}")
+        vars_dict['overall'].set(overall)
+        vars_dict['rate'].set(f"{rate}%")
+        return overall, def_weight, good
+
+    def _set_kpi(self, total, good, defw, rate):
+        self.var_total.set(total); self.var_good.set(good)
+        self.var_defw.set(f"{defw:.2f}"); self.var_rate.set(f"{rate}%")
+        self.pb['value'] = min(100, rate)
+
+    def _update_from_counts(self, m1_counts: dict, m2_counts: dict):
+        m1_overall, m1_defw, m1_good = self._apply_simple_node(m1_counts, self.m1_vars)
+        m2_overall, m2_defw, m2_good = self._apply_simple_node(m2_counts, self.m2_vars)
+        total = m1_overall + m2_overall
+        total_good = m1_good + m2_good
+        total_defw = round(m1_defw + m2_defw, 2)
+        rate = round((total_defw/total*100.0), 1) if total>0 else 0.0
+        self._set_kpi(total, total_good, total_defw, rate)
+        self._maybe_blink_beacon(rate)
+        # --- KPI 확장 항목 업데이트 ---
+        self.k_defw_abs.set(f"{total_defw:.2f}")
+        win_minutes = max(1e-9, parse_window(self.win_var.get()).total_seconds()/60.0)
+        tput = total / win_minutes if total > 0 else 0.0
+        self.k_tput.set(f"{tput:.1f} 개/분")
+
+    def _set_lamp(self, canvas: tk.Canvas, on: bool):
+        if not canvas:
+            return
+        canvas.delete("all")
+        color = "#2ecc71" if on else "#95a5a6"
+        canvas.create_oval(2, 2, 20, 20, fill=color, outline="black")
+
+    # === 데이터 새로고침 (DB 전용) ===
     def refresh(self):
         since = datetime.now() - parse_window(self.win_var.get())
         ok = self._refresh_from_6col(since)
         if not ok:
             self._refresh_from_legacy(since)
+        self.k_updated.set(datetime.now().strftime('%H:%M:%S'))
         self.after(1500, self.refresh)
 
     def _refresh_from_6col(self, since):
         try:
-            rows, cols = db_query(f'''
+            rows, _ = db_query(f'''
                 SELECT
                   COALESCE(SUM(m1_good),0), COALESCE(SUM(m1_sev),0), COALESCE(SUM(m1_par),0),
                   COALESCE(SUM(m2_good),0), COALESCE(SUM(m2_sev),0), COALESCE(SUM(m2_par),0)
                 FROM {DB_TABLE_6}
                 WHERE ts >= %s
-            ''',[since])
+            ''', [since])
             if not rows:
                 return True
             m1_g,m1_s,m1_p,m2_g,m2_s,m2_p = [int(x or 0) for x in rows[0]]
-            m1_overall, m1_defw, m1_good = self._apply_simple_node({'good':m1_g,'sev':m1_s,'par':m1_p}, self.m1_vars)
-            m2_overall, m2_defw, m2_good = self._apply_simple_node({'good':m2_g,'sev':m2_s,'par':m2_p}, self.m2_vars)
-            total = m1_overall + m2_overall; total_good = m1_good + m2_good
-            total_defw = round(m1_defw + m2_defw, 2)
-            rate = round((total_defw/total*100.0), 1) if total>0 else 0.0
-            self._set_kpi(total, total_good, total_defw, rate)
-            self._maybe_blink_beacon(rate)
+            self._update_from_counts(
+                {'good':m1_g,'sev':m1_s,'par':m1_p},
+                {'good':m2_g,'sev':m2_s,'par':m2_p},
+            )
 
             rows,_=db_query(f'''
                 SELECT ts, m1_good, m1_sev, m1_par, m2_good, m2_sev, m2_par
@@ -1031,18 +1157,12 @@ class App(tk.Tk):
                 FROM qc_agg
                 WHERE ts >= %s
                 GROUP BY model
-            ''',[since])
+            ''', [since])
             agg={'M1': {'good':0,'sev':0,'par':0},
                  'M2': {'good':0,'sev':0,'par':0}}
             for model, g, sc, sd, pc, pd in rows:
                 agg[model]={'good':int(g or 0),'sev':int(sc or 0)+int(sd or 0),'par':int(pc or 0)+int(pd or 0)}
-            m1_overall, m1_defw, m1_good = self._apply_simple_node(agg['M1'], self.m1_vars)
-            m2_overall, m2_defw, m2_good = self._apply_simple_node(agg['M2'], self.m2_vars)
-            total = m1_overall + m2_overall; total_good = m1_good + m2_good
-            total_defw = round(m1_defw + m2_defw, 2)
-            rate = round((total_defw/total*100.0), 1) if total>0 else 0.0
-            self._set_kpi(total, total_good, total_defw, rate)
-            self._maybe_blink_beacon(rate)
+            self._update_from_counts(agg['M1'], agg['M2'])
 
             rows,_=db_query('''
                 SELECT ts, model, good, (sev_contam+sev_damage) AS sev, (par_contam+par_damage) AS par
@@ -1061,27 +1181,7 @@ class App(tk.Tk):
         except Exception:
             pass
 
-    def _apply_simple_node(self, node, vars_dict):
-        sev = int(node['sev']); par = int(node['par']); good = int(node['good'])
-        par_weight = round(par * PARTIAL_WEIGHT, 2)
-        def_weight = round(sev + par_weight, 2)
-        overall = good + sev + par
-        rate = round((def_weight/overall*100.0), 1) if overall>0 else 0.0
-        vars_dict['good'].set(good)
-        vars_dict['sev'].set(sev)
-        vars_dict['par'].set(par)
-        vars_dict['par_weight'].set(f"{par_weight:.2f}")
-        vars_dict['def_weight'].set(f"{def_weight:.2f}")
-        vars_dict['overall'].set(overall)
-        vars_dict['rate'].set(f"{rate}%")
-        return overall, def_weight, good
-
-    def _set_kpi(self, total, good, defw, rate):
-        self.var_total.set(total); self.var_good.set(good)
-        self.var_defw.set(f"{defw:.2f}"); self.var_rate.set(f"{rate}%")
-        self.pb['value'] = min(100, rate)
-
-    # ==== Beacon helpers ====
+    # ==== Beacon helpers ==================================================
     def _set_beacons(self, red=None, orange=None, green=None):
         mapping = {1: red, 2: orange, 3: green}
         for idx, val in mapping.items():
@@ -1103,13 +1203,16 @@ class App(tk.Tk):
             desired = 'orange'
         elif rate == 0.0:
             desired = 'green'
+
         if desired == self._last_beacon:
             return
+
         self._last_beacon = desired
         if self._beacon_after:
             try: self.after_cancel(self._beacon_after)
             except Exception: pass
             self._beacon_after = None
+
         self._set_beacons(red=False, orange=False, green=False)
         if desired == 'none':
             return
@@ -1123,86 +1226,266 @@ class App(tk.Tk):
             self._beacon_after = self.after(on_ms, lambda: self._set_beacons(red=False, orange=False, green=False))
         except Exception:
             pass
+    # ======================================================================
 
     def _set_recent(self, rows):
         self.tree.delete(*self.tree.get_children())
-        for r in rows: self.tree.insert('', 'end', values=r)
+        for r in rows:
+            self.tree.insert('', 'end', values=r)
 
+    # === 장치 패널(임베디드) ===
     def _build_device_panel(self, root):
-        panel = ttk.LabelFrame(root, text=f"장치 패널 • {'Dummy' if self.hw.is_dummy else self.hw.dev_name}")
-        panel.grid(row=2, column=0, columnspan=2, sticky='nsew', padx=(0,6), pady=(6,0))
+        panel = ttk.LabelFrame(root, text=f"장치 패널 — {'device panel' if self.hw.is_dummy else self.hw.dev_name}")
+        panel.grid(row=2, column=0, columnspan=1, sticky='nsew', padx=(0,6), pady=(6,0))
+
         grid = ttk.Frame(panel); grid.pack(fill='both', expand=True, padx=6, pady=6)
-        grid.rowconfigure(0, weight=1); grid.rowconfigure(1, weight=1)
-        for c in range(4): grid.columnconfigure(c, weight=1)
+        for r in range(3):
+            grid.rowconfigure(r, weight=1, uniform="devrow")
+        for c in range(4):
+            grid.columnconfigure(c, weight=1, uniform="devcol")
 
-        self._relay_vars = {}; self._relay_btns = {}; self._relay_lamps = {}
+        self._relay_vars = {}
+        self._relay_lamps = {}
         names = ["Beacon Red","Beacon Orange","Beacon Green","Buzzer","LED","Conveyor","Actuator 1","Actuator 2"]
-        positions = [(0,0),(0,1),(0,2),(0,3),(1,0),(1,1),(1,2),(1,3)]
-        for i in range(1,9):
-            fr = ttk.Labelframe(grid, text=f"Relay {i}: {names[i-1]}", padding=6)
-            r,c = positions[i-1]; fr.grid(row=r, column=c, padx=4, pady=4, sticky="nsew")
-            var = tk.BooleanVar(value=False); self._relay_vars[i] = var
-            lamp = tk.Canvas(fr, width=22, height=22, highlightthickness=0); lamp.grid(row=0, column=0, padx=4, pady=4); self._relay_lamps[i] = lamp
-            btn = tk.Button(fr, text="OFF", width=7, command=lambda idx=i:self._toggle_relay(idx))
-            btn.grid(row=0, column=1, padx=4, pady=4); self._relay_btns[i] = btn
-            fr.columnconfigure(1, weight=1)
-            self._refresh_relay_visual(i)
 
-        sens = ttk.Frame(panel); sens.pack(fill='x', padx=6, pady=(0,6))
-        self._sensor_labels = {
-            "start_button": ttk.Label(sens, text="START: OFF", width=16, anchor="center"),
-            "stop_button":  ttk.Label(sens, text="STOP: OFF",  width=16, anchor="center"),
-            "sensor_1":     ttk.Label(sens, text="SENSOR1: OFF", width=16, anchor="center"),
-            "sensor_2":     ttk.Label(sens, text="SENSOR2: OFF", width=16, anchor="center"),
-        }
-        for k in ("start_button","stop_button","sensor_1","sensor_2"):
-            self._sensor_labels[k].pack(side='left', padx=6)
+        for i in range(8):
+            r = i // 4
+            c = i % 4
+            fr = ttk.Labelframe(grid, text=names[i], padding=8)
+            fr.grid(row=r, column=c, padx=4, pady=4, sticky="nsew")
+            var = tk.BooleanVar(value=False)
+            self._relay_vars[i+1] = var
+            lamp = tk.Canvas(fr, width=22, height=22, highlightthickness=0)
+            lamp.grid(row=0, column=0, padx=4, pady=4)
+            self._relay_lamps[i+1] = lamp
+            self._set_lamp(lamp, False)
+            fr.columnconfigure(0, weight=1)
 
-    def _toggle_relay(self, idx:int):
-        try:
-            val = not self._relay_vars[idx].get()
-            self._relay_vars[idx].set(val)
-            if self.hw: self.hw.set_relay(idx, val)
-        except Exception:
-            pass
-        self._refresh_relay_visual(idx)
+        self._sensor_lamps = {}
+        sensor_titles = [
+            ("START BUTTON", "start_button"),
+            ("STOP BUTTON",  "stop_button"),
+            ("SENSOR 1",     "sensor_1"),
+            ("SENSOR 2",     "sensor_2"),
+        ]
+        for c, (title, key) in enumerate(sensor_titles):
+            fr = ttk.Labelframe(grid, text=title, padding=8)
+            fr.grid(row=2, column=c, padx=4, pady=4, sticky="nsew")
+            lamp = tk.Canvas(fr, width=22, height=22, highlightthickness=0)
+            lamp.grid(row=0, column=0, padx=4, pady=4)
+            self._sensor_lamps[key] = lamp
+            self._set_lamp(lamp, False)
+            fr.columnconfigure(0, weight=1)
 
     def _refresh_relay_visual(self, idx:int):
         on = self._relay_vars[idx].get()
-        lamp = self._relay_lamps.get(idx); btn = self._relay_btns.get(idx)
-        if lamp:
-            lamp.delete("all")
-            lamp.create_oval(2,2,20,20, fill=("#2ecc71" if on else "#95a5a6"), outline="black")
-        if btn:
-            btn.configure(text=("ON" if on else "OFF"))
-            try:
-                btn.configure(bg=("#a3e6b1" if on else "#eeeeee"))
-            except Exception:
-                pass
+        lamp = self._relay_lamps.get(idx)
+        self._set_lamp(lamp, on)
 
     def _poll_device_panel(self):
         try:
-            st = self.hw.get_sensors() if self.hw else {"start_button":False,"stop_button":False,"sensor_1":False,"sensor_2":False}
-            for k,v in st.items():
-                lbl = self._sensor_labels.get(k)
-                if lbl:
-                    lbl.configure(text=f"{k.upper().replace('_',' ')}: {'ON' if v else 'OFF'}")
-                    try:
-                        lbl.configure(background="#f5b7b1" if v else "#d5dbdb")
-                    except Exception:
-                        pass
+            st = self.hw.get_sensors() if self.hw else {
+                "start_button": False, "stop_button": False, "sensor_1": False, "sensor_2": False
+            }
         except Exception:
-            pass
+            st = {"start_button": False, "stop_button": False, "sensor_1": False, "sensor_2": False}
+
         try:
             outs = self.hw.get_outputs() if self.hw else {}
+        except Exception:
+            outs = {}
+
+        try:
             for idx, on in outs.items():
                 var = self._relay_vars.get(idx)
-                if var and var.get() != bool(on):
-                    var.set(bool(on))
+                if var:
+                    if var.get() != bool(on):
+                        var.set(bool(on))
                     self._refresh_relay_visual(idx)
         except Exception:
             pass
+
+        running_hw = bool(outs.get(6, False))
+        start_pressed = bool(st.get("start_button", False))
+        stop_pressed  = bool(st.get("stop_button",  False))
+
+        if stop_pressed:
+            running_ui = False
+        elif start_pressed:
+            running_ui = True
+        else:
+            running_ui = running_hw
+
+        start_on = (not stop_pressed) and running_ui
+        stop_on  = (stop_pressed) or (not running_ui)
+
+        try:
+            if "start_button" in self._sensor_lamps:
+                self._set_lamp(self._sensor_lamps["start_button"], start_on)
+            if "stop_button" in self._sensor_lamps:
+                self._set_lamp(self._sensor_lamps["stop_button"],  stop_on)
+            if "sensor_1" in self._sensor_lamps:
+                self._set_lamp(self._sensor_lamps["sensor_1"], bool(st.get("sensor_1", False)))
+            if "sensor_2" in self._sensor_lamps:
+                self._set_lamp(self._sensor_lamps["sensor_2"], bool(st.get("sensor_2", False)))
+        except Exception:
+            pass
+
+        try:
+            if stop_pressed:
+                if 6 in self._relay_vars and self._relay_vars[6].get():
+                    self._relay_vars[6].set(False)
+                    self._refresh_relay_visual(6)
+            else:
+                if 6 in self._relay_vars:
+                    if self._relay_vars[6].get() != running_ui:
+                        self._relay_vars[6].set(running_ui)
+                        self._refresh_relay_visual(6)
+        except Exception:
+            pass
+
         self.after(200, self._poll_device_panel)
+
+    # === Stain% & 센서 연동 로직 (0.5초 지연 + 디바운스) ===
+    def _logic_loop(self):
+        """
+        센서 라이징 엣지에서 stain% 스냅샷을 기준으로 0.5초 뒤 액츄에이터 펄스.
+        - CAM1: r1 >= 31% AND sensor_1 rising → 0.5s 뒤 릴레이7
+        - CAM2: 1% <= r2 <= 30% AND sensor_2 rising → 0.5s 뒤 릴레이8
+        지연 중 조건이 바뀌어도 취소하지 않음(엣지 시점 스냅샷 기준). 디바운스 적용.
+        """
+        try:
+            st = self.hw.get_sensors() if self.hw else {"sensor_1":False,"sensor_2":False}
+            s1 = bool(st.get("sensor_1", False))
+            s2 = bool(st.get("sensor_2", False))
+            now = time.time()
+
+            # 실시간 stain% 표시(있으면)
+            r1 = self.worker1.last_ratio if self.worker1 else None
+            r2 = self.worker2.last_ratio if self.worker2 else None
+            if r1 is not None: self.r1_var.set(f"CAM1: {r1:.1f}%")
+            if r2 is not None: self.r2_var.set(f"CAM2: {r2:.1f}%")
+
+            # --- SENSOR 1: 라이징 엣지 감지 ---
+            if s1 and not self._prev_s1:
+                # 엣지 순간 스냅샷으로 판정
+                if r1 is not None and r1 >= 31.0:
+                    if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                        delay_ms = int(self._act_delay * 1000)
+                        self._pending1 = self.after(delay_ms, self._do_act1)
+
+            # --- SENSOR 2: 라이징 엣지 감지 ---
+            if s2 and not self._prev_s2:
+                if r2 is not None and 1.0 <= r2 <= 30.0:
+                    if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
+                        delay_ms = int(self._act_delay * 1000)
+                        self._pending2 = self.after(delay_ms, self._do_act2)
+
+            # 이전 상태 저장
+            self._prev_s1 = s1
+            self._prev_s2 = s2
+
+        except Exception:
+            pass
+        finally:
+            self.after(60, self._logic_loop)  # 주기 60ms
+    def _do_act1(self):
+        self._pending1 = None
+        self._act1_last = time.time()
+        self._pulse_actuator(7, ms=int(os.getenv('ACT1_PULSE_MS', '250')))
+
+    def _do_act2(self):
+        self._pending2 = None
+        self._act2_last = time.time()
+        self._pulse_actuator(8, ms=int(os.getenv('ACT2_PULSE_MS', '250')))
+
+    def _pulse_actuator(self, relay_idx:int, ms:int=250):
+        """릴레이 idx를 ms 밀리초 동안 ON 후 자동 OFF"""
+        try:
+            self._relay_vars[relay_idx].set(True)
+            if self.hw: self.hw.set_relay(relay_idx, True)
+            self._refresh_relay_visual(relay_idx)
+            self.after(ms, lambda: self._pulse_off(relay_idx))
+        except Exception:
+            pass
+
+    def _pulse_off(self, relay_idx:int):
+        try:
+            self._relay_vars[relay_idx].set(False)
+            if self.hw: self.hw.set_relay(relay_idx, False)
+            self._refresh_relay_visual(relay_idx)
+        except Exception:
+            pass
+
+    def _toggle_admin_panel(self):
+        if self._admin_win and self._admin_win.winfo_exists():
+            self._admin_win.destroy()
+            self._admin_win = None
+            self._admin_visible = False
+            return
+        self._admin_visible = True
+        self._build_admin_panel()
+
+    def _build_admin_panel(self):
+        win = tk.Toplevel(self)
+        self._admin_win = win
+        win.title("관리자 패널")
+        win.geometry("680x320")
+        try:
+            win.attributes("-topmost", True)
+        except Exception:
+            pass
+
+        def make_toggle_cell(parent, title, relay_idx):
+            cell = ttk.LabelFrame(parent, text=title, padding=8)
+            state = {"on": False}
+            def apply(new_state):
+                state["on"] = bool(new_state)
+                try:
+                    if self.hw:
+                        self.hw.set_relay(relay_idx, state["on"])
+                except Exception:
+                    pass
+                btn.config(text=("ON" if state["on"] else "OFF"))
+            btn = ttk.Button(cell, text="OFF", width=10, command=lambda: apply(not state["on"]))
+            btn.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
+            try:
+                outs = self.hw.get_outputs() if self.hw else {}
+                cur = bool(outs.get(relay_idx, False))
+                apply(cur)
+            except Exception:
+                pass
+            cell.rowconfigure(0, weight=1)
+            cell.columnconfigure(0, weight=1)
+            return cell
+
+        body = ttk.Frame(win); body.pack(fill="both", expand=True, padx=8, pady=8)
+        rows, cols = 2, 4
+        for r in range(rows):
+            body.rowconfigure(r, weight=1, uniform="admin_row")
+        for c in range(cols):
+            body.columnconfigure(c, weight=1, uniform="admin_col")
+
+        items = [
+            ("Beacon RED", 1),
+            ("Beacon ORANGE", 2),
+            ("Beacon GREEN", 3),
+            ("Buzzer", 4),
+            ("LED", 5),
+            ("Conveyor", 6),
+            ("Actuator 1", 7),
+            ("Actuator 2", 8),
+        ]
+        for i, (title, idx) in enumerate(items):
+            r, c = divmod(i, cols)
+            cell = make_toggle_cell(body, title, idx)
+            cell.grid(row=r, column=c, padx=6, pady=6, sticky="nsew")
+
+        def on_close():
+            self._admin_visible = False
+            win.destroy()
+            self._admin_win = None
+        win.protocol("WM_DELETE_WINDOW", on_close)
 
     def _on_close(self):
         self.destroy()
