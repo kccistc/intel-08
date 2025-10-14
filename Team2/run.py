@@ -567,9 +567,9 @@ class HW:
             pass
 
 # ==== Env / Config ====
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_USER = os.getenv('DB_USER', 'iot')
-DB_PASS = os.getenv('DB_PASS', 'pwiot')
+DB_HOST = os.getenv('DB_HOST', '10.10.14.17')
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASS = os.getenv('DB_PASS', '2453.')
 DB_NAME = os.getenv('DB_NAME', 'iotdb')
 DB_CHARSET = 'utf8mb4'
 
@@ -796,8 +796,8 @@ class App(tk.Tk):
 
         # Detection worker (CAM1에 적용)
         self.det_cfg = {
-            'det_path':  os.getenv('DET_MODEL',  'detection.onnx'),
-            'seg_path':  os.getenv('SEG_MODEL',  'segmentation.onnx'),
+            'det_path':  os.getenv('DET_MODEL',  'det.onnx'),
+            'seg_path':  os.getenv('SEG_MODEL',  'seg.onnx'),
             'det_size':  int(os.getenv('DET_SIZE', '640')),
             'seg_size':  int(os.getenv('SEG_SIZE', '512')),
             'det_conf':  float(os.getenv('DET_CONF', '0.35')),
