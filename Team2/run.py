@@ -3,15 +3,18 @@
 
 """
 통합 앱: Dual Camera GUI (Tkinter) + ONNXRuntime Det/Seg 파이프라인(오버레이 표시)
-- CAM1: stain%가 31~100%이고 포토센서1 감지되면 액츄에이터1 동작
-- CAM2: stain%가 1~30%  이고 포토센서2 감지되면 액츄에이터2 동작
+- CAM1: stain%가 31~100%이고 포토센서1 감지되면 액츄에이터1 동작 (완전오염 전용)
+- CAM2: stain%가 1~30%  이고 포토센서2 감지되면 액츄에이터2 동작 (30%오염 전용)
 - stain%가 0%이면 동작 없음
-- 화면에는 마스크/박스/원/비율 텍스트를 **표시**함
+- 화면에는 마스크/박스/원/비율 텍스트를 표시
+- 시작 시 컨베이어(릴레이6)만 1회 OFF(정지)로 초기화. 이후 사용자가 켜면 유지.
+- 활성 모델(M1/M2)에 따라 카운트/DB가 귀속됨(카메라 역할은 고정)
 
-모델 기본경로:
+모델 기본경로(환경변수로 변경 가능):
   DET_MODEL=~/dong/replace_detect.onnx
   SEG_MODEL=~/dong/replace_seg.onnx
-기본 SEG_MAP은 원본->표시 매핑이며, 본 코드는 표시 ID로 자동 환산하여 stain% 계산합니다.
+또는 모델 분리:
+  DET_MODEL_M1, SEG_MODEL_M1 / DET_MODEL_M2, SEG_MODEL_M2
 """
 
 import os, sys, time, warnings, threading
@@ -19,7 +22,7 @@ from datetime import datetime, timedelta
 
 # iotdemo 경로 우선 추가 (사용자 제공 위치)
 try:
-    sys.path.append(os.path.expanduser('~/dong/iotdemo'))
+    sys.path.append(os.path.expanduser('./iotdemo'))
 except Exception:
     pass
 
@@ -72,9 +75,6 @@ def letterbox(im, size, color=(114,114,114)):
     top  = (size-nh)//2; left = (size-nw)//2
     canvas[top:top+nh, left:left+nw] = resized
     return canvas, r, left, top
-
-def put_fps(img, fps):
-    cv2.putText(img, f"FPS: {fps:.1f}", (12,28), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2, cv2.LINE_AA)
 
 def _rounded_rect(img, pt1, pt2, color, thickness=2, r=8):
     x1,y1 = pt1; x2,y2 = pt2
@@ -269,11 +269,11 @@ def try_hough_circle(bgr_roi):
 
 def grade_from_ratio(ratio):
     if ratio <= 0.0:
-        return "Stain 0%", (0,255,0)
+        return (0,255,0)
     elif ratio <= 30.0:
-        return "Stain 1~30%", (0,255,255)
+        return (0,255,255)
     else:
-        return "Stain 31~100%", (0,0,255)
+        return (0,0,255)
 
 def draw_cap_circle_and_ratio(frame, cx, cy, diameter_px, stain_mask_full, *, stain_id=2):
     r = int(round(diameter_px / 2.0))
@@ -286,14 +286,12 @@ def draw_cap_circle_and_ratio(frame, cx, cy, diameter_px, stain_mask_full, *, st
     stain_area = int(np.count_nonzero(inter))
     cap_area = pi * (r**2)
     ratio = (stain_area / max(cap_area,1)) * 100.0
-    grade, color = grade_from_ratio(ratio)
+    color = grade_from_ratio(ratio)
     cv2.circle(frame, (cx,cy), r, (255,0,255), 2)
     cv2.line(frame, (cx-r, cy), (cx+r, cy), (255,0,255), 2)
     cv2.circle(frame, (cx-r, cy), 4, (255,0,255), -1)
     cv2.circle(frame, (cx+r, cy), 4, (255,0,255), -1)
-    cv2.putText(frame, f"D={diameter_px:.0f}px",
-                (max(0,cx-r), max(20, cy-r-12)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,0,255), 2)
-    cv2.putText(frame, f"{grade} ({ratio:.1f}%)",
+    cv2.putText(frame, f"{ratio:.1f}%",
                 (max(0,cx-r), min(H-10, cy+r+24)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
     return ratio, stain_area, cap_area
 
@@ -303,6 +301,7 @@ def draw_cap_circle_and_ratio(frame, cx, cy, diameter_px, stain_mask_full, *, st
 class DetectionWorker(threading.Thread):
     """
     각 카메라 별로 stain% 계산 + 오버레이 프레임 생성
+    CAM1 ← det_cfg_m1, CAM2 ← det_cfg_m2 (파일이 없을 경우 None)
     """
     def __init__(self, get_frame_fn, config):
         super().__init__(daemon=True)
@@ -325,9 +324,9 @@ class DetectionWorker(threading.Thread):
         self.seg_labels = [s.strip() for s in self.cfg['seg_labels'].split(",") if s.strip()]
         self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))
 
-        # 원본 STAIN_ID를 표시 기준 ID로 환산해 저장 (SEG_MAP 원본->표시)
+        # 표시 기준 ID
         self.stain_disp_id   = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
-        self.sticker_disp_id = self.seg_map.get(1, 1)  # sticker 원본=1로 가정
+        self.sticker_disp_id = self.seg_map.get(1, 1)  # sticker를 1로 가정
 
         self._fps_t0 = time.time()
         self._fps_n  = 0
@@ -477,7 +476,6 @@ class DetectionWorker(threading.Thread):
         dt = time.time() - self._fps_t0
         if dt >= 0.5:
             fps = self._fps_n / dt
-            put_fps(out_frame, fps)
             self._fps_t0 = time.time()
             self._fps_n = 0
 
@@ -588,9 +586,9 @@ class HW:
             pass
 
 # ==== Env / Config ====
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_USER = os.getenv('DB_USER', 'iot')
-DB_PASS = os.getenv('DB_PASS', 'pwiot')
+DB_HOST = os.getenv('DB_HOST', '10.10.14.17')
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASS = os.getenv('DB_PASS', '2453.')
 DB_NAME = os.getenv('DB_NAME', 'iotdb')
 DB_CHARSET = 'utf8mb4'
 
@@ -599,8 +597,8 @@ PARTIAL_WEIGHT = float(os.getenv('PARTIAL_WEIGHT', '0.3'))
 
 # Camera1
 CAM_INDEX   = int(os.getenv('CAM_INDEX', '0'))
-CAM_REQ_W   = int(os.getenv('CAM_REQ_W', '1280'))
-CAM_REQ_H   = int(os.getenv('CAM_REQ_H', '720'))
+CAM_REQ_W   = int(os.getenv('CAM_REQ_W', '640'))
+CAM_REQ_H   = int(os.getenv('CAM_REQ_H', '480'))
 CAM_VIEW_W  = int(os.getenv('CAM_VIEW_W', '560'))
 CAM_VIEW_H  = int(os.getenv('CAM_VIEW_H', '315'))
 CAM_FPS     = int(os.getenv('CAM_FPS', '30'))
@@ -637,8 +635,11 @@ def db_query(sql, args=None):
     try:
         with conn.cursor() as c:
             c.execute(sql, args or ())
-            rows = c.fetchall()
-            return rows, [d[0] for d in c.description]
+            if sql.strip().lower().startswith("select"):
+                rows = c.fetchall()
+                return rows, [d[0] for d in c.description]
+            else:
+                return (), []
     finally:
         conn.close()
 
@@ -744,6 +745,10 @@ class CameraThread(threading.Thread):
             if self.cap: self.cap.release()
         except Exception: pass
 
+# ====== 작은 유틸 ======
+def _has_model(cfg: dict) -> bool:
+    return os.path.isfile(cfg.get('det_path','')) and os.path.isfile(cfg.get('seg_path',''))
+
 # =========================
 # App (Tk GUI)
 # =========================
@@ -760,13 +765,35 @@ class App(tk.Tk):
         # 하드웨어 컨트롤러
         self.hw = HW(port=os.getenv('SERIAL_PORT') or None, debug=True)
 
+        # --- 시스템 실행 상태 / arming ---
+        self._is_running = False           # RUN/STOP 램프용
+        self.active_model = 0              # 0=none, 1=M1, 2=M2
+
+        # 컨트롤러 초기화 직후 강제 STOP (시작 깜빡임 방지)
+        try:
+            if self.hw:
+                self.hw.system_stop()
+                self.hw.set_relay(6, False)  # Conveyor OFF
+        except Exception:
+            pass
+        try:
+            if self.hw:
+                for idx in (1, 2, 3, 4, 5, 7, 8):  # 1=R,2=O,3=G,4=Buzzer,5=LED,7/8=Actuators
+                    self.hw.set_relay(idx, False)
+        except Exception:
+            pass
+
+        # 시작 후 1초 지연 기간(arming): 자동동작/버튼 RUN 차단
+        self._armed = False
+        self.after(1000, lambda: setattr(self, "_armed", True))
+
         # Top bar
         top = ttk.Frame(self); top.pack(fill='x', padx=8, pady=6)
         try:
-            from PIL import Image, ImageTk  # Pillow (이미 설치돼 있을 가능성 높음)
-            logo_path = os.path.join(os.path.dirname(__file__), "logo.png")  # run.py와 같은 경로
+            from PIL import Image, ImageTk
+            logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
             if os.path.exists(logo_path):
-                logo_img = Image.open(logo_path).resize((42, 30))  # 크기 조절
+                logo_img = Image.open(logo_path).resize((42, 30))
                 self._logo_tk = ImageTk.PhotoImage(logo_img)
                 ttk.Label(top, image=self._logo_tk).pack(side="left", padx=(2, 10))
             else:
@@ -774,6 +801,7 @@ class App(tk.Tk):
         except Exception as e:
             print(f"[WARN] 로고 로드 실패: {e}")
             ttk.Label(top, text="LOGO", font=("Arial", 12, "bold")).pack(side="left", padx=(2, 10))
+
         self.btn_m1 = ttk.Button(top, text="Model 1 · RUN", command=lambda:self.on_run(1))
         self.btn_m2 = ttk.Button(top, text="Model 2 · RUN", command=lambda:self.on_run(2))
         self.btn_stop = ttk.Button(top, text="STOP", command=self.on_stop)
@@ -810,10 +838,10 @@ class App(tk.Tk):
         root.grid_rowconfigure(1, weight=3)   # 모델/최근(오른쪽) 크게
         root.grid_rowconfigure(2, weight=1)   # 장치 패널
 
-        # --- KPI 확장용 변수 추가 ---
-        self.k_defw_abs = tk.StringVar(value='-')  # 불량(가중)
-        self.k_tput     = tk.StringVar(value='-')  # 처리속도
-        self.k_updated  = tk.StringVar(value='-')  # 업데이트 시각
+        # KPI 확장용 변수
+        self.k_defw_abs = tk.StringVar(value='-')
+        self.k_tput     = tk.StringVar(value='-')
+        self.k_updated  = tk.StringVar(value='-')
 
         # 오버레이에 같이 표기할 실시간 stain% 라벨
         self.r1_var = tk.StringVar(value='CAM1: - %')
@@ -832,15 +860,14 @@ class App(tk.Tk):
         self._row(g,6,"업데이트",   self.k_updated)
         ttk.Label(kpi, textvariable=self.r1_var).pack(anchor="w", padx=10)
         ttk.Label(kpi, textvariable=self.r2_var).pack(anchor="w", padx=10)
-
-        self.pb = ttk.Progressbar(kpi, orient='horizontal', length=400, mode='determinate', maximum=100); self.pb.pack(padx=8, pady=(4,10))
+        self.pb = ttk.Progressbar(kpi, orient='horizontal', length=400, mode='determinate', maximum=100)
+        self.pb.pack(padx=8, pady=(4,10))
 
         # Cameras (overlay 표시)
-        camf = ttk.LabelFrame(root, text="USB 카메라 (Dual, overlay)")
+        camf = ttk.LabelFrame(root, text="USB 카메라")
         camf.grid(row=0, column=1, sticky='nsew', padx=(6,0), pady=(0,6))
         camgrid = ttk.Frame(camf); camgrid.pack(fill='both', expand=True, padx=6, pady=6)
         camgrid.grid_columnconfigure(0, weight=1); camgrid.grid_columnconfigure(1, weight=1)
-
         self.cam1_lbl = ttk.Label(camgrid, text="CAM1 초기화 중...")
         self.cam2_lbl = ttk.Label(camgrid, text="CAM2 초기화 중...")
         self.cam1_lbl.grid(row=0, column=0, padx=4, pady=4, sticky='nsew')
@@ -854,8 +881,7 @@ class App(tk.Tk):
                                  fourcc=CAM2_FOURCC, backend=CAM2_BACKEND)
         self.cam1.start(); self.cam2.start()
 
-        # Detection workers: CAM1, CAM2 (오버레이+비율)
-        #  - DetectionWorker가 last_annot(오버레이된 프레임), last_ratio(stain%)를 제공한다고 가정
+        # Detection workers: CAM1(모델1), CAM2(모델2)
         self.det_cfg_base = {
             'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  '~/dong/replace_detect.onnx')),
             'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  '~/dong/replace_seg.onnx')),
@@ -866,16 +892,38 @@ class App(tk.Tk):
             'seg_labels': os.getenv('SEG_LABELS', 'background,sticker,stain'),
             'seg_map':    os.getenv('SEG_MAP', '0:0,1:2,2:1'),
             'scale':      float(os.getenv('SCALE', '255.0')),
-            'cap_diam':   float(os.getenv('CAP_DIAM', '137')),
+            'cap_diam':   float(os.getenv('CAP_DIAM', '170')),
             'stain_id':   int(os.getenv('STAIN_ID', '2')),
             'use_hough':  bool(int(os.getenv('USE_HOUGH', '0'))),
         }
 
+        # 모델 경로(M1/M2) 분리 지원 (M1 기본=로컬 ./det.onnx, ./seg.onnx)
+        model_dir = os.path.dirname(os.path.abspath(__file__))
+        DEFAULT_DET_LOCAL = os.path.join(model_dir, "det.onnx")
+        DEFAULT_SEG_LOCAL = os.path.join(model_dir, "seg.onnx")
+
+        self.det_cfg_m1 = dict(self.det_cfg_base)
+        self.det_cfg_m1['det_path'] = os.path.expanduser(
+        os.getenv('DET_MODEL_M1', os.getenv('DET_MODEL', DEFAULT_DET_LOCAL))
+        )
+        self.det_cfg_m1['seg_path'] = os.path.expanduser(
+        os.getenv('SEG_MODEL_M1', os.getenv('SEG_MODEL', DEFAULT_SEG_LOCAL))
+        )
+
+        self.det_cfg_m2 = dict(self.det_cfg_base)
+        self.det_cfg_m2['det_path'] = os.path.expanduser(
+        os.getenv('DET_MODEL_M2', os.getenv('DET_MODEL', self.det_cfg_base['det_path']))
+        )
+        self.det_cfg_m2['seg_path'] = os.path.expanduser(
+        os.getenv('SEG_MODEL_M2', os.getenv('SEG_MODEL', self.det_cfg_base['seg_path']))
+        )
+
+
         self.worker1 = None
         self.worker2 = None
-        self._start_workers_if_ready()
+        self.status_lbl.config(text="대기")
 
-        # Models
+        # Models (요약 패널)
         model_area = ttk.Frame(root); model_area.grid(row=1, column=0, sticky='nsew', padx=(0,6))
         model_area.grid_columnconfigure(0, weight=1); model_area.grid_columnconfigure(1, weight=1)
         self.m1_vars = {k: tk.StringVar(value='-') for k in ['good','sev','par','par_weight','def_weight','overall','rate']}
@@ -892,8 +940,8 @@ class App(tk.Tk):
             show='headings', height=24
         )
         for col, text, w in [
-            ("ts","TS",170),("m1_good","M1_G",70),("m1_sev","M1_S",70),("m1_par","M1_P",70),
-            ("m2_good","M2_G",70),("m2_sev","M2_S",70),("m2_par","M2_P",70)
+            ("ts","시간",170),("m1_good","M1 정상",70),("m1_sev","M1 완전 불량",70),("m1_par","M1 부분 불량",70),
+            ("m2_good","M2 정상",70),("m2_sev","M2 완전 불량",70),("m2_par","M2 부분 불량",70)
         ]:
             self.tree.heading(col, text=text)
             self.tree.column(col, width=w, anchor='center')
@@ -901,6 +949,8 @@ class App(tk.Tk):
 
         # 장치 패널 — 가로 전체
         self._build_device_panel(root)
+        # 처음 화면에 STOP 램프가 반드시 들어오도록
+        self._sync_start_stop_lamps()
 
         # === 액츄에이터 제어용: 디바운스 + 지연(arming) ===
         self._act1_last = 0.0
@@ -913,6 +963,13 @@ class App(tk.Tk):
         self._pending1 = None
         self._pending2 = None
 
+        # 실시간 카운터(M1,M2) + DB 이벤트 옵션
+        self._counts = {
+            1: {"good":0, "sev":0, "par":0},
+            2: {"good":0, "sev":0, "par":0},
+        }
+        self._write_db_on_event = bool(int(os.getenv("WRITE_DB_ON_EVENT", "1")))
+
         # timers
         self.after(120, self.update_camera)
         self.after(300, self.refresh)
@@ -920,26 +977,11 @@ class App(tk.Tk):
         self.after(180, self._logic_loop)  # stain% & 센서 연동 로직
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
-    # ---- worker starter ----
-    def _start_workers_if_ready(self):
-        try:
-            if not (os.path.isfile(self.det_cfg_base['det_path']) and os.path.isfile(self.det_cfg_base['seg_path'])):
-                self.status_lbl.config(text="모델 파일 없음(DET_MODEL/SEG_MODEL 확인)")
-                return
-            if cv2 is None or not PIL_OK:
-                self.status_lbl.config(text="OpenCV/Pillow 필요")
-                return
-            if self.worker1 is None:
-                cfg1 = dict(self.det_cfg_base)  # 동일 설정
-                self.worker1 = DetectionWorker(self.cam1.get_frame, cfg1)
-                self.worker1.start()
-            if self.worker2 is None:
-                cfg2 = dict(self.det_cfg_base)
-                self.worker2 = DetectionWorker(self.cam2.get_frame, cfg2)
-                self.worker2.start()
-            self.status_lbl.config(text="Det/Seg 가동(오버레이 표시)")
-        except Exception as e:
-            self.status_lbl.config(text=f"Worker 시작 실패: {e}")
+        # 모델이 없으면 RUN 버튼 비활성화(선택)
+        if not _has_model(self.det_cfg_m1):
+            self.btn_m1.config(state="disabled", text="Model 1 (미설치)")
+        if not _has_model(self.det_cfg_m2):
+            self.btn_m2.config(state="disabled", text="Model 2 (미설치)")
 
     def destroy(self):
         try:
@@ -970,6 +1012,26 @@ class App(tk.Tk):
 
     # === RUN/STOP ===
     def on_run(self, model_id:int):
+        # arming 전에 RUN 금지 (초기 깜빡임/오동작 방지)
+        if not self._armed:
+            self.status_lbl.config(text="초기화 중(잠시 후 RUN 가능)")
+            return
+
+        # 모델 가드
+        if model_id == 1 and not _has_model(self.det_cfg_m1):
+            messagebox.showwarning("Model 1", "Model 1 파일이 없습니다.\n(DET_MODEL_M1 / SEG_MODEL_M1)")
+            return
+        if model_id == 2 and not _has_model(self.det_cfg_m2):
+            messagebox.showwarning("Model 2", "Model 2 파일이 없습니다.\n(DET_MODEL_M2 / SEG_MODEL_M2)")
+            return
+        if not self._restart_workers_for(model_id):
+            return
+        
+        self._is_running = True
+        self.active_model = model_id
+        self._is_running = True
+        self._sync_start_stop_lamps()
+
         self.status_lbl.config(text=f"Model {model_id} 작동중")
         if model_id == 1:
             self.m1_state.set("작동중"); self.m2_state.set("대기")
@@ -981,45 +1043,116 @@ class App(tk.Tk):
             if SER: SER.send(f"RUN:{model_id}")
         except Exception as e:
             err = e
+
+        # 백엔드 알림 비동기
         try:
             url = os.getenv("BACKEND_URL")
             if url:
-                import json, urllib.request
-                req = urllib.request.Request(url.rstrip("/")+"/control",
-                    data=json.dumps({"action":"run", "model":model_id}).encode("utf-8"),
-                    headers={"Content-Type":"application/json"})
-                urllib.request.urlopen(req, timeout=1.5)
+                def _notify_run(mid):
+                    import json, urllib.request
+                    req = urllib.request.Request(url.rstrip("/")+"/control",
+                        data=json.dumps({"action":"run","model":mid}).encode("utf-8"),
+                        headers={"Content-Type":"application/json"})
+                    urllib.request.urlopen(req, timeout=1.5)
+                self._bg(_notify_run, model_id)
         except Exception as e:
             err = err or e
+
+        # Conveyor ON 확정
         try:
-            if self.hw: self.hw.set_relay(6, True)
+            if self.hw: self.hw.set_relay(6, True)  # Conveyor ON
+            if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
+                self._relay_vars[6].set(True)
+                self._refresh_relay_visual(6)
         except Exception:
             pass
+
         if err:
             messagebox.showwarning("제어 알림", f"장치/백엔드 알림 중 오류: {err}")
 
+    def _stop_workers(self):
+        # 두 워커 정지 및 해제
+        for w in (self.worker1, self.worker2):
+            try:
+                if w: w.stop()
+            except Exception:
+                pass
+        for w in (self.worker1, self.worker2):
+            try:
+                if w:w.join(timeout=0.8) 
+            except Exception:
+                pass
+        self.worker1 = None
+        self.worker2 = None
+
+    def _start_workers_with_cfg(self, cfg):
+        # 두 카메라 모두 같은 cfg(선택한 모델)로 추론 워커 시작
+        if cv2 is None or not PIL_OK:
+            self.status_lbl.config(text="OpenCV/Pillow 필요"); 
+            return False
+        try:
+            self.worker1 = DetectionWorker(self.cam1.get_frame, dict(cfg))
+            self.worker1.start()
+            self.worker2 = DetectionWorker(self.cam2.get_frame, dict(cfg))
+            self.worker2.start()
+            self.status_lbl.config(text="Det/Seg 가동(오버레이 표시) · CAM1/CAM2=같은 모델")
+            return True
+        except Exception as e:
+            self.status_lbl.config(text=f"Worker 시작 실패: {e}")
+            self._stop_workers()
+            return False
+
+    def _restart_workers_for(self, model_id:int):
+        # model_id=1이면 det_cfg_m1, 2면 det_cfg_m2를 두 카메라에 동시에 적용
+        cfg = self.det_cfg_m1 if model_id == 1 else self.det_cfg_m2
+        if not _has_model(cfg):
+            messagebox.showwarning(
+                f"Model {model_id}",
+                f"Model {model_id} 파일이 없습니다.\n(DET_MODEL_M{model_id} / SEG_MODEL_M{model_id})"
+            )
+            return False
+        self._stop_workers()
+        return self._start_workers_with_cfg(cfg)
+
+
+
     def on_stop(self):
+        self.active_model = 0
+        self._is_running = False
+        self._stop_workers()
+        self._sync_start_stop_lamps()
         self.status_lbl.config(text="대기")
         self.m1_state.set("대기"); self.m2_state.set("대기")
+
         err = None
         try:
             if SER: SER.send("STOP")
         except Exception as e:
             err = e
+
+        # 백엔드 알림 비동기
         try:
             url = os.getenv("BACKEND_URL")
             if url:
-                import json, urllib.request
-                req = urllib.request.Request(url.rstrip("/")+"/control",
-                    data=json.dumps({"action":"stop"}).encode("utf-8"),
-                    headers={"Content-Type":"application/json"})
-                urllib.request.urlopen(req, timeout=1.5)
+                def _notify_stop():
+                    import json, urllib.request
+                    req = urllib.request.Request(url.rstrip("/")+"/control",
+                        data=json.dumps({"action":"stop"}).encode("utf-8"),
+                        headers={"Content-Type":"application/json"})
+                    urllib.request.urlopen(req, timeout=1.5)
+                self._bg(_notify_stop)
         except Exception as e:
             err = err or e
+
+        # Conveyor OFF 확정
         try:
-            if self.hw: self.hw.set_relay(6, False)
+            if self.hw: self.hw.set_relay(6, False)  # Conveyor OFF
+            if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
+                self._relay_vars[6].set(False)
+                self._refresh_relay_visual(6)
         except Exception:
             pass
+
         if err:
             messagebox.showwarning("제어 알림", f"장치/백엔드 알림 중 오류: {err}")
 
@@ -1033,11 +1166,7 @@ class App(tk.Tk):
                 resample = dict(LANCZOS=Image.LANCZOS, BILINEAR=Image.BILINEAR, BICUBIC=Image.BICUBIC).get(RESAMPLE.upper(), Image.LANCZOS)
 
                 # CAM1: worker 오버레이가 있으면 우선 사용
-                f1 = None
-                if self.worker1 and getattr(self.worker1, "last_annot", None) is not None:
-                    f1 = self.worker1.last_annot
-                else:
-                    f1 = self.cam1.get_frame()
+                f1 = self.worker1.last_annot if (self.worker1 and self.worker1.last_annot is not None) else self.cam1.get_frame()
                 if f1 is not None:
                     rgb1 = cv2.cvtColor(f1, cv2.COLOR_BGR2RGB)
                     img1 = Image.fromarray(rgb1).resize((CAM_VIEW_W, CAM_VIEW_H), resample=resample).copy()
@@ -1045,11 +1174,7 @@ class App(tk.Tk):
                     self.cam1_lbl.configure(image=self._tk_img1, text='')
 
                 # CAM2: worker 오버레이 우선
-                f2 = None
-                if self.worker2 and getattr(self.worker2, "last_annot", None) is not None:
-                    f2 = self.worker2.last_annot
-                else:
-                    f2 = self.cam2.get_frame()
+                f2 = self.worker2.last_annot if (self.worker2 and self.worker2.last_annot is not None) else self.cam2.get_frame()
                 if f2 is not None:
                     rgb2 = cv2.cvtColor(f2, cv2.COLOR_BGR2RGB)
                     img2 = Image.fromarray(rgb2).resize((CAM2_VIEW_W, CAM2_VIEW_H), resample=resample).copy()
@@ -1060,6 +1185,12 @@ class App(tk.Tk):
             self.cam2_lbl.configure(text=f"(CAM2 오류: {e})")
         finally:
             self.after(90, self.update_camera)
+
+    # === 백그라운드 실행 헬퍼 ===
+    def _bg(self, target, *args, **kwargs):
+        th = threading.Thread(target=target, args=args, kwargs=kwargs, daemon=True)
+        th.start()
+        return th
 
     # === 공통 갱신 로직(중복 제거) ===
     def _apply_simple_node(self, node, vars_dict):
@@ -1091,11 +1222,21 @@ class App(tk.Tk):
         rate = round((total_defw/total*100.0), 1) if total>0 else 0.0
         self._set_kpi(total, total_good, total_defw, rate)
         self._maybe_blink_beacon(rate)
-        # --- KPI 확장 항목 업데이트 ---
+        # KPI 확장 항목
         self.k_defw_abs.set(f"{total_defw:.2f}")
         win_minutes = max(1e-9, parse_window(self.win_var.get()).total_seconds()/60.0)
         tput = total / win_minutes if total > 0 else 0.0
         self.k_tput.set(f"{tput:.1f} 개/분")
+
+    def _win_minutes(self) -> int:
+        s = (self.win_var.get() or '5m').strip().lower()
+        if s.endswith('m'):
+            return max(1, int(s[:-1] or 5))
+        if s.endswith('h'):
+            return max(1, int(s[:-1] or 1) * 60)
+        if s.endswith('d'):
+            return max(1, int(s[:-1] or 1) * 1440)
+        return 5
 
     def _set_lamp(self, canvas: tk.Canvas, on: bool):
         if not canvas:
@@ -1104,24 +1245,37 @@ class App(tk.Tk):
         color = "#2ecc71" if on else "#95a5a6"
         canvas.create_oval(2, 2, 20, 20, fill=color, outline="black")
 
-    # === 데이터 새로고침 (DB 전용) ===
+    def _sync_start_stop_lamps(self):
+        """START/STOP 타일(왼쪽 하단)의 램프를 시스템 상태(_is_running) 기준으로 표시"""
+        try:
+            # START 버튼 타일 = RUN일 때 초록, STOP 버튼 타일 = RUN 아닐 때 초록
+            if hasattr(self, "_sensor_lamps"):
+                self._set_lamp(self._sensor_lamps.get("start_button"), bool(self._is_running))
+                self._set_lamp(self._sensor_lamps.get("stop_button"),  not bool(self._is_running))
+        except Exception:
+            pass
+
+
+    # === 데이터 새로고침 (DB 전용) - 비동기 ===
     def refresh(self):
-        since = datetime.now() - parse_window(self.win_var.get())
-        ok = self._refresh_from_6col(since)
-        if not ok:
-            self._refresh_from_legacy(since)
         self.k_updated.set(datetime.now().strftime('%H:%M:%S'))
+        self._bg(self._refresh_async)
         self.after(1500, self.refresh)
 
-    def _refresh_from_6col(self, since):
+    def _refresh_async(self):
+        if not self._refresh_from_6col():
+            self._refresh_from_legacy()
+
+    def _refresh_from_6col(self):
         try:
+            mins = self._win_minutes()
             rows, _ = db_query(f'''
                 SELECT
                   COALESCE(SUM(m1_good),0), COALESCE(SUM(m1_sev),0), COALESCE(SUM(m1_par),0),
                   COALESCE(SUM(m2_good),0), COALESCE(SUM(m2_sev),0), COALESCE(SUM(m2_par),0)
                 FROM {DB_TABLE_6}
-                WHERE ts >= %s
-            ''', [since])
+                WHERE ts >= NOW() - INTERVAL {mins} MINUTE
+            ''')
             if not rows:
                 return True
             m1_g,m1_s,m1_p,m2_g,m2_s,m2_p = [int(x or 0) for x in rows[0]]
@@ -1145,9 +1299,10 @@ class App(tk.Tk):
         except Exception:
             return False
 
-    def _refresh_from_legacy(self, since):
+    def _refresh_from_legacy(self):
         try:
-            rows, _ = db_query('''
+            mins = self._win_minutes()
+            rows, _ = db_query(f'''
                 SELECT model,
                        SUM(good)        AS good,
                        SUM(sev_contam)  AS sev_contam,
@@ -1155,9 +1310,9 @@ class App(tk.Tk):
                        SUM(par_contam)  AS par_contam,
                        SUM(par_damage)  AS par_damage
                 FROM qc_agg
-                WHERE ts >= %s
+                WHERE ts >= NOW() - INTERVAL {mins} MINUTE
                 GROUP BY model
-            ''', [since])
+            ''')
             agg={'M1': {'good':0,'sev':0,'par':0},
                  'M2': {'good':0,'sev':0,'par':0}}
             for model, g, sc, sd, pc, pd in rows:
@@ -1194,6 +1349,37 @@ class App(tk.Tk):
                 self._refresh_relay_visual(idx)
             except Exception:
                 pass
+    def _pulse_beacon(self, kind: str, ms: int = None):
+        """
+        이벤트 1건(정상품/30%불량/완전불량) 발생 시 비콘을 ms 동안 켰다가 자동 OFF.
+        - kind: "good" | "par" | "sev"
+        - ms: None이면 환경변수 BEACON_PULSE_MS(기본 600ms) 사용
+        """
+        try:
+            dur = int(os.getenv("BEACON_PULSE_MS", "600")) if ms is None else int(ms)
+        except Exception:
+            dur = 600
+
+        # KPI 점멸과 겹칠 때 깔끔히 보이도록 일단 모두 OFF
+        try:
+            self._set_beacons(red=False, orange=False, green=False)
+        except Exception:
+            pass
+
+        if kind == "sev":       # 완전불량 = 빨강
+            self._set_beacons(red=True,  orange=False, green=False)
+        elif kind == "par":     # 30%불량 = 주황
+            self._set_beacons(red=False, orange=True,  green=False)
+        elif kind == "good":    # 정상품 = 초록
+            self._set_beacons(red=False, orange=False, green=True)
+        else:
+            return  # 알 수 없는 종류는 무시
+
+        # dur ms 뒤 모두 끔 (실기기 + 패널 동시 반영)
+        try:
+            self.after(dur, lambda: self._set_beacons(red=False, orange=False, green=False))
+        except Exception:
+            pass
 
     def _maybe_blink_beacon(self, rate: float, on_ms: int = 800):
         desired = 'none'
@@ -1295,6 +1481,7 @@ class App(tk.Tk):
         except Exception:
             outs = {}
 
+        # 램프 상태 갱신
         try:
             for idx, on in outs.items():
                 var = self._relay_vars.get(idx)
@@ -1305,54 +1492,26 @@ class App(tk.Tk):
         except Exception:
             pass
 
-        running_hw = bool(outs.get(6, False))
-        start_pressed = bool(st.get("start_button", False))
-        stop_pressed  = bool(st.get("stop_button",  False))
-
-        if stop_pressed:
-            running_ui = False
-        elif start_pressed:
-            running_ui = True
-        else:
-            running_ui = running_hw
-
-        start_on = (not stop_pressed) and running_ui
-        stop_on  = (stop_pressed) or (not running_ui)
-
+        # 센서 램프
         try:
-            if "start_button" in self._sensor_lamps:
-                self._set_lamp(self._sensor_lamps["start_button"], start_on)
-            if "stop_button" in self._sensor_lamps:
-                self._set_lamp(self._sensor_lamps["stop_button"],  stop_on)
+            self._sync_start_stop_lamps()  # START/STOP은 시스템 상태 기준
             if "sensor_1" in self._sensor_lamps:
                 self._set_lamp(self._sensor_lamps["sensor_1"], bool(st.get("sensor_1", False)))
             if "sensor_2" in self._sensor_lamps:
                 self._set_lamp(self._sensor_lamps["sensor_2"], bool(st.get("sensor_2", False)))
-        except Exception:
-            pass
 
-        try:
-            if stop_pressed:
-                if 6 in self._relay_vars and self._relay_vars[6].get():
-                    self._relay_vars[6].set(False)
-                    self._refresh_relay_visual(6)
-            else:
-                if 6 in self._relay_vars:
-                    if self._relay_vars[6].get() != running_ui:
-                        self._relay_vars[6].set(running_ui)
-                        self._refresh_relay_visual(6)
         except Exception:
             pass
 
         self.after(200, self._poll_device_panel)
 
-    # === Stain% & 센서 연동 로직 (0.5초 지연 + 디바운스) ===
+    # === Stain% & 센서 연동 로직 (카메라 역할 고정 + 디바운스/지연 + 엣지 스냅샷) ===
     def _logic_loop(self):
         """
-        센서 라이징 엣지에서 stain% 스냅샷을 기준으로 0.5초 뒤 액츄에이터 펄스.
-        - CAM1: r1 >= 31% AND sensor_1 rising → 0.5s 뒤 릴레이7
-        - CAM2: 1% <= r2 <= 30% AND sensor_2 rising → 0.5s 뒤 릴레이8
-        지연 중 조건이 바뀌어도 취소하지 않음(엣지 시점 스냅샷 기준). 디바운스 적용.
+        센서 라이징 엣지에서 stain% 스냅샷을 저장하고 0.5초 뒤 액츄에이터 펄스.
+        - CAM1: r1 >= 31% AND sensor_1 rising → 0.5s 뒤 릴레이7 (kind='sev')
+        - CAM2: 1% <= r2 <= 30% AND sensor_2 rising → 0.5s 뒤 릴레이8 (kind='par')
+        0%는 동작 없음. 디바운스 적용.
         """
         try:
             st = self.hw.get_sensors() if self.hw else {"sensor_1":False,"sensor_2":False}
@@ -1366,20 +1525,30 @@ class App(tk.Tk):
             if r1 is not None: self.r1_var.set(f"CAM1: {r1:.1f}%")
             if r2 is not None: self.r2_var.set(f"CAM2: {r2:.1f}%")
 
-            # --- SENSOR 1: 라이징 엣지 감지 ---
-            if s1 and not self._prev_s1:
-                # 엣지 순간 스냅샷으로 판정
-                if r1 is not None and r1 >= 31.0:
-                    if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
-                        delay_ms = int(self._act_delay * 1000)
-                        self._pending1 = self.after(delay_ms, self._do_act1)
-
-            # --- SENSOR 2: 라이징 엣지 감지 ---
-            if s2 and not self._prev_s2:
-                if r2 is not None and 1.0 <= r2 <= 30.0:
-                    if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
-                        delay_ms = int(self._act_delay * 1000)
-                        self._pending2 = self.after(delay_ms, self._do_act2)
+            # --- SENSOR 1: CAM1 = 완전오염 전용 ---
+            if s1 and not self._prev_s1 and self._is_running:
+                if r1 is not None:
+                    snap = float(r1)
+                    if snap >= 31.0:
+                        if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                            self._pending1 = {"when": now, "ratio": snap, "kind": "sev"}
+                            delay_ms = int(self._act_delay * 1000)
+                            self.after(delay_ms, self._do_act1)
+                    else:
+                        # ★ 추가: 불량 아님 → CAM1 정상품으로 1건 기록
+                        self._record_event(kind="good")
+            # --- SENSOR 2: CAM2 = 30%오염 전용 ---
+            if s2 and not self._prev_s2 and self._is_running:
+                if r2 is not None:
+                    snap = float(r2)
+                    if 1.0 <= snap <= 30.0:
+                        if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
+                            self._pending2 = {"when": now, "ratio": snap, "kind": "par"}
+                            delay_ms = int(self._act_delay * 1000)
+                            self.after(delay_ms, self._do_act2)
+                    else:
+                        # ★ 추가: 불량 아님 → CAM2 정상품으로 1건 기록
+                        self._record_event(kind="good")
 
             # 이전 상태 저장
             self._prev_s1 = s1
@@ -1389,15 +1558,20 @@ class App(tk.Tk):
             pass
         finally:
             self.after(60, self._logic_loop)  # 주기 60ms
+
     def _do_act1(self):
-        self._pending1 = None
+        info = self._pending1; self._pending1 = None
         self._act1_last = time.time()
         self._pulse_actuator(7, ms=int(os.getenv('ACT1_PULSE_MS', '250')))
+        if info:
+            self._record_event(kind=info.get("kind","sev"))
 
     def _do_act2(self):
-        self._pending2 = None
+        info = self._pending2; self._pending2 = None
         self._act2_last = time.time()
         self._pulse_actuator(8, ms=int(os.getenv('ACT2_PULSE_MS', '250')))
+        if info:
+            self._record_event(kind=info.get("kind","par"))
 
     def _pulse_actuator(self, relay_idx:int, ms:int=250):
         """릴레이 idx를 ms 밀리초 동안 ON 후 자동 OFF"""
@@ -1416,6 +1590,47 @@ class App(tk.Tk):
             self._refresh_relay_visual(relay_idx)
         except Exception:
             pass
+
+    def _record_event(self, model:int=None, kind:str="good"):
+        # model 미지정 → 현재 활성 모델로 귀속
+        if model is None:
+            model = self.active_model
+        if model not in (1,2):
+            return  # STOP 상태면 기록하지 않음
+
+        node = self._counts[model]
+        if kind == "sev":
+            node["sev"] += 1
+        elif kind == "par":
+            node["par"] += 1
+        else:
+            node["good"] += 1
+
+        # UI 즉시 반영
+        self._update_from_counts(self._counts[1], self._counts[2])
+                # ★ 이벤트에 맞춰 비콘 펄스
+        try:
+            self._pulse_beacon(kind)
+        except Exception:
+            pass
+
+
+        # 선택적 DB 한 줄 INSERT (WRITE_DB_ON_EVENT=1일 때)
+        if self._write_db_on_event and pymysql is not None:
+            try:
+                cols = ("m1_good","m1_sev","m1_par","m2_good","m2_sev","m2_par")
+                vals = [0,0,0,0,0,0]
+                idx_map = {
+                    (1,"good"): 0, (1,"sev"): 1, (1,"par"): 2,
+                    (2,"good"): 3, (2,"sev"): 4, (2,"par"): 5,
+                }
+                j = idx_map.get((model,kind), None)
+                if j is not None:
+                    vals[j] = 1
+                    sql = f"INSERT INTO {DB_TABLE_6} ({','.join(cols)}) VALUES (%s,%s,%s,%s,%s,%s)"
+                    self._bg(lambda: db_query(sql, vals))
+            except Exception:
+                pass
 
     def _toggle_admin_panel(self):
         if self._admin_win and self._admin_win.winfo_exists():
@@ -1447,6 +1662,14 @@ class App(tk.Tk):
                 except Exception:
                     pass
                 btn.config(text=("ON" if state["on"] else "OFF"))
+
+                if relay_idx == 6:
+                    self._is_running = state["on"]
+                    self._sync_start_stop_lamps()
+                if relay_idx in self._relay_vars:
+                    self._relay_vars[relay_idx].set(state["on"])
+                    self._refresh_relay_visual(relay_idx)
+
             btn = ttk.Button(cell, text="OFF", width=10, command=lambda: apply(not state["on"]))
             btn.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
             try:
