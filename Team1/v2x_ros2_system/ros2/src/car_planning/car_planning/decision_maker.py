@@ -1,85 +1,107 @@
+
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from rclpy.time import Time
+from rclpy.duration import Duration
 from geometry_msgs.msg import Twist
-from car_msgs.msg import V2VAlert  # ver, src, seq, ts, type, severity(str), ...
+from car_msgs.msg import V2VAlert
 
 class DecisionMaker(Node):
     def __init__(self):
-        super().__init__('decision_maker')
+        super().__init__("decision_maker")
 
-        # 파라미터
-        self.declare_parameter('stop_distance_m', 10.0)
-        self.declare_parameter('slow_distance_m', 20.0)
-        self.declare_parameter('cruise_speed', 1.0)
-        self.declare_parameter('slow_speed', 0.3)
-        self.declare_parameter('turn_rate', 0.4)
+        # Parameters
+        self.declare_parameter("stop_distance_m", 10.0)
+        self.declare_parameter("slow_distance_m", 20.0)
+        self.declare_parameter("cruise_speed", 1.0)
+        self.declare_parameter("slow_speed", 0.3)
+        self.declare_parameter("turn_rate", 0.4)
+        self.declare_parameter("no_input_timeout_s", 0.0)  # 0이면 비활성
 
-        self.sub = self.create_subscription(V2VAlert, '/v2x/alert_struct', self.alert_cb, 10)
-        self.pub = self.create_publisher(Twist, '/vehicle/cmd', 10)
+        # Pub/Sub
+        self.sub = self.create_subscription(
+            V2VAlert, "/v2x/alert_struct", self.on_alert, 10
+        )
+        self.pub = self.create_publisher(Twist, "/vehicle/cmd", 10)
 
-        self.get_logger().info('DecisionMaker: /v2x/alert_struct → /vehicle/cmd (using ts, severity=str)')
+        # Deadman timer
+        self._last_rx = self.get_clock().now()
+        self._timer = self.create_timer(0.2, self._tick)
 
-    def alert_cb(self, msg: V2VAlert):
-        # TTL / ts 검사 (header 없음, ts 사용)
-        ttl = float(msg.ttl_s) if hasattr(msg, 'ttl_s') else 0.0
-        if ttl > 0.0 and hasattr(msg, 'ts'):
-            now = self.get_clock().now()
-            msg_time = Time.from_msg(msg.ts)
-            age_s = (now - msg_time).nanoseconds / 1e9
-            if age_s > ttl:
-                self.get_logger().warn(f'Expired alert ignored (age={age_s:.2f}s > ttl={ttl:.2f}s)')
-                return
+    # Convenience getters
+    def p(self, name:str)->float:
+        return float(self.get_parameter(name).get_parameter_value().double_value)
 
-        stop_dist = self.get_parameter('stop_distance_m').get_parameter_value().double_value
-        slow_dist = self.get_parameter('slow_distance_m').get_parameter_value().double_value
-        cruise = self.get_parameter('cruise_speed').get_parameter_value().double_value
-        slow = self.get_parameter('slow_speed').get_parameter_value().double_value
-        turn = self.get_parameter('turn_rate').get_parameter_value().double_value
+    def on_alert(self, msg: V2VAlert):
+        self._last_rx = self.get_clock().now()
+        self._decide_and_publish(msg)
 
-        sev = (msg.severity or '').lower().strip()
-        sug = (msg.suggest or '').lower().strip()
-        typ = (msg.type or '').lower().strip()
+    def _tick(self):
+        timeout = self.p("no_input_timeout_s")
+        if timeout <= 0:
+            return
+        if (self.get_clock().now() - self._last_rx) > Duration(seconds=timeout):
+            cmd = Twist()  # zero = stop
+            self.pub.publish(cmd)
+            self.get_logger().warn(f"Deadman stop: no alert for > {timeout:.1f}s")
+
+    def _decide_and_publish(self, alert: V2VAlert):
+        stop_dist = self.p("stop_distance_m")
+        slow_dist = self.p("slow_distance_m")
+        cruise    = self.p("cruise_speed")
+        slow      = self.p("slow_speed")
+        turn      = self.p("turn_rate")
+
+        typ = (alert.type or "").strip().lower()
+        sev = (alert.severity or "").strip().lower()
+        sug = (alert.suggest or "").strip().lower()
+        d   = float(alert.distance_m)
 
         cmd = Twist()
 
-        # 규칙
-        if typ == 'collision' and msg.distance_m < stop_dist:
-            action = 'EMERGENCY_STOP'
+        # ===== Priority =====
+        # 1) Emergency stop (collision & near)
+        if typ == "collision" and d < stop_dist:
+            action = "EMERGENCY_STOP"
             cmd.linear.x = 0.0
             cmd.angular.z = 0.0
 
-        elif (typ in ('obstacle', 'hazard') or sev in ('medium', 'high')) and msg.distance_m < slow_dist:
-            action = 'SLOW_DOWN'
-            cmd.linear.x = slow
-            cmd.angular.z = 0.0
-
-        elif sug == 'reroute':
-            action = 'REROUTE_SLOW'
-            cmd.linear.x = slow
-            cmd.angular.z = 0.0
-
-        elif sug == 'slow_down':
-            action = 'SLOW_DOWN_ADVICE'
-            cmd.linear.x = slow
-            cmd.angular.z = 0.0
-
-        elif sug == 'stop':
-            action = 'STOP_ADVICE'
+        # 2) Explicit stop advice
+        elif sug == "stop":
+            action = "STOP_ADVICE"
             cmd.linear.x = 0.0
             cmd.angular.z = 0.0
 
+        # 3) Avoid advice (left/right)
+        elif sug in ("avoid_left", "avoid_right"):
+            action = "AVOID_LEFT" if sug == "avoid_left" else "AVOID_RIGHT"
+            # Choose forward speed for avoidance; can be tuned
+            cmd.linear.x = max(0.5, slow)
+            cmd.angular.z = (+turn) if sug == "avoid_left" else (-turn)
+
+        # 4) Slow or reroute advice
+        elif sug in ("slow_down", "reroute"):
+            action = "SLOW_DOWN_ADVICE" if sug == "slow_down" else "REROUTE_SLOW"
+            cmd.linear.x = slow
+            cmd.angular.z = 0.0
+
+        # 5) Hazard/obstacle near → slow
+        elif (typ in ("obstacle", "hazard") or sev in ("medium", "high")) and d < slow_dist:
+            action = "SLOW_DOWN"
+            cmd.linear.x = slow
+            cmd.angular.z = 0.0
+
+        # 6) Default cruise
         else:
-            action = 'CRUISE'
+            action = "CRUISE"
             cmd.linear.x = cruise
             cmd.angular.z = 0.0
 
-        self.pub.publish(cmd)
         self.get_logger().info(
-            f'[{action}] type={typ}, sev={sev}, dist={msg.distance_m:.1f}m, suggest={sug} → '
-            f'cmd: v={cmd.linear.x:.2f} m/s, yaw_rate={cmd.angular.z:.2f} rad/s'
+            f"[{action}] type={typ}, sev={sev}, dist={d:.1f}m, suggest={sug} "
+            f"→ cmd: v={cmd.linear.x:.2f} m/s, yaw_rate={cmd.angular.z:.2f} rad/s"
         )
+        self.pub.publish(cmd)
 
 def main(args=None):
     rclpy.init(args=args)
@@ -88,5 +110,5 @@ def main(args=None):
     node.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
