@@ -1,0 +1,269 @@
+[0.000000] (-) TimerEvent: {}
+[0.000101] (car_msgs) JobQueued: {'identifier': 'car_msgs', 'dependencies': OrderedDict()}
+[0.000136] (vision_pkg) JobQueued: {'identifier': 'vision_pkg', 'dependencies': OrderedDict()}
+[0.000156] (car_comms) JobQueued: {'identifier': 'car_comms', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.000179] (car_control) JobQueued: {'identifier': 'car_control', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.000197] (car_planning) JobQueued: {'identifier': 'car_planning', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.000215] (car_vision) JobQueued: {'identifier': 'car_vision', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.000566] (car_msgs) JobStarted: {'identifier': 'car_msgs'}
+[0.009906] (vision_pkg) JobStarted: {'identifier': 'vision_pkg'}
+[0.019181] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'cmake'}
+[0.020208] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'build'}
+[0.021116] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/ws/build/car_msgs', '--', '-j4', '-l4'], 'cwd': '/ws/build/car_msgs', 'env': OrderedDict({'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_msgs', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy'}), 'shell': False}
+[0.100026] (-) TimerEvent: {}
+[0.200234] (-) TimerEvent: {}
+[0.301130] (-) TimerEvent: {}
+[0.313210] (car_msgs) StdoutLine: {'line': b'[  0%] Built target ament_cmake_python_symlink_car_msgs\n'}
+[0.315236] (car_msgs) StdoutLine: {'line': b'[  2%] Built target car_msgs__rosidl_generator_type_description\n'}
+[0.316748] (car_msgs) StdoutLine: {'line': b'[ 17%] Built target car_msgs__rosidl_generator_c\n'}
+[0.317898] (car_msgs) StdoutLine: {'line': b'[ 26%] Built target car_msgs__rosidl_typesupport_introspection_c\n'}
+[0.318141] (car_msgs) StdoutLine: {'line': b'[ 35%] Built target car_msgs__rosidl_typesupport_fastrtps_c\n'}
+[0.318255] (car_msgs) StdoutLine: {'line': b'[ 44%] Built target car_msgs__rosidl_typesupport_c\n'}
+[0.318340] (car_msgs) StdoutLine: {'line': b'[ 47%] Built target car_msgs__cpp\n'}
+[0.318418] (car_msgs) StdoutLine: {'line': b'[ 55%] Built target car_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[0.318494] (car_msgs) StdoutLine: {'line': b'[ 64%] Built target car_msgs__rosidl_typesupport_cpp\n'}
+[0.334377] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs__rosidl_typesupport_introspection_cpp\n'}
+[0.353722] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs\n'}
+[0.374582] (car_msgs) StdoutLine: {'line': b'[ 76%] Built target car_msgs__py\n'}
+[0.400991] (-) TimerEvent: {}
+[0.434033] (car_msgs) StdoutLine: {'line': b'[ 82%] Built target car_msgs__rosidl_generator_py\n'}
+[0.445800] (car_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[0.463327] (car_msgs) StdoutLine: {'line': b'writing car_msgs.egg-info/PKG-INFO\n'}
+[0.466116] (car_msgs) StdoutLine: {'line': b'writing dependency_links to car_msgs.egg-info/dependency_links.txt\n'}
+[0.466289] (car_msgs) StdoutLine: {'line': b'writing top-level names to car_msgs.egg-info/top_level.txt\n'}
+[0.472155] (car_msgs) StdoutLine: {'line': b'[ 88%] Built target car_msgs_s__rosidl_typesupport_introspection_c\n'}
+[0.501132] (-) TimerEvent: {}
+[0.505699] (car_msgs) StdoutLine: {'line': b'[ 94%] Built target car_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[0.513901] (car_msgs) StdoutLine: {'line': b"reading manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[0.514131] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[0.537212] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_c\n'}
+[0.573175] (car_msgs) StdoutLine: {'line': b'[100%] Built target ament_cmake_python_build_car_msgs_egg\n'}
+[0.585077] (car_msgs) CommandEnded: {'returncode': 0}
+[0.586308] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'install'}
+[0.597458] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/ws/build/car_msgs'], 'cwd': '/ws/build/car_msgs', 'env': OrderedDict({'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_msgs', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy'}), 'shell': False}
+[0.601240] (-) TimerEvent: {}
+[0.620968] (car_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[0.623391] (car_msgs) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[0.624025] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/rosidl_interfaces/car_msgs\n'}
+[0.624555] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.json\n'}
+[0.625931] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__functions.h\n'}
+[0.626307] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.h\n'}
+[0.626616] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.h\n'}
+[0.626910] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[0.627219] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.h\n'}
+[0.627819] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.sh\n'}
+[0.628367] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.dsv\n'}
+[0.629717] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_c.h\n'}
+[0.630008] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[0.631069] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_c.h\n'}
+[0.631397] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[0.632579] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__builder.hpp\n'}
+[0.632946] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.hpp\n'}
+[0.633338] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__traits.hpp\n'}
+[0.633695] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.hpp\n'}
+[0.634025] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[0.634344] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.hpp\n'}
+[0.635590] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[0.635898] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[0.636811] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_cpp.hpp\n'}
+[0.637365] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.sh\n'}
+[0.637945] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.dsv\n'}
+[0.638984] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/PKG-INFO\n'}
+[0.639325] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/SOURCES.txt\n'}
+[0.639709] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/dependency_links.txt\n'}
+[0.640059] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/top_level.txt\n'}
+[0.641568] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py\n'}
+[0.641917] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[0.642215] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[0.642514] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[0.642810] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[0.643122] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[0.643413] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[0.643722] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py\n'}
+[0.644023] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert.py\n'}
+[0.644320] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert_s.c\n'}
+[0.645162] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[0.645922] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[0.646625] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[0.647125] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.idl\n'}
+[0.647560] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.msg\n'}
+[0.648045] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/package_run_dependencies/car_msgs\n'}
+[0.648517] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/parent_prefix_path/car_msgs\n'}
+[0.649012] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.sh\n'}
+[0.649448] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.dsv\n'}
+[0.649990] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.sh\n'}
+[0.650412] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.dsv\n'}
+[0.650808] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.bash\n'}
+[0.651236] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.sh\n'}
+[0.651662] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.zsh\n'}
+[0.652090] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.dsv\n'}
+[0.652428] (car_msgs) StdoutLine: {'line': b'-- Symlinking: /ws/install/car_msgs/share/car_msgs/package.dsv\n'}
+[0.662436] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/packages/car_msgs\n'}
+[0.662918] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[0.663423] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[0.663914] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[0.664387] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[0.664840] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[0.665313] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[0.665806] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[0.666296] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig.cmake\n'}
+[0.666604] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig-version.cmake\n'}
+[0.667155] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/package.xml\n'}
+[0.667790] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so\n'}
+[0.668609] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[0.669317] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so\n'}
+[0.669991] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so\n'}
+[0.670663] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[0.671383] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[0.672057] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so\n'}
+[0.701455] (-) TimerEvent: {}
+[0.717962] (car_msgs) StdoutLine: {'line': b"Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs'...\n"}
+[0.718209] (car_msgs) StdoutLine: {'line': b"Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg'...\n"}
+[0.724897] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so\n'}
+[0.725543] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport.cmake\n'}
+[0.725765] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[0.725997] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[0.726138] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[0.726404] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[0.726538] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[0.726812] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport.cmake\n'}
+[0.726946] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[0.727224] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cppExport.cmake\n'}
+[0.727496] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[0.727614] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[0.727885] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[0.728019] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[0.728276] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[0.728402] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[0.728651] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport.cmake\n'}
+[0.728774] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[0.737668] (car_msgs) CommandEnded: {'returncode': 0}
+[0.774317] (car_msgs) JobEnded: {'identifier': 'car_msgs', 'rc': 0}
+[0.776539] (car_comms) JobStarted: {'identifier': 'car_comms'}
+[0.781535] (car_control) JobStarted: {'identifier': 'car_control'}
+[0.787892] (car_planning) JobStarted: {'identifier': 'car_planning'}
+[0.801466] (-) TimerEvent: {}
+[0.901653] (-) TimerEvent: {}
+[1.001885] (-) TimerEvent: {}
+[1.103321] (-) TimerEvent: {}
+[1.203492] (-) TimerEvent: {}
+[1.303648] (-) TimerEvent: {}
+[1.403804] (-) TimerEvent: {}
+[1.503979] (-) TimerEvent: {}
+[1.604163] (-) TimerEvent: {}
+[1.704396] (-) TimerEvent: {}
+[1.782665] (vision_pkg) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/vision_pkg/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/vision_pkg', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/vision_pkg', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/vision_pkg/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1'}, 'shell': False}
+[1.810307] (-) TimerEvent: {}
+[1.910694] (-) TimerEvent: {}
+[2.011063] (-) TimerEvent: {}
+[2.111431] (-) TimerEvent: {}
+[2.133268] (vision_pkg) StdoutLine: {'line': b'running develop\n'}
+[2.211601] (-) TimerEvent: {}
+[2.276563] (vision_pkg) StdoutLine: {'line': b'running egg_info\n'}
+[2.290870] (vision_pkg) StdoutLine: {'line': b'writing vision_pkg.egg-info/PKG-INFO\n'}
+[2.291569] (vision_pkg) StdoutLine: {'line': b'writing dependency_links to vision_pkg.egg-info/dependency_links.txt\n'}
+[2.294088] (vision_pkg) StdoutLine: {'line': b'writing entry points to vision_pkg.egg-info/entry_points.txt\n'}
+[2.294665] (vision_pkg) StdoutLine: {'line': b'writing requirements to vision_pkg.egg-info/requires.txt\n'}
+[2.296286] (vision_pkg) StdoutLine: {'line': b'writing top-level names to vision_pkg.egg-info/top_level.txt\n'}
+[2.311782] (-) TimerEvent: {}
+[2.335584] (vision_pkg) StdoutLine: {'line': b"reading manifest file 'vision_pkg.egg-info/SOURCES.txt'\n"}
+[2.337506] (vision_pkg) StdoutLine: {'line': b"writing manifest file 'vision_pkg.egg-info/SOURCES.txt'\n"}
+[2.356732] (vision_pkg) StdoutLine: {'line': b'running build_ext\n'}
+[2.357787] (vision_pkg) StdoutLine: {'line': b'Creating /ws/install/vision_pkg/lib/python3.12/site-packages/vision-pkg.egg-link (link to .)\n'}
+[2.362523] (vision_pkg) StdoutLine: {'line': b'Installing lane_detector_node script to /ws/install/vision_pkg/lib/vision_pkg\n'}
+[2.362979] (vision_pkg) StdoutLine: {'line': b'\n'}
+[2.363367] (vision_pkg) StdoutLine: {'line': b'Installed /ws/build/vision_pkg\n'}
+[2.363739] (vision_pkg) StdoutLine: {'line': b'running symlink_data\n'}
+[2.409090] (car_planning) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_planning/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_planning', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_planning', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_planning/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[2.415827] (-) TimerEvent: {}
+[2.454184] (vision_pkg) CommandEnded: {'returncode': 0}
+[2.476892] (vision_pkg) JobEnded: {'identifier': 'vision_pkg', 'rc': 0}
+[2.481020] (car_vision) JobStarted: {'identifier': 'car_vision'}
+[2.515931] (-) TimerEvent: {}
+[2.616117] (-) TimerEvent: {}
+[2.716311] (-) TimerEvent: {}
+[2.816498] (-) TimerEvent: {}
+[2.913676] (car_planning) StdoutLine: {'line': b'running develop\n'}
+[2.916013] (car_control) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_control/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_control', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_control', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_control/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[2.919171] (-) TimerEvent: {}
+[2.935881] (car_planning) StdoutLine: {'line': b'running egg_info\n'}
+[2.950839] (car_planning) StdoutLine: {'line': b'writing car_planning.egg-info/PKG-INFO\n'}
+[2.953199] (car_planning) StdoutLine: {'line': b'writing dependency_links to car_planning.egg-info/dependency_links.txt\n'}
+[2.955417] (car_planning) StdoutLine: {'line': b'writing entry points to car_planning.egg-info/entry_points.txt\n'}
+[2.956638] (car_planning) StdoutLine: {'line': b'writing requirements to car_planning.egg-info/requires.txt\n'}
+[2.957876] (car_planning) StdoutLine: {'line': b'writing top-level names to car_planning.egg-info/top_level.txt\n'}
+[2.985124] (car_planning) StdoutLine: {'line': b"reading manifest file 'car_planning.egg-info/SOURCES.txt'\n"}
+[2.987250] (car_planning) StdoutLine: {'line': b"writing manifest file 'car_planning.egg-info/SOURCES.txt'\n"}
+[3.003763] (car_planning) StdoutLine: {'line': b'running build_ext\n'}
+[3.006170] (car_planning) StdoutLine: {'line': b'Creating /ws/install/car_planning/lib/python3.12/site-packages/car-planning.egg-link (link to .)\n'}
+[3.008864] (car_planning) StdoutLine: {'line': b'Installing decision_maker script to /ws/install/car_planning/lib/car_planning\n'}
+[3.010760] (car_planning) StdoutLine: {'line': b'\n'}
+[3.013113] (car_planning) StdoutLine: {'line': b'Installed /ws/build/car_planning\n'}
+[3.015288] (car_planning) StdoutLine: {'line': b'running symlink_data\n'}
+[3.019517] (-) TimerEvent: {}
+[3.095124] (car_planning) CommandEnded: {'returncode': 0}
+[3.119581] (-) TimerEvent: {}
+[3.120203] (car_planning) JobEnded: {'identifier': 'car_planning', 'rc': 0}
+[3.219672] (-) TimerEvent: {}
+[3.261832] (car_control) StdoutLine: {'line': b'running develop\n'}
+[3.319782] (-) TimerEvent: {}
+[3.401356] (car_comms) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_comms/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_comms', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_comms', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_comms/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[3.414104] (car_control) StdoutLine: {'line': b'running egg_info\n'}
+[3.419886] (-) TimerEvent: {}
+[3.422859] (car_control) StdoutLine: {'line': b'writing car_control.egg-info/PKG-INFO\n'}
+[3.423170] (car_control) StdoutLine: {'line': b'writing dependency_links to car_control.egg-info/dependency_links.txt\n'}
+[3.425069] (car_control) StdoutLine: {'line': b'writing entry points to car_control.egg-info/entry_points.txt\n'}
+[3.429814] (car_control) StdoutLine: {'line': b'writing requirements to car_control.egg-info/requires.txt\n'}
+[3.430005] (car_control) StdoutLine: {'line': b'writing top-level names to car_control.egg-info/top_level.txt\n'}
+[3.481983] (car_control) StdoutLine: {'line': b"reading manifest file 'car_control.egg-info/SOURCES.txt'\n"}
+[3.483017] (car_control) StdoutLine: {'line': b"writing manifest file 'car_control.egg-info/SOURCES.txt'\n"}
+[3.499100] (car_control) StdoutLine: {'line': b'running build_ext\n'}
+[3.499387] (car_control) StdoutLine: {'line': b'Creating /ws/install/car_control/lib/python3.12/site-packages/car-control.egg-link (link to .)\n'}
+[3.500078] (car_control) StdoutLine: {'line': b'Installing v2x_avoidance_node script to /ws/install/car_control/lib/car_control\n'}
+[3.500398] (car_control) StdoutLine: {'line': b'\n'}
+[3.500498] (car_control) StdoutLine: {'line': b'Installed /ws/build/car_control\n'}
+[3.500632] (car_control) StdoutLine: {'line': b'running symlink_data\n'}
+[3.520002] (-) TimerEvent: {}
+[3.581796] (car_control) CommandEnded: {'returncode': 0}
+[3.593525] (car_control) JobEnded: {'identifier': 'car_control', 'rc': 0}
+[3.620098] (-) TimerEvent: {}
+[3.720271] (-) TimerEvent: {}
+[3.727162] (car_vision) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_vision/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_vision', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_vision', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_vision/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[3.728361] (car_comms) StdoutLine: {'line': b'running develop\n'}
+[3.820374] (-) TimerEvent: {}
+[3.867789] (car_comms) StdoutLine: {'line': b'running egg_info\n'}
+[3.880836] (car_comms) StdoutLine: {'line': b'writing car_comms.egg-info/PKG-INFO\n'}
+[3.881368] (car_comms) StdoutLine: {'line': b'writing dependency_links to car_comms.egg-info/dependency_links.txt\n'}
+[3.883162] (car_comms) StdoutLine: {'line': b'writing entry points to car_comms.egg-info/entry_points.txt\n'}
+[3.883786] (car_comms) StdoutLine: {'line': b'writing requirements to car_comms.egg-info/requires.txt\n'}
+[3.884389] (car_comms) StdoutLine: {'line': b'writing top-level names to car_comms.egg-info/top_level.txt\n'}
+[3.912114] (car_comms) StdoutLine: {'line': b"reading manifest file 'car_comms.egg-info/SOURCES.txt'\n"}
+[3.913161] (car_comms) StdoutLine: {'line': b"writing manifest file 'car_comms.egg-info/SOURCES.txt'\n"}
+[3.920452] (-) TimerEvent: {}
+[3.928708] (car_comms) StdoutLine: {'line': b'running build_ext\n'}
+[3.929020] (car_comms) StdoutLine: {'line': b'Creating /ws/install/car_comms/lib/python3.12/site-packages/car-comms.egg-link (link to .)\n'}
+[3.930495] (car_comms) StdoutLine: {'line': b'Installing v2x_alert_bridge script to /ws/install/car_comms/lib/car_comms\n'}
+[3.930766] (car_comms) StdoutLine: {'line': b'\n'}
+[3.930888] (car_comms) StdoutLine: {'line': b'Installed /ws/build/car_comms\n'}
+[3.931019] (car_comms) StdoutLine: {'line': b'running symlink_data\n'}
+[4.006296] (car_comms) CommandEnded: {'returncode': 0}
+[4.016353] (car_comms) JobEnded: {'identifier': 'car_comms', 'rc': 0}
+[4.020522] (-) TimerEvent: {}
+[4.025983] (car_vision) StdoutLine: {'line': b'running develop\n'}
+[4.120614] (-) TimerEvent: {}
+[4.155298] (car_vision) StdoutLine: {'line': b'running egg_info\n'}
+[4.167913] (car_vision) StdoutLine: {'line': b'writing car_vision.egg-info/PKG-INFO\n'}
+[4.168204] (car_vision) StdoutLine: {'line': b'writing dependency_links to car_vision.egg-info/dependency_links.txt\n'}
+[4.169090] (car_vision) StdoutLine: {'line': b'writing requirements to car_vision.egg-info/requires.txt\n'}
+[4.169643] (car_vision) StdoutLine: {'line': b'writing top-level names to car_vision.egg-info/top_level.txt\n'}
+[4.196594] (car_vision) StdoutLine: {'line': b"reading manifest file 'car_vision.egg-info/SOURCES.txt'\n"}
+[4.197564] (car_vision) StdoutLine: {'line': b"writing manifest file 'car_vision.egg-info/SOURCES.txt'\n"}
+[4.212229] (car_vision) StdoutLine: {'line': b'running build_ext\n'}
+[4.212515] (car_vision) StdoutLine: {'line': b'Creating /ws/install/car_vision/lib/python3.12/site-packages/car-vision.egg-link (link to .)\n'}
+[4.213383] (car_vision) StdoutLine: {'line': b'\n'}
+[4.213489] (car_vision) StdoutLine: {'line': b'Installed /ws/build/car_vision\n'}
+[4.217687] (car_vision) StdoutLine: {'line': b'running symlink_data\n'}
+[4.220731] (-) TimerEvent: {}
+[4.279753] (car_vision) CommandEnded: {'returncode': 0}
+[4.290749] (car_vision) JobEnded: {'identifier': 'car_vision', 'rc': 0}
+[4.291563] (-) EventReactorShutdown: {}

@@ -1,0 +1,12 @@
+package.xml
+setup.cfg
+setup.py
+car_vision/__init__.py
+car_vision/lane_detector.py
+car_vision.egg-info/PKG-INFO
+car_vision.egg-info/SOURCES.txt
+car_vision.egg-info/dependency_links.txt
+car_vision.egg-info/requires.txt
+car_vision.egg-info/top_level.txt
+car_vision.egg-info/zip-safe
+resource/car_vision

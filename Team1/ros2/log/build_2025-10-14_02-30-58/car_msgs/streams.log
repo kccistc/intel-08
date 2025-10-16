@@ -1,0 +1,121 @@
+[0.018s] Invoking command in '/ws/build/car_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/ws/install/vision_pkg:/ws/install/car_vision:/ws/install/car_planning:/ws/install/car_control:/ws/install/car_comms:/opt/ros/jazzy /usr/bin/cmake --build /ws/build/car_msgs -- -j4 -l4
+[0.137s] [  0%] Built target ament_cmake_python_symlink_car_msgs
+[0.219s] [  2%] Built target car_msgs__rosidl_generator_type_description
+[0.284s] [  5%] Built target car_msgs__cpp
+[0.338s] [ 20%] Built target car_msgs__rosidl_generator_c
+[0.361s] [ 29%] Built target car_msgs__rosidl_typesupport_cpp
+[0.387s] [ 38%] Built target car_msgs__rosidl_typesupport_fastrtps_c
+[0.401s] [ 47%] Built target car_msgs__rosidl_typesupport_c
+[0.424s] [ 55%] Built target car_msgs__rosidl_typesupport_introspection_c
+[0.425s] [ 64%] Built target car_msgs__rosidl_typesupport_fastrtps_cpp
+[0.474s] running egg_info
+[0.490s] writing car_msgs.egg-info/PKG-INFO
+[0.490s] writing dependency_links to car_msgs.egg-info/dependency_links.txt
+[0.491s] writing top-level names to car_msgs.egg-info/top_level.txt
+[0.534s] reading manifest file 'car_msgs.egg-info/SOURCES.txt'
+[0.534s] writing manifest file 'car_msgs.egg-info/SOURCES.txt'
+[0.593s] [ 67%] Built target ament_cmake_python_build_car_msgs_egg
+[0.593s] [ 73%] Built target car_msgs__rosidl_typesupport_introspection_cpp
+[0.615s] [ 73%] Built target car_msgs
+[0.635s] [ 76%] Built target car_msgs__py
+[0.659s] [ 82%] Built target car_msgs__rosidl_generator_py
+[0.688s] [ 88%] Built target car_msgs_s__rosidl_typesupport_c
+[0.702s] [ 94%] Built target car_msgs_s__rosidl_typesupport_fastrtps_c
+[0.711s] [100%] Built target car_msgs_s__rosidl_typesupport_introspection_c
+[0.721s] Invoked command in '/ws/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/ws/install/vision_pkg:/ws/install/car_vision:/ws/install/car_planning:/ws/install/car_control:/ws/install/car_comms:/opt/ros/jazzy /usr/bin/cmake --build /ws/build/car_msgs -- -j4 -l4
+[0.731s] Invoking command in '/ws/build/car_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/ws/install/vision_pkg:/ws/install/car_vision:/ws/install/car_planning:/ws/install/car_control:/ws/install/car_comms:/opt/ros/jazzy /usr/bin/cmake --install /ws/build/car_msgs
+[0.740s] -- Install configuration: ""
+[0.740s] -- Execute custom install script
+[0.741s] -- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/rosidl_interfaces/car_msgs
+[0.741s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.json
+[0.742s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__functions.h
+[0.742s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.h
+[0.742s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.h
+[0.743s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_c__visibility_control.h
+[0.743s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.h
+[0.743s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.sh
+[0.743s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.dsv
+[0.744s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_c.h
+[0.744s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[0.745s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_c.h
+[0.745s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[0.746s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__builder.hpp
+[0.746s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.hpp
+[0.746s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__traits.hpp
+[0.746s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.hpp
+[0.747s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[0.747s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.hpp
+[0.747s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_cpp.hpp
+[0.747s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_cpp.hpp
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.sh
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.dsv
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/PKG-INFO
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/SOURCES.txt
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/dependency_links.txt
+[0.750s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/top_level.txt
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so
+[0.751s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert.py
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert_s.c
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so
+[0.752s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so
+[0.753s] -- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so
+[0.753s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.idl
+[0.754s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.msg
+[0.754s] -- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/package_run_dependencies/car_msgs
+[0.754s] -- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/parent_prefix_path/car_msgs
+[0.755s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.sh
+[0.755s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.dsv
+[0.755s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.sh
+[0.756s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.dsv
+[0.756s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.bash
+[0.756s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.sh
+[0.756s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.zsh
+[0.757s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.dsv
+[0.757s] -- Symlinking: /ws/install/car_msgs/share/car_msgs/package.dsv
+[0.767s] -- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/packages/car_msgs
+[0.767s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake-extras.cmake
+[0.768s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[0.768s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[0.769s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[0.769s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[0.769s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[0.769s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[0.770s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig.cmake
+[0.770s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig-version.cmake
+[0.770s] -- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/package.xml
+[0.770s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so
+[0.771s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so
+[0.771s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so
+[0.772s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so
+[0.772s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so
+[0.773s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so
+[0.773s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so
+[0.820s] Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs'...
+[0.820s] Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg'...
+[0.831s] -- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so
+[0.831s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport.cmake
+[0.831s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport-noconfig.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cppExport.cmake
+[0.832s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport.cmake
+[0.833s] -- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport-noconfig.cmake
+[0.835s] Invoked command in '/ws/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/ws/install/vision_pkg:/ws/install/car_vision:/ws/install/car_planning:/ws/install/car_control:/ws/install/car_comms:/opt/ros/jazzy /usr/bin/cmake --install /ws/build/car_msgs

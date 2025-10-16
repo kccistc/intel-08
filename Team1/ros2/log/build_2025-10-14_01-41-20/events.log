@@ -1,0 +1,271 @@
+[0.000000] (-) TimerEvent: {}
+[0.003971] (car_msgs) JobQueued: {'identifier': 'car_msgs', 'dependencies': OrderedDict()}
+[0.004037] (vision_pkg) JobQueued: {'identifier': 'vision_pkg', 'dependencies': OrderedDict()}
+[0.004059] (car_comms) JobQueued: {'identifier': 'car_comms', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.004082] (car_control) JobQueued: {'identifier': 'car_control', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.004100] (car_planning) JobQueued: {'identifier': 'car_planning', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.004117] (car_vision) JobQueued: {'identifier': 'car_vision', 'dependencies': OrderedDict({'car_msgs': '/ws/install/car_msgs'})}
+[0.004134] (car_msgs) JobStarted: {'identifier': 'car_msgs'}
+[0.008320] (vision_pkg) JobStarted: {'identifier': 'vision_pkg'}
+[0.017094] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'cmake'}
+[0.017858] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'build'}
+[0.018529] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/ws/build/car_msgs', '--', '-j4', '-l4'], 'cwd': '/ws/build/car_msgs', 'env': OrderedDict({'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_msgs', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy'}), 'shell': False}
+[0.094036] (car_msgs) StdoutLine: {'line': b'[  2%] Built target car_msgs__rosidl_generator_type_description\n'}
+[0.100351] (-) TimerEvent: {}
+[0.103495] (car_msgs) StdoutLine: {'line': b'[  2%] Built target ament_cmake_python_symlink_car_msgs\n'}
+[0.126816] (car_msgs) StdoutLine: {'line': b'[ 11%] Built target car_msgs__cpp\n'}
+[0.127185] (car_msgs) StdoutLine: {'line': b'[ 20%] Built target car_msgs__rosidl_generator_c\n'}
+[0.154094] (car_msgs) StdoutLine: {'line': b'[ 29%] Built target car_msgs__rosidl_typesupport_introspection_c\n'}
+[0.169719] (car_msgs) StdoutLine: {'line': b'[ 38%] Built target car_msgs__rosidl_typesupport_c\n'}
+[0.193436] (car_msgs) StdoutLine: {'line': b'[ 47%] Built target car_msgs__rosidl_typesupport_fastrtps_c\n'}
+[0.200402] (car_msgs) StdoutLine: {'line': b'[ 55%] Built target car_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[0.200637] (-) TimerEvent: {}
+[0.231487] (car_msgs) StdoutLine: {'line': b'[ 67%] Built target car_msgs__rosidl_typesupport_introspection_cpp\n'}
+[0.231782] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs__rosidl_typesupport_cpp\n'}
+[0.251881] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs\n'}
+[0.272439] (car_msgs) StdoutLine: {'line': b'[ 76%] Built target car_msgs__py\n'}
+[0.295709] (car_msgs) StdoutLine: {'line': b'[ 82%] Built target car_msgs__rosidl_generator_py\n'}
+[0.301838] (-) TimerEvent: {}
+[0.324164] (car_msgs) StdoutLine: {'line': b'[ 88%] Built target car_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[0.331065] (car_msgs) StdoutLine: {'line': b'[ 94%] Built target car_msgs_s__rosidl_typesupport_c\n'}
+[0.348679] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_introspection_c\n'}
+[0.403977] (-) TimerEvent: {}
+[0.504285] (-) TimerEvent: {}
+[0.550890] (car_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[0.565872] (car_msgs) StdoutLine: {'line': b'writing car_msgs.egg-info/PKG-INFO\n'}
+[0.566206] (car_msgs) StdoutLine: {'line': b'writing dependency_links to car_msgs.egg-info/dependency_links.txt\n'}
+[0.566920] (car_msgs) StdoutLine: {'line': b'writing top-level names to car_msgs.egg-info/top_level.txt\n'}
+[0.604369] (-) TimerEvent: {}
+[0.607519] (car_msgs) StdoutLine: {'line': b"reading manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[0.608299] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[0.695091] (car_msgs) StdoutLine: {'line': b'[100%] Built target ament_cmake_python_build_car_msgs_egg\n'}
+[0.704537] (-) TimerEvent: {}
+[0.724904] (car_msgs) CommandEnded: {'returncode': 0}
+[0.725931] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'install'}
+[0.748831] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/ws/build/car_msgs'], 'cwd': '/ws/build/car_msgs', 'env': OrderedDict({'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_msgs', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy'}), 'shell': False}
+[0.757203] (car_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[0.757811] (car_msgs) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[0.758106] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/rosidl_interfaces/car_msgs\n'}
+[0.758358] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.json\n'}
+[0.758679] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__functions.h\n'}
+[0.758952] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.h\n'}
+[0.759230] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.h\n'}
+[0.759449] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[0.759662] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.h\n'}
+[0.759819] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.sh\n'}
+[0.762719] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/library_path.dsv\n'}
+[0.768095] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_c.h\n'}
+[0.775349] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[0.780954] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_c.h\n'}
+[0.788474] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[0.793962] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__builder.hpp\n'}
+[0.799032] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.hpp\n'}
+[0.806358] (-) TimerEvent: {}
+[0.810745] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__traits.hpp\n'}
+[0.816010] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.hpp\n'}
+[0.816179] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[0.816271] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.hpp\n'}
+[0.816351] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[0.816429] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[0.816504] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_cpp.hpp\n'}
+[0.816578] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.sh\n'}
+[0.816653] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/pythonpath.dsv\n'}
+[0.816732] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/PKG-INFO\n'}
+[0.816805] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/SOURCES.txt\n'}
+[0.816878] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/dependency_links.txt\n'}
+[0.816957] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/top_level.txt\n'}
+[0.817030] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py\n'}
+[0.817104] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[0.817180] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[0.817254] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[0.817323] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[0.817393] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[0.817461] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[0.817529] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py\n'}
+[0.817597] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert.py\n'}
+[0.817668] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert_s.c\n'}
+[0.817738] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[0.817806] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[0.817874] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[0.817943] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.idl\n'}
+[0.818010] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/msg/V2VAlert.msg\n'}
+[0.818081] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/package_run_dependencies/car_msgs\n'}
+[0.818150] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/parent_prefix_path/car_msgs\n'}
+[0.818219] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.sh\n'}
+[0.818303] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/ament_prefix_path.dsv\n'}
+[0.818375] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.sh\n'}
+[0.818450] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/environment/path.dsv\n'}
+[0.818519] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.bash\n'}
+[0.818588] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.sh\n'}
+[0.818658] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.zsh\n'}
+[0.818730] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/local_setup.dsv\n'}
+[0.818800] (car_msgs) StdoutLine: {'line': b'-- Symlinking: /ws/install/car_msgs/share/car_msgs/package.dsv\n'}
+[0.818870] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/ament_index/resource_index/packages/car_msgs\n'}
+[0.818939] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[0.819009] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[0.819078] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[0.819147] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[0.819215] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[0.819284] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[0.819352] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[0.819421] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig.cmake\n'}
+[0.819489] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/cmake/car_msgsConfig-version.cmake\n'}
+[0.819558] (car_msgs) StdoutLine: {'line': b'-- Up-to-date symlink: /ws/install/car_msgs/share/car_msgs/package.xml\n'}
+[0.819625] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so\n'}
+[0.819695] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[0.819769] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so\n'}
+[0.819840] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so\n'}
+[0.819980] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[0.820070] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[0.820142] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so\n'}
+[0.822168] (car_msgs) StdoutLine: {'line': b"Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs'...\n"}
+[0.822298] (car_msgs) StdoutLine: {'line': b"Listing '/ws/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg'...\n"}
+[0.832331] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so\n'}
+[0.832515] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport.cmake\n'}
+[0.832862] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[0.832990] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[0.833292] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[0.833404] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[0.833682] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[0.833785] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport.cmake\n'}
+[0.834165] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[0.834267] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cppExport.cmake\n'}
+[0.834340] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[0.834664] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[0.834764] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[0.834837] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[0.835201] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[0.835300] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[0.835373] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport.cmake\n'}
+[0.835936] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /ws/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[0.838538] (car_msgs) CommandEnded: {'returncode': 0}
+[0.870497] (car_msgs) JobEnded: {'identifier': 'car_msgs', 'rc': 0}
+[0.871953] (car_comms) JobStarted: {'identifier': 'car_comms'}
+[0.877014] (car_control) JobStarted: {'identifier': 'car_control'}
+[0.883325] (car_planning) JobStarted: {'identifier': 'car_planning'}
+[0.906212] (-) TimerEvent: {}
+[1.008079] (-) TimerEvent: {}
+[1.108540] (-) TimerEvent: {}
+[1.208931] (-) TimerEvent: {}
+[1.309314] (-) TimerEvent: {}
+[1.409713] (-) TimerEvent: {}
+[1.510385] (-) TimerEvent: {}
+[1.611204] (-) TimerEvent: {}
+[1.616148] (vision_pkg) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/vision_pkg/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/vision_pkg', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/vision_pkg', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/vision_pkg/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1'}, 'shell': False}
+[1.711321] (-) TimerEvent: {}
+[1.815954] (-) TimerEvent: {}
+[1.916632] (-) TimerEvent: {}
+[1.946556] (vision_pkg) StdoutLine: {'line': b'running develop\n'}
+[2.016723] (-) TimerEvent: {}
+[2.117409] (-) TimerEvent: {}
+[2.217949] (-) TimerEvent: {}
+[2.232393] (car_control) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_control/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_control', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_control', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_control/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[2.237952] (car_comms) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_comms/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_comms', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_comms', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_comms/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[2.245075] (vision_pkg) StdoutLine: {'line': b'running egg_info\n'}
+[2.288451] (vision_pkg) StdoutLine: {'line': b'writing vision_pkg.egg-info/PKG-INFO\n'}
+[2.289406] (vision_pkg) StdoutLine: {'line': b'writing dependency_links to vision_pkg.egg-info/dependency_links.txt\n'}
+[2.291473] (vision_pkg) StdoutLine: {'line': b'writing entry points to vision_pkg.egg-info/entry_points.txt\n'}
+[2.292158] (vision_pkg) StdoutLine: {'line': b'writing requirements to vision_pkg.egg-info/requires.txt\n'}
+[2.292734] (vision_pkg) StdoutLine: {'line': b'writing top-level names to vision_pkg.egg-info/top_level.txt\n'}
+[2.318048] (-) TimerEvent: {}
+[2.361574] (vision_pkg) StdoutLine: {'line': b"reading manifest file 'vision_pkg.egg-info/SOURCES.txt'\n"}
+[2.363264] (vision_pkg) StdoutLine: {'line': b"writing manifest file 'vision_pkg.egg-info/SOURCES.txt'\n"}
+[2.380359] (vision_pkg) StdoutLine: {'line': b'running build_ext\n'}
+[2.382102] (vision_pkg) StdoutLine: {'line': b'Creating /ws/install/vision_pkg/lib/python3.12/site-packages/vision-pkg.egg-link (link to .)\n'}
+[2.384052] (vision_pkg) StdoutLine: {'line': b'Installing lane_detector_node script to /ws/install/vision_pkg/lib/vision_pkg\n'}
+[2.386274] (vision_pkg) StdoutLine: {'line': b'\n'}
+[2.388859] (vision_pkg) StdoutLine: {'line': b'Installed /ws/build/vision_pkg\n'}
+[2.391021] (vision_pkg) StdoutLine: {'line': b'running symlink_data\n'}
+[2.418418] (-) TimerEvent: {}
+[2.469594] (vision_pkg) CommandEnded: {'returncode': 0}
+[2.489011] (vision_pkg) JobEnded: {'identifier': 'vision_pkg', 'rc': 0}
+[2.494935] (car_vision) JobStarted: {'identifier': 'car_vision'}
+[2.518508] (-) TimerEvent: {}
+[2.603645] (car_control) StdoutLine: {'line': b'running develop\n'}
+[2.618812] (-) TimerEvent: {}
+[2.669182] (car_comms) StdoutLine: {'line': b'running develop\n'}
+[2.718900] (-) TimerEvent: {}
+[2.749825] (car_control) StdoutLine: {'line': b'running egg_info\n'}
+[2.763542] (car_control) StdoutLine: {'line': b'writing car_control.egg-info/PKG-INFO\n'}
+[2.764936] (car_control) StdoutLine: {'line': b'writing dependency_links to car_control.egg-info/dependency_links.txt\n'}
+[2.766041] (car_control) StdoutLine: {'line': b'writing entry points to car_control.egg-info/entry_points.txt\n'}
+[2.767075] (car_control) StdoutLine: {'line': b'writing requirements to car_control.egg-info/requires.txt\n'}
+[2.768161] (car_control) StdoutLine: {'line': b'writing top-level names to car_control.egg-info/top_level.txt\n'}
+[2.799080] (car_control) StdoutLine: {'line': b"reading manifest file 'car_control.egg-info/SOURCES.txt'\n"}
+[2.800663] (car_control) StdoutLine: {'line': b"writing manifest file 'car_control.egg-info/SOURCES.txt'\n"}
+[2.817394] (car_control) StdoutLine: {'line': b'running build_ext\n'}
+[2.819040] (-) TimerEvent: {}
+[2.821567] (car_control) StdoutLine: {'line': b'Creating /ws/install/car_control/lib/python3.12/site-packages/car-control.egg-link (link to .)\n'}
+[2.825051] (car_comms) StdoutLine: {'line': b'running egg_info\n'}
+[2.827249] (car_control) StdoutLine: {'line': b'Installing v2x_avoidance_node script to /ws/install/car_control/lib/car_control\n'}
+[2.829272] (car_control) StdoutLine: {'line': b'\n'}
+[2.831818] (car_control) StdoutLine: {'line': b'Installed /ws/build/car_control\n'}
+[2.833505] (car_control) StdoutLine: {'line': b'running symlink_data\n'}
+[2.838273] (car_comms) StdoutLine: {'line': b'writing car_comms.egg-info/PKG-INFO\n'}
+[2.838930] (car_comms) StdoutLine: {'line': b'writing dependency_links to car_comms.egg-info/dependency_links.txt\n'}
+[2.840289] (car_comms) StdoutLine: {'line': b'writing entry points to car_comms.egg-info/entry_points.txt\n'}
+[2.840866] (car_comms) StdoutLine: {'line': b'writing requirements to car_comms.egg-info/requires.txt\n'}
+[2.842387] (car_comms) StdoutLine: {'line': b'writing top-level names to car_comms.egg-info/top_level.txt\n'}
+[2.878931] (car_comms) StdoutLine: {'line': b"reading manifest file 'car_comms.egg-info/SOURCES.txt'\n"}
+[2.880403] (car_comms) StdoutLine: {'line': b"writing manifest file 'car_comms.egg-info/SOURCES.txt'\n"}
+[2.899296] (car_comms) StdoutLine: {'line': b'running build_ext\n'}
+[2.900660] (car_comms) StdoutLine: {'line': b'Creating /ws/install/car_comms/lib/python3.12/site-packages/car-comms.egg-link (link to .)\n'}
+[2.902870] (car_comms) StdoutLine: {'line': b'Installing v2x_alert_bridge script to /ws/install/car_comms/lib/car_comms\n'}
+[2.904306] (car_comms) StdoutLine: {'line': b'\n'}
+[2.905659] (car_comms) StdoutLine: {'line': b'Installed /ws/build/car_comms\n'}
+[2.906728] (car_comms) StdoutLine: {'line': b'running symlink_data\n'}
+[2.919188] (-) TimerEvent: {}
+[3.010834] (car_comms) CommandEnded: {'returncode': 0}
+[3.019365] (-) TimerEvent: {}
+[3.022490] (car_comms) JobEnded: {'identifier': 'car_comms', 'rc': 0}
+[3.023972] (car_control) CommandEnded: {'returncode': 0}
+[3.035079] (car_control) JobEnded: {'identifier': 'car_control', 'rc': 0}
+[3.119466] (-) TimerEvent: {}
+[3.219826] (-) TimerEvent: {}
+[3.313160] (car_planning) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_planning/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_planning', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_planning', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_planning/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[3.319978] (-) TimerEvent: {}
+[3.420953] (-) TimerEvent: {}
+[3.521253] (-) TimerEvent: {}
+[3.606445] (car_planning) StdoutLine: {'line': b'running develop\n'}
+[3.621330] (-) TimerEvent: {}
+[3.721637] (-) TimerEvent: {}
+[3.743516] (car_planning) StdoutLine: {'line': b'running egg_info\n'}
+[3.756668] (car_planning) StdoutLine: {'line': b'writing car_planning.egg-info/PKG-INFO\n'}
+[3.757068] (car_planning) StdoutLine: {'line': b'writing dependency_links to car_planning.egg-info/dependency_links.txt\n'}
+[3.758857] (car_planning) StdoutLine: {'line': b'writing entry points to car_planning.egg-info/entry_points.txt\n'}
+[3.760067] (car_planning) StdoutLine: {'line': b'writing requirements to car_planning.egg-info/requires.txt\n'}
+[3.760691] (car_planning) StdoutLine: {'line': b'writing top-level names to car_planning.egg-info/top_level.txt\n'}
+[3.789755] (car_planning) StdoutLine: {'line': b"reading manifest file 'car_planning.egg-info/SOURCES.txt'\n"}
+[3.790699] (car_planning) StdoutLine: {'line': b"writing manifest file 'car_planning.egg-info/SOURCES.txt'\n"}
+[3.806577] (car_planning) StdoutLine: {'line': b'running build_ext\n'}
+[3.806792] (car_planning) StdoutLine: {'line': b'Creating /ws/install/car_planning/lib/python3.12/site-packages/car-planning.egg-link (link to .)\n'}
+[3.807673] (car_planning) StdoutLine: {'line': b'Installing decision_maker script to /ws/install/car_planning/lib/car_planning\n'}
+[3.808069] (car_planning) StdoutLine: {'line': b'\n'}
+[3.808187] (car_planning) StdoutLine: {'line': b'Installed /ws/build/car_planning\n'}
+[3.808286] (car_planning) StdoutLine: {'line': b'running symlink_data\n'}
+[3.821747] (-) TimerEvent: {}
+[3.894162] (car_planning) CommandEnded: {'returncode': 0}
+[3.906239] (car_planning) JobEnded: {'identifier': 'car_planning', 'rc': 0}
+[3.913967] (car_vision) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/ws/build/car_vision/build', '--no-deps', 'symlink_data'], 'cwd': '/ws/build/car_vision', 'env': {'HOSTNAME': 'pi03', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/ws/install/car_msgs/lib:/opt/ros/jazzy/lib/aarch64-linux-gnu:/opt/ros/jazzy/lib', 'HOME': '/root', 'ROS_PYTHON_VERSION': '3', 'ROS_DISTRO': 'jazzy', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'ROS_DOMAIN_ID': '10', 'AMENT_PREFIX_PATH': '/ws/install/car_msgs:/opt/ros/jazzy', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/ws/build/car_vision', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ws/build/car_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_vision/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/ws/install/car_msgs'}, 'shell': False}
+[3.921821] (-) TimerEvent: {}
+[4.022077] (-) TimerEvent: {}
+[4.122387] (-) TimerEvent: {}
+[4.196853] (car_vision) StdoutLine: {'line': b'running develop\n'}
+[4.222466] (-) TimerEvent: {}
+[4.322716] (-) TimerEvent: {}
+[4.326671] (car_vision) StdoutLine: {'line': b'running egg_info\n'}
+[4.339305] (car_vision) StdoutLine: {'line': b'writing car_vision.egg-info/PKG-INFO\n'}
+[4.339634] (car_vision) StdoutLine: {'line': b'writing dependency_links to car_vision.egg-info/dependency_links.txt\n'}
+[4.341424] (car_vision) StdoutLine: {'line': b'writing requirements to car_vision.egg-info/requires.txt\n'}
+[4.341970] (car_vision) StdoutLine: {'line': b'writing top-level names to car_vision.egg-info/top_level.txt\n'}
+[4.369687] (car_vision) StdoutLine: {'line': b"reading manifest file 'car_vision.egg-info/SOURCES.txt'\n"}
+[4.370431] (car_vision) StdoutLine: {'line': b"writing manifest file 'car_vision.egg-info/SOURCES.txt'\n"}
+[4.386165] (car_vision) StdoutLine: {'line': b'running build_ext\n'}
+[4.386581] (car_vision) StdoutLine: {'line': b'Creating /ws/install/car_vision/lib/python3.12/site-packages/car-vision.egg-link (link to .)\n'}
+[4.386951] (car_vision) StdoutLine: {'line': b'\n'}
+[4.387204] (car_vision) StdoutLine: {'line': b'Installed /ws/build/car_vision\n'}
+[4.388120] (car_vision) StdoutLine: {'line': b'running symlink_data\n'}
+[4.422855] (-) TimerEvent: {}
+[4.454131] (car_vision) CommandEnded: {'returncode': 0}
+[4.465392] (car_vision) JobEnded: {'identifier': 'car_vision', 'rc': 0}
+[4.467213] (-) EventReactorShutdown: {}

@@ -1,0 +1,17 @@
+[2.131s] Invoking command in '/ws/build/vision_pkg': PYTHONPATH=/ws/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/vision_pkg/build --no-deps symlink_data
+[2.822s] running develop
+[2.980s] running egg_info
+[2.992s] writing vision_pkg.egg-info/PKG-INFO
+[2.992s] writing dependency_links to vision_pkg.egg-info/dependency_links.txt
+[2.994s] writing entry points to vision_pkg.egg-info/entry_points.txt
+[2.995s] writing requirements to vision_pkg.egg-info/requires.txt
+[2.996s] writing top-level names to vision_pkg.egg-info/top_level.txt
+[3.029s] reading manifest file 'vision_pkg.egg-info/SOURCES.txt'
+[3.030s] writing manifest file 'vision_pkg.egg-info/SOURCES.txt'
+[3.048s] running build_ext
+[3.052s] Creating /ws/install/vision_pkg/lib/python3.12/site-packages/vision-pkg.egg-link (link to .)
+[3.052s] Installing lane_detector_node script to /ws/install/vision_pkg/lib/vision_pkg
+[3.052s] 
+[3.052s] Installed /ws/build/vision_pkg
+[3.052s] running symlink_data
+[3.161s] Invoked command in '/ws/build/vision_pkg' returned '0': PYTHONPATH=/ws/build/vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/vision_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/vision_pkg/build --no-deps symlink_data

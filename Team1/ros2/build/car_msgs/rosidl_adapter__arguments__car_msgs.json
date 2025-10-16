@@ -1,0 +1,6 @@
+{
+  "package_name": "car_msgs",
+  "non_idl_tuples": [
+    "/ws/src/car_msgs:msg/V2VAlert.msg"
+  ]
+}

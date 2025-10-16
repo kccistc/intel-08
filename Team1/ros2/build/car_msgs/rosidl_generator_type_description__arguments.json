@@ -1,0 +1,10 @@
+{
+  "package_name": "car_msgs",
+  "output_dir": "/ws/build/car_msgs/rosidl_generator_type_description/car_msgs",
+  "idl_tuples": [
+    "/ws/build/car_msgs/rosidl_adapter/car_msgs:msg/V2VAlert.idl"
+  ],
+  "include_paths": [
+    "builtin_interfaces:/opt/ros/jazzy/share/builtin_interfaces"
+  ]
+}

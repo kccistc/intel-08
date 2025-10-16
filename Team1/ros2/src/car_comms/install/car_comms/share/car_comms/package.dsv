@@ -1,0 +1,6 @@
+source;share/car_comms/hook/pythonpath.ps1
+source;share/car_comms/hook/pythonpath.dsv
+source;share/car_comms/hook/pythonpath.sh
+source;../../build/car_comms/share/car_comms/hook/pythonpath_develop.ps1
+source;../../build/car_comms/share/car_comms/hook/pythonpath_develop.dsv
+source;../../build/car_comms/share/car_comms/hook/pythonpath_develop.sh

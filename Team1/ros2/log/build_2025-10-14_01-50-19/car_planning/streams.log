@@ -1,0 +1,17 @@
+[0.810s] Invoking command in '/ws/build/car_planning': PYTHONPATH=/ws/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_planning/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/ws/build/vision_pkg:/ws/install/vision_pkg/lib/python3.12/site-packages:/ws/build/car_vision:/ws/install/car_vision/lib/python3.12/site-packages:/ws/build/car_planning:/ws/install/car_planning/lib/python3.12/site-packages:/ws/build/car_control:/ws/install/car_control/lib/python3.12/site-packages:/ws/build/car_comms:/ws/install/car_comms/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/car_planning/build --no-deps symlink_data
+[1.106s] running develop
+[1.242s] running egg_info
+[1.255s] writing car_planning.egg-info/PKG-INFO
+[1.256s] writing dependency_links to car_planning.egg-info/dependency_links.txt
+[1.257s] writing entry points to car_planning.egg-info/entry_points.txt
+[1.258s] writing requirements to car_planning.egg-info/requires.txt
+[1.259s] writing top-level names to car_planning.egg-info/top_level.txt
+[1.287s] reading manifest file 'car_planning.egg-info/SOURCES.txt'
+[1.287s] writing manifest file 'car_planning.egg-info/SOURCES.txt'
+[1.303s] running build_ext
+[1.303s] Creating /ws/install/car_planning/lib/python3.12/site-packages/car-planning.egg-link (link to .)
+[1.303s] Installing decision_maker script to /ws/install/car_planning/lib/car_planning
+[1.304s] 
+[1.304s] Installed /ws/build/car_planning
+[1.304s] running symlink_data
+[1.371s] Invoked command in '/ws/build/car_planning' returned '0': PYTHONPATH=/ws/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_planning/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:/ws/build/vision_pkg:/ws/install/vision_pkg/lib/python3.12/site-packages:/ws/build/car_vision:/ws/install/car_vision/lib/python3.12/site-packages:/ws/build/car_planning:/ws/install/car_planning/lib/python3.12/site-packages:/ws/build/car_control:/ws/install/car_control/lib/python3.12/site-packages:/ws/build/car_comms:/ws/install/car_comms/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/car_planning/build --no-deps symlink_data

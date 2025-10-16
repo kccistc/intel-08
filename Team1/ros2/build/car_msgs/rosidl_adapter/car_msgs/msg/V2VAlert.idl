@@ -1,0 +1,43 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from car_msgs/msg/V2VAlert.msg
+// generated code does not contain a copyright notice
+
+#include "builtin_interfaces/msg/Time.idl"
+
+module car_msgs {
+  module msg {
+    struct V2VAlert {
+      uint32 ver;
+
+      string src;
+
+      uint32 seq;
+
+      @verbatim (language="comment", text=
+        "수신/발행 시각(또는 원본 ts 변환)")
+      builtin_interfaces::msg::Time ts;
+
+      @verbatim (language="comment", text=
+        "\"collision\", \"fire\", ...")
+      string type;
+
+      @verbatim (language="comment", text=
+        "\"low\"|\"medium\"|\"high\"")
+      string severity;
+
+      float distance_m;
+
+      string road;
+
+      double lat;
+
+      double lon;
+
+      @verbatim (language="comment", text=
+        "\"slow_down\"|\"stop\"|\"reroute\"|...")
+      string suggest;
+
+      float ttl_s;
+    };
+  };
+};

@@ -1,0 +1,5 @@
+[console_scripts]
+bt_cmd_bridge = car_control.bt_cmd_bridge:main
+carla_event_bridge = car_control.carla_event_bridge:main
+dummy_carla_collision_pub = car_control.dummy_carla_collision_pub:main
+v2x_avoidance_node = car_control.v2x_avoidance_node:main
