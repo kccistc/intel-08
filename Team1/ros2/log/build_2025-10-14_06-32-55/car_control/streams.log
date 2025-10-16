@@ -1,0 +1,17 @@
+[1.401s] Invoking command in '/ws/build/car_control': AMENT_PREFIX_PATH=/ws/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/ws/install/car_msgs LD_LIBRARY_PATH=/ws/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/ws/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_control/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/car_control/build --no-deps symlink_data
+[1.792s] running develop
+[1.937s] running egg_info
+[1.953s] writing car_control.egg-info/PKG-INFO
+[1.953s] writing dependency_links to car_control.egg-info/dependency_links.txt
+[1.954s] writing entry points to car_control.egg-info/entry_points.txt
+[1.954s] writing requirements to car_control.egg-info/requires.txt
+[1.954s] writing top-level names to car_control.egg-info/top_level.txt
+[1.990s] reading manifest file 'car_control.egg-info/SOURCES.txt'
+[1.990s] writing manifest file 'car_control.egg-info/SOURCES.txt'
+[2.005s] running build_ext
+[2.005s] Creating /ws/install/car_control/lib/python3.12/site-packages/car-control.egg-link (link to .)
+[2.006s] Installing v2x_avoidance_node script to /ws/install/car_control/lib/car_control
+[2.007s] 
+[2.007s] Installed /ws/build/car_control
+[2.007s] running symlink_data
+[2.095s] Invoked command in '/ws/build/car_control' returned '0': AMENT_PREFIX_PATH=/ws/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/ws/install/car_msgs LD_LIBRARY_PATH=/ws/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/ws/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ws/install/car_control/lib/python3.12/site-packages:/ws/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ws/build/car_control/build --no-deps symlink_data

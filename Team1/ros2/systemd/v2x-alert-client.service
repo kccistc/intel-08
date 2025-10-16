@@ -1,0 +1,17 @@
+[Unit]
+Description=V2X Alert Client (Vehicle)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WatchdogSec=30s
+Restart=always
+RestartSec=2
+EnvironmentFile=<V2X_DIR>/.env
+EnvironmentFile=<V2X_DIR>/client.env
+WorkingDirectory=<V2X_DIR>
+ExecStart=<PYTHON_BIN> -u <V2X_DIR>/client.py --hmac-key ${V2X_KEY] --mcast ${MCAST} --port ${PORT} --log ${LOG} --beep
+
+
+[Install]
+WantedBy=multi-user.target

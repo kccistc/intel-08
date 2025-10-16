@@ -1,0 +1,2 @@
+[console_scripts]
+decision_maker = car_planning.decision_maker:main

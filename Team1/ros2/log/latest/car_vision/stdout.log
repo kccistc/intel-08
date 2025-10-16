@@ -1,0 +1,13 @@
+running develop
+running egg_info
+writing car_vision.egg-info/PKG-INFO
+writing dependency_links to car_vision.egg-info/dependency_links.txt
+writing requirements to car_vision.egg-info/requires.txt
+writing top-level names to car_vision.egg-info/top_level.txt
+reading manifest file 'car_vision.egg-info/SOURCES.txt'
+writing manifest file 'car_vision.egg-info/SOURCES.txt'
+running build_ext
+Creating /ws/install/car_vision/lib/python3.12/site-packages/car-vision.egg-link (link to .)
+
+Installed /ws/build/car_vision
+running symlink_data
