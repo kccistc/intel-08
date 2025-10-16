@@ -22,5 +22,8 @@ setup(
     license='Apache-2.0',
     entry_points={'console_scripts': [
         'v2x_avoidance_node = car_control.v2x_avoidance_node:main',
+        'carla_event_bridge = car_control.carla_event_bridge:main',
+        'dummy_carla_collision_pub = car_control.dummy_carla_collision_pub:main',
+        'bt_cmd_bridge = car_control.bt_cmd_bridge:main',
     ]},
 )
