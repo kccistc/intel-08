@@ -1,23 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-통합 앱: Dual Camera GUI (Tkinter) + ONNXRuntime Det/Seg 파이프라인(오버레이 표시)
-- CAM1: stain%가 31~100%이고 포토센서1 감지되면 액츄에이터1 동작 (완전오염 전용)
-- CAM2: stain%가 1~30%  이고 포토센서2 감지되면 액츄에이터2 동작 (30%오염 전용)
-- stain%가 0%이면 동작 없음
-- 화면에는 마스크/박스/원/비율 텍스트를 표시
-- 시작 시 컨베이어(릴레이6)만 1회 OFF(정지)로 초기화. 이후 사용자가 켜면 유지.
-- 활성 모델(M1/M2)에 따라 카운트/DB가 귀속됨(카메라 역할은 고정)
-
-모델 기본경로(환경변수로 변경 가능):
-  DET_MODEL=~/dong/replace_detect.onnx
-  SEG_MODEL=~/dong/replace_seg.onnx
-또는 모델 분리:
-  DET_MODEL_M1, SEG_MODEL_M1 / DET_MODEL_M2, SEG_MODEL_M2
-"""
-
-import os, sys, time, warnings, threading
+import os, sys, time, warnings, threading, queue
 from datetime import datetime, timedelta
 
 # iotdemo 경로 우선 추가 (사용자 제공 위치)
@@ -98,10 +82,19 @@ def _label_badge(img, x, y, text, bg, fg=WHITE):
     _rounded_rect(img,(bx1,by1),(bx2,by2),bg,2,r)
     cv2.putText(img, text, (bx1+pad+r//2, by2-pad), font, scale, fg, thick, cv2.LINE_AA)
 
+# [PATCH] 좌측 상단에 멀티라인 텍스트를 그려주는 헬퍼
+def put_lines_top_left(img, lines, colors=None, x=12, y0=22, dy=20):
+    """lines: ['text1','text2',...]  colors: [(b,g,r), ...] 또는 None"""
+    font = cv2.FONT_HERSHEY_SIMPLEX; scale=0.55; thick=2
+    for i, text in enumerate(lines):
+        y = y0 + i * dy
+        color = (colors[i] if (colors and i < len(colors)) else (255,255,255))
+        cv2.putText(img, str(text), (x, y), font, scale, color, thick, cv2.LINE_AA)
+
 def draw_box(frame, x1,y1,x2,y2, score, cls, labels, color=PINK):
+    # [PATCH] 박스만 그리고, 텍스트 라벨은 표시하지 않음
     _rounded_rect(frame, (x1,y1), (x2,y2), color, 2, r=8)
-    name = labels[int(cls)] if 0 <= int(cls) < len(labels) else str(int(cls))
-    _label_badge(frame, x1, y1, f"{name} {int(score*100+0.5)}%", bg=color, fg=WHITE)
+
 
 def draw_seg_on_roi(roi_bgr, mask_uint8, labels, *, sticker_cid=1, stain_cid=2):
     h,w = mask_uint8.shape
@@ -134,6 +127,30 @@ def draw_seg_on_roi(roi_bgr, mask_uint8, labels, *, sticker_cid=1, stain_cid=2):
                 cv2.rectangle(out,(bx1,by1),(bx2,by2),style["badge"],-1)
                 cv2.putText(out, name, (bx1+pad, by2-pad), font, scale, WHITE, 1, cv2.LINE_AA)
     return out
+
+# ---------- Gate & geometry helpers (추가) ----------
+def rect_from_ratio(W, H, wr, hr):
+    bw, bh = int(W*wr), int(H*hr)
+    cx0, cy0 = W//2, H//2
+    return (cx0 - bw//2, cy0 - bh//2, bw, bh)
+
+def rect_from_pct(W, H, L, T, R, B):
+    x1 = int(np.clip(L, 0, 1) * W)
+    y1 = int(np.clip(T, 0, 1) * H)
+    x2 = int(np.clip(R, 0, 1) * W)
+    y2 = int(np.clip(B, 0, 1) * H)
+    if x2 < x1: x1, x2 = x2, x1
+    if y2 < y1: y1, y2 = y2, y1
+    return (x1, y1, x2 - x1, y2 - y1)
+
+def draw_gate_box(frame, rect, color=(0,255,255), thick=2):
+    x, y, w, h = rect
+    cv2.rectangle(frame, (x, y), (x+w, y+h), color, thick)
+
+def circle_fully_inside_rect(cx, cy, r, rect):
+    x, y, w, h = rect
+    x1, y1, x2, y2 = x, y, x+w, y+h
+    return (cx - r >= x1) and (cx + r <= x2) and (cy - r >= y1) and (cy + r <= y2)
 
 # ---------- Detection decoders ----------
 _GRID_CACHE = {}
@@ -276,58 +293,82 @@ def grade_from_ratio(ratio):
         return (0,0,255)
 
 def draw_cap_circle_and_ratio(frame, cx, cy, diameter_px, stain_mask_full, *, stain_id=2):
-    r = int(round(diameter_px / 2.0))
-    H,W = frame.shape[:2]
-    cx = int(np.clip(cx, 0, W-1)); cy = int(np.clip(cy, 0, H-1))
-    circ_mask = np.zeros((H,W), dtype=np.uint8)
-    cv2.circle(circ_mask, (cx,cy), r, 255, -1)
-    stain_bin = (stain_mask_full == stain_id).astype(np.uint8)*255
-    inter = cv2.bitwise_and(stain_bin, circ_mask)
-    stain_area = int(np.count_nonzero(inter))
-    cap_area = pi * (r**2)
-    ratio = (stain_area / max(cap_area,1)) * 100.0
+    """
+    기존 함수 이름 유지.
+    변경 내용:
+      - 삭제/제거 X (연결성 필터, 열림연산 등 전부 제거)
+      - '픽셀 수'로만 stain 비율 계산
+      - 분모 = 이너서클 픽셀 총계
+      - 분자 = 이너서클 내 stain_id 픽셀 수
+      - rim(림 제외) 옵션만 유지 (기본 6%)
+    """
+    import os
+    H, W = frame.shape[:2]
+    cx = int(np.clip(cx, 0, W - 1))
+    cy = int(np.clip(cy, 0, H - 1))
+
+    # 림 제외 비율
+    rim_frac = float(os.getenv('STAIN_RIM_FRAC', '0.06'))  # 6%
+    r_out = int(max(1, round(diameter_px / 2.0)))
+    r_in  = max(1, int(round(r_out * (1.0 - np.clip(rim_frac, 0.0, 0.3)))))
+
+    # ---- 분모(캡 전체) 마스크 생성 ----
+    cap_mask = np.zeros((H, W), dtype=np.uint8)
+    cv2.circle(cap_mask, (cx, cy), r_in, 255, -1)
+
+    # ---- 분자(stain 픽셀) 계산 (삭제/제거 무시) ----
+    stain_bin = (stain_mask_full == stain_id).astype(np.uint8) * 255
+    inter = cv2.bitwise_and(stain_bin, cap_mask)
+
+    stain_px = int(cv2.countNonZero(inter))
+    cap_px   = int(cv2.countNonZero(cap_mask))
+    ratio = float(stain_px) / max(cap_px, 1) * 100.0
+    ratio = float(np.clip(ratio, 0.0, 100.0))
+
+    # ---- 오버레이 표시 (GUI용) ----
     color = grade_from_ratio(ratio)
-    cv2.circle(frame, (cx,cy), r, (255,0,255), 2)
-    cv2.line(frame, (cx-r, cy), (cx+r, cy), (255,0,255), 2)
-    cv2.circle(frame, (cx-r, cy), 4, (255,0,255), -1)
-    cv2.circle(frame, (cx+r, cy), 4, (255,0,255), -1)
-    cv2.putText(frame, f"{ratio:.1f}%",
-                (max(0,cx-r), min(H-10, cy+r+24)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-    return ratio, stain_area, cap_area
+    cv2.circle(frame, (cx, cy), r_out, (200, 120, 255), 1)   # 원 가이드
+    cv2.circle(frame, (cx, cy), r_in,  (255,   0, 255), 2)   # 분모 영역
+    cv2.line(frame, (max(0, cx - r_in), cy), (min(W - 1, cx + r_in), cy), (255, 0, 255), 2)
+    cv2.putText(frame, f"{ratio:.1f}%", (max(0, cx - r_in), min(H - 10, cy + r_in + 24)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+
+    return ratio, stain_px, cap_px
 
 # =========================
 # Detection Worker Thread
 # =========================
 class DetectionWorker(threading.Thread):
     """
-    각 카메라 별로 stain% 계산 + 오버레이 프레임 생성
-    CAM1 ← det_cfg_m1, CAM2 ← det_cfg_m2 (파일이 없을 경우 None)
+    실시간 워커:
+      - 프레임에서 '디텍션만' 수행 (세그는 하지 않음)
+      - 게이트 박스 안 (full/center) 조건 충족 시 캡처
+      - 캡처된 원본 프레임을 snap_q로 전달 (DecideWorker가 Seg/판정)
+      - 프리뷰에는 bbox/게이트만 그려줌 (stain% 미표시)
     """
-    def __init__(self, get_frame_fn, config):
+    def __init__(self, get_frame_fn, config, snap_q=None):
         super().__init__(daemon=True)
         self.get_frame = get_frame_fn
         self.cfg = config
         self._stop = threading.Event()
-        self.last_ratio = None
-        self.last_time  = 0.0
         self.last_annot = None
+        self.last_ratio = None  # 실시간 ratio는 제공하지 않음
+        self.last_time  = 0.0
 
-        # ORT sessions
+        # ONNX Runtime (Det only)
         self.det_sess = ort_session(self.cfg['det_path'])
-        self.seg_sess = ort_session(self.cfg['seg_path'])
         self.det_in_name = self.det_sess.get_inputs()[0].name
-        self.seg_in_name = self.seg_sess.get_inputs()[0].name
         self.det_out_names = [o.name for o in self.det_sess.get_outputs()]
-        self.seg_out_name  = self.seg_sess.get_outputs()[0].name
 
+        # labels
         self.det_labels = [s.strip() for s in self.cfg['det_labels'].split(",") if s.strip()]
-        self.seg_labels = [s.strip() for s in self.cfg['seg_labels'].split(",") if s.strip()]
-        self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))
 
-        # 표시 기준 ID
-        self.stain_disp_id   = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
-        self.sticker_disp_id = self.seg_map.get(1, 1)  # sticker를 1로 가정
+        # gate / capture
+        self._gate_rect = None
+        self._last_capture_ts = 0.0
+        self.snap_q = snap_q if snap_q is not None else queue.Queue(maxsize=16)
 
+        # FPS
         self._fps_t0 = time.time()
         self._fps_n  = 0
 
@@ -338,37 +379,52 @@ class DetectionWorker(threading.Thread):
         while not self._stop.is_set():
             frame = self.get_frame()
             if frame is None:
-                time.sleep(0.03)
+                time.sleep(0.01)
                 continue
             try:
                 out = self._process_frame(frame)
                 self.last_annot = out
             except Exception:
-                self.last_annot = frame  # 실패 시라도 원본은 띄움
-            time.sleep(0.01)
+                self.last_annot = frame
+            time.sleep(0.005)
 
     def _process_frame(self, frame):
-        H,W = frame.shape[:2]
-        stain_mask_full = np.zeros((H,W), dtype=np.uint8)
+        H, W = frame.shape[:2]
+        out_frame = frame.copy()
 
-        # ---- DET ----
+        # ---------- 게이트 직사각형 초기화 ----------
+        if self._gate_rect is None:
+            roi_pct = self.cfg.get('roi_pct', '')
+            box_str = self.cfg.get('box', '')
+            cap_box = self.cfg.get('capture_box', '0.3,0.3')
+            if roi_pct:
+                L,T,R,B = [float(v) for v in roi_pct.split(",")]
+                self._gate_rect = rect_from_pct(W, H, L, T, R, B)
+            elif box_str:
+                bx,by,bw,bh = [int(v) for v in box_str.split(",")]
+                self._gate_rect = (bx, by, bw, bh)
+            else:
+                wr,hr = [float(x) for x in cap_box.split(",")] if "," in cap_box else (0.3,0.3)
+                self._gate_rect = rect_from_ratio(W, H, wr, hr)
+
+        # ---------- DET ----------
         d_img, d_r, d_l, d_t = letterbox(frame, self.cfg['det_size'])
         d_rgb = cv2.cvtColor(d_img, cv2.COLOR_BGR2RGB)
         d_ten = d_rgb.transpose(2,0,1)[None].astype(np.float32)
-        if self.cfg['scale']: d_ten/=self.cfg['scale']
+        if self.cfg.get('scale'): d_ten /= self.cfg['scale']
 
-        d_outs = ort_run(self.det_sess, {self.det_in_name: d_ten}, self.det_out_names)
+        outs = self.det_sess.run(self.det_out_names, {self.det_in_name: d_ten})
         d_arrs = []
-        for a in d_outs:
+        for a in outs:
             d_arrs.extend(a if isinstance(a, list) else [np.asarray(a)])
 
-        det=None
-        if len(d_arrs)>=2:
-            a0,a1=d_arrs[0],d_arrs[1]
+        det = None
+        if len(d_arrs) >= 2:
+            a0, a1 = d_arrs[0], d_arrs[1]
             if a0.ndim==3 and a0.shape[0]==1 and a0.shape[2]==5 and a1.ndim>=2:
-                det=decode_box5_plus_cls(a0,a1,self.cfg['det_size'],self.cfg['det_conf'])
+                det = decode_box5_plus_cls(a0, a1, self.cfg['det_size'], self.cfg['det_conf'])
             elif a1.ndim==3 and a1.shape[0]==1 and a1.shape[2]==5 and a0.ndim>=2:
-                det=decode_box5_plus_cls(a1,a0,self.cfg['det_size'],self.cfg['det_conf'])
+                det = decode_box5_plus_cls(a1, a0, self.cfg['det_size'], self.cfg['det_conf'])
         if det is None or (hasattr(det, "size") and det.size==0):
             for a in d_arrs:
                 if (a.ndim==2 and a.shape[-1]>=6): det=a; break
@@ -376,7 +432,8 @@ class DetectionWorker(threading.Thread):
         if det is None or (hasattr(det, "size") and det.size==0):
             for a in d_arrs:
                 if a.ndim==4 and a.shape[-1]==7:
-                    det=decode_detection_output(a,self.cfg['det_size'],self.cfg['det_conf']); break
+                    det = decode_detection_output(a, self.cfg['det_size'], self.cfg['det_conf'])
+                    break
         if det is None or (hasattr(det, "size") and det.size==0):
             for a in d_arrs:
                 if a.ndim==3 and a.shape[0]==1 and (a.shape[1]>=6 or a.shape[2]>=6):
@@ -384,90 +441,66 @@ class DetectionWorker(threading.Thread):
                     pred = raw if (raw.ndim==2 and raw.shape[0]>=6) else (raw.T if (raw.ndim==2 and raw.shape[1]>=6) else None)
                     if pred is None and raw.ndim==3:
                         tmp=raw.reshape(raw.shape[0],-1); pred=tmp if tmp.shape[0]>=6 else tmp.T
-                    if pred is not None: det=decode_yolox_raw(pred,self.cfg['det_size'],self.cfg['det_conf']); break
-        if det is None: det=np.zeros((0,6),np.float32)
+                    if pred is not None:
+                        det = decode_yolox_raw(pred, self.cfg['det_size'], self.cfg['det_conf'])
+                        break
+        if det is None:
+            det = np.zeros((0,6), np.float32)
+
         det = normalize_dets(det, self.cfg['det_size'])
 
-        out_frame = frame.copy()
-
+        # ---------- 프리뷰: 게이트/박스만 ----------
+        draw_gate_box(out_frame, self._gate_rect, (0,255,255), 2)
         if det.shape[0] == 0:
-            self.last_ratio = 0.0
             self._tick_fps(out_frame)
             return out_frame
 
-        # 최고 score 하나만 사용
-        row = det[np.argmax(det[:,4])]
-        x1,y1,x2,y2,score,cls = map(float, row[:6])
-
-        # 원본 좌표로 투영
+        # 최고 score 하나 쓰기
+        x1,y1,x2,y2,score,cls = map(float, det[np.argmax(det[:,4])][:6])
         gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
         gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
         if gx2<=gx1 or gy2<=gy1:
-            self.last_ratio = 0.0
             self._tick_fps(out_frame)
             return out_frame
 
-        roi = out_frame[gy1:gy2, gx1:gx2]
-        if roi.size==0:
-            self.last_ratio = 0.0
-            self._tick_fps(out_frame)
-            return out_frame
-
-        # ---- SEG ----
-        s_img, s_r, s_l, s_t = letterbox(roi, self.cfg['seg_size'])
-        s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
-        s_ten = s_rgb.transpose(2,0,1)[None].astype(np.float32)
-        if self.cfg['scale']: s_ten/=self.cfg['scale']
-
-        s_res = ort_run(self.seg_sess, {self.seg_in_name: s_ten}, [self.seg_out_name])[0]  # [1,C,H,W] or [1,1,H,W]
-        if s_res.ndim==4 and s_res.shape[1]>1:
-            prob = softmax(s_res, axis=1)[0]     # [C,H,W]
-            mask  = np.argmax(prob, axis=0).astype(np.uint8)
-        else:
-            mask = (s_res[0,0]>0.5).astype(np.uint8)
-
-        # 원본->표시 매핑 적용
-        mask = remap_mask(mask, self.seg_map)
-
-        # letterbox 되돌리기(ROI 크기로)
-        canvas = np.zeros((self.cfg['seg_size'], self.cfg['seg_size']), dtype=np.uint8)
-        nh = int(round(roi.shape[0]*s_r)); nw = int(round(roi.shape[1]*s_r))
-        top = (self.cfg['seg_size']-nh)//2; left=(self.cfg['seg_size']-nw)//2
-        mask_rs = cv2.resize(mask,(nw,nh),interpolation=cv2.INTER_NEAREST)
-        canvas[top:top+nh, left:left+nw] = mask_rs
-        mask_roi = cv2.resize(canvas,(roi.shape[1],roi.shape[0]),interpolation=cv2.INTER_NEAREST)
-
-        # ROI에 마스크 오버레이
-        roi_vis = draw_seg_on_roi(
-            roi, mask_roi, self.seg_labels,
-            sticker_cid=self.sticker_disp_id,
-            stain_cid=self.stain_disp_id
-        )
-        out_frame[gy1:gy2, gx1:gx2] = roi_vis
-
-        # 병합된 stain 마스크(전체 프레임 기준)
-        stain_mask_full = np.zeros((H,W), dtype=np.uint8)
-        stain_mask_full[gy1:gy2, gx1:gx2] = np.where(mask_roi==self.stain_disp_id, self.stain_disp_id, 0)
-
-        # 박스/라벨
+        # 박스/라벨만 표시
         draw_box(out_frame, gx1, gy1, gx2, gy2, score, cls, self.det_labels, color=PINK)
 
-        # 원/비율 + 텍스트
-        cx, cy = (gx1+gx2)//2, (gy1+gy2)//2
-        if self.cfg['use_hough']:
-            hc = try_hough_circle(roi)
-            if hc is not None:
-                rx, ry, rr = hc
-                cx, cy = gx1 + rx, gy1 + ry
-        ratio, _, _ = draw_cap_circle_and_ratio(
-            out_frame, cx, cy, self.cfg['cap_diam'],
-            stain_mask_full, stain_id=self.stain_disp_id
-        )
-        ratio = float(np.clip(ratio, 0.0, 100.0))
-        self.last_ratio = ratio
-        self.last_time  = time.time()
+        # ---------- 게이트 판정 + 캡처 ----------
+        gate_mode = self.cfg.get('gate_mode', 'full')
+        dyn_k = float(self.cfg.get('dynamic_diam_k', 0.90))
+        dyn_diam = max(10.0, dyn_k * min(gx2-gx1, gy2-gy1))
+        r_cap = int(round(dyn_diam / 2.0))
 
-        # FPS
+        # 중심점(허프 보정 옵션 없음: Seg가 없으므로 ROI만으로 계산)
+        cx, cy = (gx1+gx2)//2, (gy1+gy2)//2
+        if gate_mode == "full":
+            inside_ok = circle_fully_inside_rect(cx, cy, r_cap, self._gate_rect)
+        else:
+            gx, gy, gw2, gh2 = self._gate_rect
+            inside_ok = (gx <= cx <= gx+gw2 and gy <= cy <= gy+gh2)
+
+        if inside_ok:
+            now = time.time()
+            cooldown = float(self.cfg.get('capture_cooldown', 1.5))
+            if now - self._last_capture_ts >= cooldown:
+                ts_ms = int(now * 1000)
+
+                # 옵션: raw 저장
+                if self.cfg.get('save_raw_caps', 0):
+                    os.makedirs("captures/raw", exist_ok=True)
+                    cv2.imwrite(f"captures/raw/{ts_ms}.jpg", frame)
+
+                # 스냅샷 전달 (DecideWorker가 Seg/판정)
+                try:
+                    self.snap_q.put_nowait((ts_ms, frame.copy()))
+                except queue.Full:
+                    try: self.snap_q.get_nowait()
+                    except: pass
+                    self.snap_q.put_nowait((ts_ms, frame.copy()))
+
+                self._last_capture_ts = now
+
         self._tick_fps(out_frame)
         return out_frame
 
@@ -475,9 +508,240 @@ class DetectionWorker(threading.Thread):
         self._fps_n += 1
         dt = time.time() - self._fps_t0
         if dt >= 0.5:
-            fps = self._fps_n / dt
             self._fps_t0 = time.time()
             self._fps_n = 0
+
+# =========================
+# Decide Worker (캡쳐 후 오프라인 판정 + 액츄에이터 콜백)
+# =========================
+class DecideWorker(threading.Thread):
+    """
+    오프라인 워커:
+      - DetectionWorker가 큐에 넣은 스냅샷을 소비
+      - '세그멘테이션 + mask remap + 오염비율 계산 + 등급(OK/NG30/NG80)'
+      - 주석이미지 저장 / CSV 로그 / 액츄에이터 콜백
+    """
+    def __init__(self, snap_q: "queue.Queue", cfg: dict, on_decision_cb):
+        super().__init__(daemon=True)
+        self.snap_q = snap_q
+        self.cfg = cfg
+        self.on_decision = on_decision_cb
+        self._stop = threading.Event()
+
+        # ONNX Runtime (Seg + Det 재사용: 스냅샷에서도 1회 det 수행 → ROI 잡아 Seg)
+        self.det_sess = ort_session(self.cfg['det_path'])
+        self.seg_sess = ort_session(self.cfg['seg_path'])
+        self.det_in = self.det_sess.get_inputs()[0].name
+        self.seg_in = self.seg_sess.get_inputs()[0].name
+        self.det_outs = [o.name for o in self.det_sess.get_outputs()]
+        self.seg_out  = self.seg_sess.get_outputs()[0].name
+
+        # label & seg map
+        self.det_labels = [s.strip() for s in self.cfg['det_labels'].split(",") if s.strip()]
+        self.seg_labels = [s.strip() for s in self.cfg['seg_labels'].split(",") if s.strip()]
+        self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))  # snap 스타일:contentReference[oaicite:12]{index=12}
+        self.stain_disp_id = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
+        self.sticker_disp_id = self.seg_map.get(self.cfg['sticker_id'], self.cfg['sticker_id'])
+        print("[SEG]", "seg_map=", self.seg_map, "STAIN_ID(orig)=", self.cfg['stain_id'], "→ stain_disp_id=", self.stain_disp_id,"STICKER_ID(orig)=", self.cfg['sticker_id'], "→ sticker_disp_id=", self.sticker_disp_id)
+    
+    def stop(self):
+        self._stop.set()
+
+    def run(self):
+        # 로그/이미지 디렉토리
+        log_path = "captures/log/decisions.csv"
+        if self.cfg.get('log_csv', 1):
+            os.makedirs("captures/log", exist_ok=True)
+            if not os.path.isfile(log_path):
+                with open(log_path,"w") as f:
+                    f.write("ts,grade,stain_pct\n")
+        if self.cfg.get('save_annotated', 1):
+            os.makedirs("captures/annotated", exist_ok=True)
+
+        while not self._stop.is_set():
+            try:
+                ts_ms, snap_bgr = self.snap_q.get(timeout=0.25)
+            except queue.Empty:
+                continue
+            try:
+                grade, ratio, annotated, has_sticker = self._analyze_one(snap_bgr)  # [PATCH] sticker flag 수신
+
+                if self.cfg.get('save_annotated', 1):
+                    sticker_tag = "yes" if has_sticker else "no"     # [PATCH] 파일명에 sticker 여부 포함
+                    outp = f"captures/annotated/{grade}_sticker-{sticker_tag}_{ratio:.1f}pct_{ts_ms}.jpg"
+                    cv2.imwrite(outp, annotated)
+
+                if self.cfg.get('log_csv', 1):
+                    with open(log_path,"a") as f:
+                        f.write(f"{ts_ms},{grade},{ratio:.3f}\n")
+
+                if callable(self.on_decision):
+                    self.on_decision(grade, ratio, has_sticker)
+            except Exception as e:
+                print("[DECIDE] error:", e)
+
+    def _analyze_one(self, img_bgr):
+        """
+        snap_after_seg3.py의 analyze_one_frame 로직을 run.py 스타일로 이식
+        (det → ROI → seg → mask remap → 비율 계산 → 등급)
+        """
+        H, W = img_bgr.shape[:2]
+
+        # ---------- gate (표시용) ----------
+        if self.cfg.get('roi_pct'):
+            L,T,R,B = [float(v) for v in self.cfg['roi_pct'].split(",")]
+            gate = rect_from_pct(W, H, L, T, R, B)
+        elif self.cfg.get('box'):
+            bx,by,bw,bh = [int(v) for v in self.cfg['box'].split(",")]
+            gate = (bx,by,bw,bh)
+        else:
+            wr,hr = [float(x) for x in self.cfg.get('capture_box','0.3,0.3').split(",")]
+            gate = rect_from_ratio(W, H, wr, hr)
+
+        annotated = img_bgr.copy()
+        draw_gate_box(annotated, gate, (0,255,255), 2)
+
+        # ---------- det (스냅샷에서 다시 한 번) ----------
+        d_img, d_r, d_l, d_t = letterbox(img_bgr, self.cfg['det_size'])
+        d_rgb = cv2.cvtColor(d_img, cv2.COLOR_BGR2RGB)
+        d = d_rgb.transpose(2,0,1)[None].astype(np.float32)
+        if self.cfg.get('scale'): d /= self.cfg['scale']
+        outs = self.det_sess.run(self.det_outs, {self.det_in:d})
+        arrs=[]; [arrs.extend(a if isinstance(a,list) else [np.asarray(a)]) for a in outs]
+
+        det=None
+        if len(arrs)>=2:
+            a0,a1=arrs[0],arrs[1]
+            if a0.ndim==3 and a0.shape[0]==1 and a0.shape[2]==5 and a1.ndim>=2:
+                det=decode_box5_plus_cls(a0,a1,self.cfg['det_size'],self.cfg['det_conf'])
+            elif a1.ndim==3 and a1.shape[0]==1 and a1.shape[2]==5 and a0.ndim>=2:
+                det=decode_box5_plus_cls(a1,a0,self.cfg['det_size'],self.cfg['det_conf'])
+        if det is None or (hasattr(det, "size") and det.size==0):
+            for a in arrs:
+                if (a.ndim==2 and a.shape[-1]>=6): det=a; break
+                if (a.ndim==3 and a.shape[0]==1 and a.shape[-1]>=6): det=a[0]; break
+        if det is None or (hasattr(det, "size") and det.size==0):
+            for a in arrs:
+                if a.ndim==4 and a.shape[-1]==7:
+                    det=decode_detection_output(a,self.cfg['det_size'],self.cfg['det_conf']); break
+        if det is None or (hasattr(det, "size") and det.size==0):
+            for a in arrs:
+                if a.ndim==3 and a.shape[0]==1 and (a.shape[1]>=6 or a.shape[2]>=6):
+                    raw=a[0]; pred=raw if (raw.ndim==2 and raw.shape[0]>=6) else (raw.T if (raw.ndim==2 and raw.shape[1]>=6) else None)
+                    if pred is None and raw.ndim==3:
+                        tmp=raw.reshape(raw.shape[0],-1); pred=tmp if tmp.shape[0]>=6 else tmp.T
+                    if pred is not None: det=decode_yolox_raw(pred,self.cfg['det_size'],self.cfg['det_conf']); break
+        if det is None:
+            det=np.zeros((0,6),np.float32)
+
+        if det.shape[0]==0:
+            _label_badge(annotated, 12, 40, "NO_CAP", (40,40,40), WHITE)
+            return "NO_CAP", 0.0, annotated, False  # [PATCH] has_sticker=False
+
+        # 최고 score 1개 ROI
+        x1,y1,x2,y2,score,cls = map(float, det[np.argmax(det[:,4])][:6])
+        gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
+        gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
+        if gx2<=gx1 or gy2<=gy1:
+            return "NO_CAP", 0.0, annotated, False
+        roi = annotated[gy1:gy2, gx1:gx2]
+        if roi.size==0:
+            return "NO_CAP", 0.0, annotated, False
+
+        # ---------- seg ----------
+        s_img, s_r, s_l, s_t = letterbox(roi, self.cfg['seg_size'])
+        s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
+        s = s_rgb.transpose(2,0,1)[None].astype(np.float32)
+        if self.cfg.get('scale'): s /= self.cfg['scale']
+        s_res = self.seg_sess.run([self.seg_out], {self.seg_in:s})[0]
+
+        # multi-class / binary 대응
+        if s_res.ndim==4 and s_res.shape[1]>1:
+            prob = softmax(s_res, axis=1)[0]
+            mask = np.argmax(prob, axis=0).astype(np.uint8)
+        else:
+            mask = (s_res[0,0] > 0.5).astype(np.uint8)
+
+        # 표기가 원하는 class id에 맞게 remap
+        mask = remap_mask(mask, self.seg_map)
+
+        # letterbox 되돌리기 (ROI 크기와 정합)
+        canvas = np.zeros((self.cfg['seg_size'], self.cfg['seg_size']), dtype=np.uint8)
+        nh = int(round(roi.shape[0]*s_r)); nw = int(round(roi.shape[1]*s_r))
+        top = (self.cfg['seg_size']-nh)//2; left=(self.cfg['seg_size']-nw)//2
+        mask_rs = cv2.resize(mask,(nw,nh),interpolation=cv2.INTER_NEAREST)
+        canvas[top:top+nh, left:left+nw] = mask_rs
+        mask_roi = cv2.resize(canvas,(roi.shape[1],roi.shape[0]),interpolation=cv2.INTER_NEAREST)
+
+        # ROI 오버레이
+        annotated[gy1:gy2, gx1:gx2] = draw_seg_on_roi(
+            roi, mask_roi, self.seg_labels,
+            sticker_cid=self.sticker_disp_id,
+            stain_cid=self.stain_disp_id
+        )
+
+        # ---------- STICKER 여부 판단 + 상단 배지 출력 [PATCH] ----------
+        sticker_id = self.seg_map.get(1, 1)
+        has_sticker = bool(np.any(mask_roi == self.sticker_disp_id))
+        badge_text = f"STICKER: {'YES' if has_sticker else 'NO'}"
+        badge_bg   = (40,180,40) if has_sticker else (50,50,200)
+        # 박스 상단 중앙 쯤에 뱃지
+        bx = max(12, gx1 + (gx2 - gx1)//2 - 80)
+        by = max(24, gy1 - 10)
+        _label_badge(annotated, bx, by, badge_text, badge_bg, WHITE)
+
+        # ---------- 오염 비율 (원형 캡 내 비율) ----------
+        # 동적 지름: 디텍션 박스 기반 or 허프 보정
+        dyn_k = float(self.cfg.get('dynamic_diam_k', 0.90))
+        dyn_diam = max(10.0, dyn_k * min(gx2-gx1, gy2-gy1))
+        cx, cy = (gx1+gx2)//2, (gy1+gy2)//2
+        if self.cfg.get('use_hough'):
+            hc = try_hough_circle(annotated[gy1:gy2, gx1:gx2])
+            if hc is not None:
+                rx, ry, rr = hc
+                cx, cy = gx1 + rx, gy1 + ry
+                dyn_diam = max(dyn_diam, rr * 2.0)
+
+        stain_full = np.zeros((H,W), np.uint8)
+        stain_full[gy1:gy2, gx1:gx2] = np.where(mask_roi==self.stain_disp_id, self.stain_disp_id, 0)
+
+# [PATCH] 픽셀 카운트도 받는다
+        ratio, stain_px, cap_px = draw_cap_circle_and_ratio(
+            annotated, cx, cy, dyn_diam, stain_full, stain_id=self.stain_disp_id
+        )
+        ratio = float(np.clip(ratio, 0.0, 100.0))
+        
+        # [PATCH] 좌측 상단에 메트릭 표기
+        sticker_line = f"sticker: {'YES' if has_sticker else 'NO'}"
+        lines  = [
+            sticker_line,
+            f"cap_px:   {cap_px}",
+            f"stain_px: {stain_px}",
+            f"stain:    {ratio:.1f}%",
+        ]
+        colors = [
+            (40,180,40) if has_sticker else (50,50,200),
+            (255,255,255),
+            (255,255,255),
+            (255,255,255),
+        ]
+        put_lines_top_left(annotated, lines, colors)
+
+        # ---------- 등급 판정 ----------
+        if not has_sticker:
+            grade = "NG_STICKER"          # 스티커 없음은 강제 불량
+            ratio = float(ratio)          # (표시/저장용으로 유지)
+        else:
+            if   ratio <= 0.0: grade = "OK"
+            elif ratio <= 30.: grade = "NG30"
+            else:              grade = "NG80"
+
+        # 중앙 배지: 등급 | STAIN xx.x%
+        _label_badge(annotated, max(0,cx-60), max(0,cy-80), f"{grade} | STAIN {ratio:.1f}%", (40,40,40), WHITE)
+        draw_box(annotated, gx1, gy1, gx2, gy2, score, cls, self.det_labels, color=PINK)
+
+        return grade, ratio, annotated, has_sticker   # [PATCH] sticker flag 반환
+
 
 # =========================
 # Hardware / DB / Serial
@@ -643,24 +907,6 @@ def db_query(sql, args=None):
     finally:
         conn.close()
 
-# ==== Serial helper (optional) ====
-class SerialCtrl:
-    def __init__(self, port, baud):
-        self._ser = None; self._lock = threading.Lock(); self._last = 0.0
-        if serial and port:
-            try:
-                self._ser = serial.Serial(port, baud, timeout=0.2)
-                time.sleep(0.2)
-            except Exception:
-                self._ser = None
-    def send(self, line):
-        if not self._ser: return
-        with self._lock:
-            self._ser.write((line.strip()+"\n").encode('utf-8'))
-            self._last = time.time()
-
-SER = SerialCtrl(os.getenv('SERIAL_PORT'), int(os.getenv('SERIAL_BAUD', '115200'))) if os.getenv('SERIAL_PORT') else None
-
 # ==== Camera Thread (dual) ====
 class CameraThread(threading.Thread):
     def __init__(self, index=0, req_w=None, req_h=None, fps=None, fourcc=None, buffers=None, backend=None):
@@ -763,7 +1009,7 @@ class App(tk.Tk):
         self._beacon_after = None
 
         # 하드웨어 컨트롤러
-        self.hw = HW(port=os.getenv('SERIAL_PORT') or None, debug=True)
+        self.hw = HW(port=None, debug=True)
 
         # --- 시스템 실행 상태 / arming ---
         self._is_running = False           # RUN/STOP 램프용
@@ -883,8 +1129,9 @@ class App(tk.Tk):
 
         # Detection workers: CAM1(모델1), CAM2(모델2)
         self.det_cfg_base = {
-            'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  '~/dong/replace_detect.onnx')),
-            'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  '~/dong/replace_seg.onnx')),
+            # 모델 2 입니다.
+            'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  'det2.onnx')),
+            'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  'seg2.onnx')),
             'det_size':  int(os.getenv('DET_SIZE', '640')),
             'seg_size':  int(os.getenv('SEG_SIZE', '512')),
             'det_conf':  float(os.getenv('DET_CONF', '0.35')),
@@ -893,11 +1140,23 @@ class App(tk.Tk):
             'seg_map':    os.getenv('SEG_MAP', '0:0,1:2,2:1'),
             'scale':      float(os.getenv('SCALE', '255.0')),
             'cap_diam':   float(os.getenv('CAP_DIAM', '170')),
-            'stain_id':   int(os.getenv('STAIN_ID', '2')),
-            'use_hough':  bool(int(os.getenv('USE_HOUGH', '0'))),
+            'stain_id':   int(os.getenv('STAIN_ID', '1')),
+            'sticker_id': int(os.getenv('STICKER_ID', '2')),
+            'use_hough':  bool(int(os.getenv('USE_HOUGH', '1'))),
+            
+            # --- [추가] 게이트/캡쳐 관련 ---
+            'roi_pct':   os.getenv('ROI_PCT', '0.3, 0.3, 0.7, 0.7'),                  # "L,T,R,B" (0~1)
+            'box':       os.getenv('BOX', ''),                      # "x,y,w,h" (px)
+            'capture_box': os.getenv('CAPTURE_BOX', '0.3,0.3'),     # 중앙 비율 (백업)
+            'gate_mode': os.getenv('GATE_MODE', 'full'),            # full|center
+            'capture_cooldown': float(os.getenv('CAPTURE_COOLDOWN', '1.5')),
+            'dynamic_diam_k': float(os.getenv('DYN_DIAM_K', '0.90')),  # 검출박스 기반 지름 스케일
+            
+            'save_raw_caps': int(os.getenv('SAVE_RAW_CAPS', '0')),   # 게이트 통과시 원본컷 저장
+            'save_annotated': int(os.getenv('SAVE_ANNOTATED', '1')), # 판정 결과 이미지 저장
+            'log_csv': int(os.getenv('LOG_CSV', '1')),               # 판정 CSV 로깅
         }
 
-        # 모델 경로(M1/M2) 분리 지원 (M1 기본=로컬 ./det.onnx, ./seg.onnx)
         model_dir = os.path.dirname(os.path.abspath(__file__))
         DEFAULT_DET_LOCAL = os.path.join(model_dir, "det.onnx")
         DEFAULT_SEG_LOCAL = os.path.join(model_dir, "seg.onnx")
@@ -921,6 +1180,13 @@ class App(tk.Tk):
 
         self.worker1 = None
         self.worker2 = None
+        
+        self._snap_q = queue.Queue(maxsize=16)
+        self._decider = None
+
+        self._decider = DecideWorker(self._snap_q, self.det_cfg_m1, self._on_decision)
+        self._decider.start()
+        
         self.status_lbl.config(text="대기")
 
         # Models (요약 패널)
@@ -956,7 +1222,13 @@ class App(tk.Tk):
         self._act1_last = 0.0
         self._act2_last = 0.0
         self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.8'))  # 0.8초 디바운스
-        self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.5'))        # 0.5초 지연(감지 후)
+        self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.3'))        # 0.5초 지연(감지 후)
+        
+        # --- [추가] 센서 게이팅용 3초 무장 창 ---
+        self._arm1_deadline = 0.0   # CAM1 유효 마감시각 (epoch)
+        self._arm2_deadline = 0.0   # CAM2 유효 마감시각 (epoch)
+        self._arm1_cond = None      # 'sev' 등
+        self._arm2_cond = None      # 'par' or 'good'
 
         self._prev_s1 = False
         self._prev_s2 = False
@@ -987,6 +1259,7 @@ class App(tk.Tk):
         try:
             if self.worker1: self.worker1.stop()
             if self.worker2: self.worker2.stop()
+            if hasattr(self, "_decider") and self._decider: self._decider.stop()   # [추가]
         except Exception: pass
         try: self.cam1.stop(); self.cam2.stop()
         except Exception: pass
@@ -1012,6 +1285,7 @@ class App(tk.Tk):
 
     # === RUN/STOP ===
     def on_run(self, model_id:int):
+        err = None
         # arming 전에 RUN 금지 (초기 깜빡임/오동작 방지)
         if not self._armed:
             self.status_lbl.config(text="초기화 중(잠시 후 RUN 가능)")
@@ -1037,12 +1311,6 @@ class App(tk.Tk):
             self.m1_state.set("작동중"); self.m2_state.set("대기")
         else:
             self.m1_state.set("대기"); self.m2_state.set("작동중")
-
-        err = None
-        try:
-            if SER: SER.send(f"RUN:{model_id}")
-        except Exception as e:
-            err = e
 
         # 백엔드 알림 비동기
         try:
@@ -1091,10 +1359,21 @@ class App(tk.Tk):
             self.status_lbl.config(text="OpenCV/Pillow 필요"); 
             return False
         try:
-            self.worker1 = DetectionWorker(self.cam1.get_frame, dict(cfg))
+            self.worker1 = DetectionWorker(self.cam1.get_frame, dict(cfg), self._snap_q)
             self.worker1.start()
-            self.worker2 = DetectionWorker(self.cam2.get_frame, dict(cfg))
+            self.worker2 = DetectionWorker(self.cam2.get_frame, dict(cfg), self._snap_q)
             self.worker2.start()
+
+            # [추가] 판정 워커 시작 (중복 방지)
+            try:
+                if self._decider:
+                    self._decider.stop()
+                    self._decider = None
+            except Exception:
+                pass
+            self._decider = DecideWorker(self._snap_q, dict(cfg), self._on_decision)
+            self._decider.start()
+            
             self.status_lbl.config(text="Det/Seg 가동(오버레이 표시) · CAM1/CAM2=같은 모델")
             return True
         except Exception as e:
@@ -1117,18 +1396,13 @@ class App(tk.Tk):
 
 
     def on_stop(self):
+        err = None
         self.active_model = 0
         self._is_running = False
         self._stop_workers()
         self._sync_start_stop_lamps()
         self.status_lbl.config(text="대기")
         self.m1_state.set("대기"); self.m2_state.set("대기")
-
-        err = None
-        try:
-            if SER: SER.send("STOP")
-        except Exception as e:
-            err = e
 
         # 백엔드 알림 비동기
         try:
@@ -1349,37 +1623,48 @@ class App(tk.Tk):
                 self._refresh_relay_visual(idx)
             except Exception:
                 pass
+            
     def _pulse_beacon(self, kind: str, ms: int = None):
         """
-        이벤트 1건(정상품/30%불량/완전불량) 발생 시 비콘을 ms 동안 켰다가 자동 OFF.
-        - kind: "good" | "par" | "sev"
-        - ms: None이면 환경변수 BEACON_PULSE_MS(기본 600ms) 사용
+        kind: "good" | "par" | "sev"
+        요청 패턴:
+        - sev(RED):   0.5s ON → 0.5s OFF → 0.5s ON → 0.5s OFF  (총 2.0s)
+        - par(ORANGE):0.5s ON → 0.5s OFF                       (총 1.0s)
+        - good(GREEN):1.0s ON                                  (총 1.0s)
         """
-        try:
-            dur = int(os.getenv("BEACON_PULSE_MS", "600")) if ms is None else int(ms)
-        except Exception:
-            dur = 600
-
-        # KPI 점멸과 겹칠 때 깔끔히 보이도록 일단 모두 OFF
+        # 먼저 모두 OFF
         try:
             self._set_beacons(red=False, orange=False, green=False)
         except Exception:
             pass
 
-        if kind == "sev":       # 완전불량 = 빨강
-            self._set_beacons(red=True,  orange=False, green=False)
-        elif kind == "par":     # 30%불량 = 주황
-            self._set_beacons(red=False, orange=True,  green=False)
-        elif kind == "good":    # 정상품 = 초록
-            self._set_beacons(red=False, orange=False, green=True)
-        else:
-            return  # 알 수 없는 종류는 무시
+        def seq_red():
+            # ON 0.5s
+            self._set_beacons(red=True)
+            self.after(500, lambda: (
+                self._set_beacons(red=False),
+                self.after(500, lambda: (
+                    self._set_beacons(red=True),
+                    self.after(500, lambda: self._set_beacons(red=False))
+                ))
+            ))
 
-        # dur ms 뒤 모두 끔 (실기기 + 패널 동시 반영)
-        try:
-            self.after(dur, lambda: self._set_beacons(red=False, orange=False, green=False))
-        except Exception:
-            pass
+        def seq_orange():
+            self._set_beacons(orange=True)
+            self.after(500, lambda: self._set_beacons(orange=False))  # 0.5s 후 OFF (총 1.0s 간격)
+
+        def seq_green():
+            self._set_beacons(green=True)
+            self.after(1000, lambda: self._set_beacons(green=False))
+
+        if kind == "sev":
+            seq_red()
+        elif kind == "par":
+            seq_orange()
+        elif kind == "good":
+            seq_green()
+        else:
+            return
 
     def _maybe_blink_beacon(self, rate: float, on_ms: int = 800):
         desired = 'none'
@@ -1526,29 +1811,37 @@ class App(tk.Tk):
             if r2 is not None: self.r2_var.set(f"CAM2: {r2:.1f}%")
 
             # --- SENSOR 1: CAM1 = 완전오염 전용 ---
+            # --- SENSOR 1: CAM1 (무장창 내에서만 유효) ---
             if s1 and not self._prev_s1 and self._is_running:
-                if r1 is not None:
-                    snap = float(r1)
-                    if snap >= 31.0:
-                        if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
-                            self._pending1 = {"when": now, "ratio": snap, "kind": "sev"}
-                            delay_ms = int(self._act_delay * 1000)
-                            self.after(delay_ms, self._do_act1)
-                    else:
-                        # ★ 추가: 불량 아님 → CAM1 정상품으로 1건 기록
-                        self._record_event(kind="good")
-            # --- SENSOR 2: CAM2 = 30%오염 전용 ---
+                now = time.time()
+                if (self._arm1_cond == "sev") and (now <= self._arm1_deadline):
+                    if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                        self._pending1 = {"when": now, "kind": "sev"}
+                        delay_ms = int(self._act_delay * 1000)  # 0.3s
+                        self.after(delay_ms, self._do_act1)
+                # 트리거 이후 즉시 해제(중복 방지)
+                self._arm1_deadline = 0.0
+                self._arm1_cond = None
+
+            # --- SENSOR 2: CAM2 (무장창 내에서만 유효) ---
             if s2 and not self._prev_s2 and self._is_running:
-                if r2 is not None:
-                    snap = float(r2)
-                    if 1.0 <= snap <= 30.0:
+                now = time.time()
+                if (self._arm2_cond in ("par", "good")) and (now <= self._arm2_deadline):
+                    # par: Act2 + 주황 패턴 / good: 액츄에이터 없이 green 패턴만
+                    if self._arm2_cond == "par":
                         if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
-                            self._pending2 = {"when": now, "ratio": snap, "kind": "par"}
-                            delay_ms = int(self._act_delay * 1000)
+                            self._pending2 = {"when": now, "kind": "par"}
+                            delay_ms = int(self._act_delay * 1000)  # 0.3s
                             self.after(delay_ms, self._do_act2)
-                    else:
-                        # ★ 추가: 불량 아님 → CAM2 정상품으로 1건 기록
-                        self._record_event(kind="good")
+                    elif self._arm2_cond == "good":
+                        # 0.3s 지연 후 GREEN 패턴만 1회
+                        def _green_only():
+                            # DB 카운터(정상품) + 비콘 그린 패턴
+                            self._record_event(kind="good")
+                        self.after(int(self._act_delay * 1000), _green_only)
+                # 트리거 이후 즉시 해제(중복 방지)
+                self._arm2_deadline = 0.0
+                self._arm2_cond = None
 
             # 이전 상태 저장
             self._prev_s1 = s1
@@ -1712,6 +2005,38 @@ class App(tk.Tk):
 
     def _on_close(self):
         self.destroy()
+
+    def _on_decision(self, grade, ratio, has_sticker):
+        """
+        모델 판정 결과 콜백
+        grade: "OK", "NG30", "NG80", "NG_STICKER"
+        ratio: stain 비율(%)
+        has_sticker: 스티커 유무(True/False)
+        """
+        print(f"[DECISION] {grade}, stain={ratio:.1f}%, sticker={has_sticker}")
+        now = time.time()
+
+        # 규칙 요약:
+        # CAM1: no-sticker OR stain >= 30  → 3초 이내 S1 감지시 0.3s 뒤 Act1 + RED 0.5s x2(총 2초)
+        # CAM2: sticker AND 0 < stain <=30 → 3초 이내 S2 감지시 0.3s 뒤 Act2 + ORANGE 0.5s x1(총 1초)
+        # CAM2: sticker AND stain == 0     → 3초 이내 S2 통과 시 GREEN 1.0s x1(총 1초), 액츄에이터 없음
+
+        # 1) CAM1 조건: no-sticker 또는 stain >= 30
+        if (not has_sticker) or (ratio >= 30.0):
+            self._arm1_deadline = now + 3.0
+            self._arm1_cond = "sev"   # RED 패턴 + Act1
+
+        # 2) CAM2 조건: sticker AND 0 < stain <= 30
+        elif has_sticker and (0.0 < ratio <= 30.0):
+            self._arm2_deadline = now + 3.0
+            self._arm2_cond = "par"   # ORANGE 패턴 + Act2
+
+        # 3) CAM2 조건: sticker AND stain == 0
+        elif has_sticker and ratio == 0.0:
+            self._arm2_deadline = now + 3.0
+            self._arm2_cond = "good"  # GREEN 패턴(액츄에이터 없음)
+
+        # 그 외는 무시
 
 # =========================
 # Entrypoint
