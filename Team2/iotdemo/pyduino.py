@@ -88,7 +88,8 @@ class PyDuino:
         for idx in self.__init_input_pins:
             self.watch(idx)
 
-    # Tx Thread
+# pyduino.py - inside class PyDuino
+
     def __transmitter(self):
         arduino = self.__arduino
 
@@ -105,11 +106,31 @@ class PyDuino:
             pin = int(pin) & 0xff
             value = int(value) & 0xff
 
-            arduino.write(
-                bytes([
+            try:
+                arduino.write(bytes([
                     PyDuino.PACKET_START, packet_id, pin, value,
                     PyDuino.PACKET_END
                 ]))
+            except Exception as e:
+                # 치명 오류 시: 강제 정지하고 Tx 종료
+                try:
+                    from serial import SerialException
+                except Exception:
+                    SerialException = Exception
+                if isinstance(e, (SerialException, OSError)):
+                    if self.debug:
+                        try: self.logger.warning("Tx write failed / serial down: %s", e)
+                        except Exception: pass
+                    self.__force_stop = True
+                    # set()에서 wait중일 수 있으니 깨워준다
+                    try:
+                        with self.__tx_cv:
+                            self.__tx_cv.notify_all()
+                    except Exception:
+                        pass
+                    break
+                # 기타 오류는 약간 쉬고 재시도(선택)
+                import time; time.sleep(0.02)
 
     # Rx Thread
     def __receiver(self):
@@ -228,25 +249,30 @@ class PyDuino:
         if self.debug:
             self.logger.info("stopped")
 
+    # pyduino.py - inside class PyDuino
+
     def set(self, pin: int, value: int) -> bool:
         """
         Set arduino pin with given value
         """
-        if self.__stop_requested:
+        if self.__stop_requested or self.__force_stop:
             return False
 
         with self.__tx_lock:
             packet_id = self.__tx_packet_id
 
+            ok = False
             with self.__tx_cv:
                 self.__tx_queue.put((pin, value, packet_id))
-                self.__tx_cv.wait()
+                # wait()에 타임아웃 추가 (예: 0.5s)
+                self.__tx_cv.wait(timeout=0.5)
+                ok = not self.__force_stop  # Rx/Tx가 죽었으면 False
 
             self.__tx_packet_id += 1
             if self.__tx_packet_id == PyDuino.PACKET_ID_MAX:
                 self.__tx_packet_id = 1
 
-        return True
+        return ok
 
     def get(self, pin: int) -> int:
         """
