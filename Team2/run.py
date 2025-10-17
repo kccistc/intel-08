@@ -542,7 +542,6 @@ class DecideWorker(threading.Thread):
         self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))  # snap 스타일:contentReference[oaicite:12]{index=12}
         self.stain_disp_id = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
         self.sticker_disp_id = self.seg_map.get(self.cfg['sticker_id'], self.cfg['sticker_id'])
-        print("[SEG]", "seg_map=", self.seg_map, "STAIN_ID(orig)=", self.cfg['stain_id'], "→ stain_disp_id=", self.stain_disp_id,"STICKER_ID(orig)=", self.cfg['sticker_id'], "→ sticker_disp_id=", self.sticker_disp_id)
     
     def stop(self):
         self._stop.set()
@@ -578,7 +577,7 @@ class DecideWorker(threading.Thread):
                 if callable(self.on_decision):
                     self.on_decision(grade, ratio, has_sticker)
             except Exception as e:
-                print("[DECIDE] error:", e)
+                pass
 
     def _analyze_one(self, img_bgr):
         """
@@ -1022,6 +1021,12 @@ class App(tk.Tk):
                 self.hw.set_relay(6, False)  # Conveyor OFF
         except Exception:
             pass
+        
+        # 부팅 인디케이터: RED → ORANGE → GREEN → ALL OFF
+        try:
+            self._beacon_boot_chase(step_ms=250, hold_ms=1000)
+        except Exception:
+            pass
         try:
             if self.hw:
                 for idx in (1, 2, 3, 4, 5, 7, 8):  # 1=R,2=O,3=G,4=Buzzer,5=LED,7/8=Actuators
@@ -1045,8 +1050,7 @@ class App(tk.Tk):
             else:
                 ttk.Label(top, text="LOGO", font=("Arial", 12, "bold")).pack(side="left", padx=(2, 10))
         except Exception as e:
-            print(f"[WARN] 로고 로드 실패: {e}")
-            ttk.Label(top, text="LOGO", font=("Arial", 12, "bold")).pack(side="left", padx=(2, 10))
+            pass
 
         self.btn_m1 = ttk.Button(top, text="Model 1 · RUN", command=lambda:self.on_run(1))
         self.btn_m2 = ttk.Button(top, text="Model 2 · RUN", command=lambda:self.on_run(2))
@@ -1234,12 +1238,22 @@ class App(tk.Tk):
         self._prev_s2 = False
         self._pending1 = None
         self._pending2 = None
-        self._prev_start_btn = False   # 하드웨어 START 버튼 직전 상태
-        self._prev_stop_btn  = False   # 하드웨어 STOP  버튼 직전 상태
-        self._btn_debounce = float(os.getenv('BTN_DEBOUNCE_SEC', '0.15'))  # 150ms
+        self._prev_start_btn = False
+        self._prev_stop_btn  = False
+        
+        # 기존 짧은 엣지 디바운스(남겨둠, 내부 보조용)
+        self._btn_debounce = float(os.getenv('BTN_DEBOUNCE_SEC', '0.15'))
         self._last_start_edge = 0.0
         self._last_stop_edge  = 0.0
-        self._stop_latched_until = 0.0   # STOP 후 이 시각까지 START 무시
+
+        # STOP 후 START 잠금(기존 로직)
+        self._stop_latched_until = 0.0
+
+        # ★ 3초 레벨 디바운스(눌린 상태 무시)용 타이머
+        self._start_db_sec = float(os.getenv('START_DEBOUNCE_SEC', '3.0'))
+        self._stop_db_sec  = float(os.getenv('STOP_DEBOUNCE_SEC',  '3.0'))
+        self._start_ignore_until = 0.0
+        self._stop_ignore_until  = 0.0
 
         # 실시간 카운터(M1,M2) + DB 이벤트 옵션
         self._counts = {
@@ -1247,7 +1261,7 @@ class App(tk.Tk):
             2: {"good":0, "sev":0, "par":0},
         }
         self._write_db_on_event = bool(int(os.getenv("WRITE_DB_ON_EVENT", "1")))
-
+        self._refreshing = False
         # timers
         self.after(120, self.update_camera)
         self.after(300, self.refresh)
@@ -1260,6 +1274,8 @@ class App(tk.Tk):
             self.btn_m1.config(state="disabled", text="Model 1 (미설치)")
         if not _has_model(self.det_cfg_m2):
             self.btn_m2.config(state="disabled", text="Model 2 (미설치)")
+            
+        self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}  # 단일 버저 ARM 슬롯
 
     def destroy(self):
         try:
@@ -1311,6 +1327,10 @@ class App(tk.Tk):
         self.active_model = model_id
         self._is_running = True
         self._sync_start_stop_lamps()
+        
+        self._set_beacons(red=False, orange=False, green=False)
+        
+        self._pattern_on_model_start(model_id)
 
         self.status_lbl.config(text=f"Model {model_id} 작동중")
         if model_id == 1:
@@ -1338,10 +1358,6 @@ class App(tk.Tk):
             if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
                 self._relay_vars[6].set(True)
                 self._refresh_relay_visual(6)
-        except Exception:
-            pass
-        try:
-            self._set_beacons(red=False, orange=False, green=False)
         except Exception:
             pass
 
@@ -1542,13 +1558,106 @@ class App(tk.Tk):
 
     # === 데이터 새로고침 (DB 전용) - 비동기 ===
     def refresh(self):
-        self.k_updated.set(datetime.now().strftime('%H:%M:%S'))
+        # 주기 스케줄 (자체 재호출)
+        try:
+            self.k_updated.set(datetime.now().strftime('%H:%M:%S'))
+        except Exception:
+            pass
+
+        if self._refreshing:
+            self.after(1500, self.refresh)
+            return
+
+        self._refreshing = True
+        # DB는 백그라운드에서, UI는 after(0, ...)로
         self._bg(self._refresh_async)
         self.after(1500, self.refresh)
 
     def _refresh_async(self):
-        if not self._refresh_from_6col():
-            self._refresh_from_legacy()
+        try:
+            mins = self._win_minutes()
+            ok_payload = None
+
+            # 6-cols 집계 + 최근 목록 시도
+            try:
+                rows_sum, _ = db_query(f'''
+                    SELECT
+                    COALESCE(SUM(m1_good),0), COALESCE(SUM(m1_sev),0), COALESCE(SUM(m1_par),0),
+                    COALESCE(SUM(m2_good),0), COALESCE(SUM(m2_sev),0), COALESCE(SUM(m2_par),0)
+                    FROM {DB_TABLE_6}
+                    WHERE ts >= NOW() - INTERVAL {mins} MINUTE
+                ''')
+                m1_g,m1_s,m1_p,m2_g,m2_s,m2_p = [int(x or 0) for x in rows_sum[0]]
+
+                rows_recent, _ = db_query(f'''
+                    SELECT ts, m1_good, m1_sev, m1_par, m2_good, m2_sev, m2_par
+                    FROM {DB_TABLE_6}
+                    ORDER BY ts DESC, id DESC
+                    LIMIT 50
+                ''')
+                recent_rows = [
+                    (ts.strftime('%Y-%m-%d %H:%M:%S'),
+                    int(m1g or 0), int(m1s or 0), int(m1p or 0),
+                    int(m2g or 0), int(m2s or 0), int(m2p or 0))
+                    for ts,m1g,m1s,m1p,m2g,m2s,m2p in rows_recent
+                ]
+                ok_payload = (
+                    {'good':m1_g,'sev':m1_s,'par':m1_p},
+                    {'good':m2_g,'sev':m2_s,'par':m2_p},
+                    recent_rows
+                )
+            except Exception:
+                ok_payload = None
+
+            if ok_payload is not None:
+                self.after(0, lambda p=ok_payload: self._apply_6col_to_ui(*p))
+                return
+
+            # === 레거시 테이블 경로 ===
+            try:
+                rows, _ = db_query(f'''
+                    SELECT model,
+                        SUM(good)        AS good,
+                        SUM(sev_contam)  AS sev_contam,
+                        SUM(sev_damage)  AS sev_damage,
+                        SUM(par_contam)  AS par_contam,
+                        SUM(par_damage)  AS par_damage
+                    FROM qc_agg
+                    WHERE ts >= NOW() - INTERVAL {mins} MINUTE
+                    GROUP BY model
+                ''')
+                agg={'M1': {'good':0,'sev':0,'par':0},
+                    'M2': {'good':0,'sev':0,'par':0}}
+                for model, g, sc, sd, pc, pd in rows:
+                    agg[model]={'good':int(g or 0),'sev':int(sc or 0)+int(sd or 0),'par':int(pc or 0)+int(pd or 0)}
+
+                rows_recent,_=db_query('''
+                    SELECT ts, model, good, (sev_contam+sev_damage) AS sev, (par_contam+par_damage) AS par
+                    FROM qc_agg
+                    ORDER BY ts DESC, id DESC
+                    LIMIT 50
+                ''')
+                recent_rows=[]
+                for ts,model,g,sev,par in rows_recent:
+                    tsf = ts.strftime('%Y-%m-%d %H:%M:%S')
+                    if model=='M1':
+                        recent_rows.append((tsf,int(g or 0),int(sev or 0),int(par or 0),0,0,0))
+                    else:
+                        recent_rows.append((tsf,0,0,0,int(g or 0),int(sev or 0),int(par or 0)))
+
+                self.after(0, lambda: self._apply_legacy_to_ui(agg, recent_rows))
+            finally:
+                self.after(0, lambda: setattr(self, "_refreshing", False))
+        except Exception:
+            self.after(0, lambda: setattr(self, "_refreshing", False))
+
+    def _apply_6col_to_ui(self, m1_counts, m2_counts, recent_rows):
+        self._update_from_counts(m1_counts, m2_counts)
+        self._set_recent_diff(recent_rows)
+
+    def _apply_legacy_to_ui(self, agg, recent_rows):
+        self._update_from_counts(agg['M1'], agg['M2'])
+        self._set_recent_diff(recent_rows)
 
     def _refresh_from_6col(self):
         try:
@@ -1676,6 +1785,63 @@ class App(tk.Tk):
         else:
             return
 
+    # === 모델 시작 패턴: 비프 + GREEN 점멸 ===============================
+    def _beep(self, n=1, dur=0.1, gap=0.1):
+        """릴레이 #4 (Buzzer) 짧게 n회 비프. GUI 블로킹 방지: after 체인."""
+        if not self.hw:
+            return
+        total_steps = n * 2  # ON/OFF 세트
+        def step(i=0):
+            try:
+                on = (i % 2 == 0)
+                self.hw.set_relay(4, on)
+                if 4 in self._relay_vars:
+                    self._relay_vars[4].set(on); self._refresh_relay_visual(4)
+            except Exception:
+                pass
+            if i + 1 < total_steps:
+                self.after(int(1000*(dur if on else gap)), lambda: step(i+1))
+            else:
+                # 마지막은 확실히 OFF
+                try:
+                    self.hw.set_relay(4, False)
+                    if 4 in self._relay_vars:
+                        self._relay_vars[4].set(False); self._refresh_relay_visual(4)
+                except Exception:
+                    pass
+        step(0)
+
+    def _blink_green(self, count=1, on_ms=500, off_ms=200):
+        """릴레이 #3 (Green Beacon) 점멸 count회."""
+        if not self.hw:
+            return
+        def one_blink(k):
+            # ON
+            try:
+                self._set_beacons(green=True)
+            except Exception:
+                pass
+            # OFF 예약
+            self.after(on_ms, lambda: (
+                self._set_beacons(green=False),
+                self.after(off_ms, lambda: one_blink(k-1) if k-1>0 else None)
+            ))
+        # 먼저 모두 OFF
+        try:
+            self._set_beacons(red=False, orange=False, green=False)
+        except Exception:
+            pass
+        one_blink(count)
+
+    def _pattern_on_model_start(self, model_id:int):
+        """Model 1: 비프 1회 + 초록 0.5s 1회 / Model 2: 비프 2회 + 초록 0.5s 2회"""
+        if model_id == 1:
+            self._beep(n=1, dur=0.1, gap=0.1)
+            self._blink_green(count=1, on_ms=500, off_ms=200)
+        else:
+            self._beep(n=2, dur=0.1, gap=0.1)
+            self._blink_green(count=2, on_ms=500, off_ms=200)
+
     def _maybe_blink_beacon(self, rate: float, on_ms: int = 800):
         desired = 'none'
         if rate >= 100.0:
@@ -1707,12 +1873,81 @@ class App(tk.Tk):
             self._beacon_after = self.after(on_ms, lambda: self._set_beacons(red=False, orange=False, green=False))
         except Exception:
             pass
-    # ======================================================================
 
-    def _set_recent(self, rows):
-        self.tree.delete(*self.tree.get_children())
-        for r in rows:
-            self.tree.insert('', 'end', values=r)
+        
+
+    def _beacon_boot_chase(self, step_ms: int = 250, hold_ms: int = 1000):
+        """
+        앱 시작시: RED -> ORANGE -> GREEN 순서로 "누적" 켠 뒤,
+        GREEN까지 켜진 상태로 hold_ms 유지하고 모두 OFF.
+        """
+        try:
+            # 모두 끈 상태에서 시작
+            self._set_beacons(red=False, orange=False, green=False)
+        except Exception:
+            pass
+
+        def on_red():
+            # RED 켜고 유지
+            self._set_beacons(red=True, orange=False, green=False)
+            self.after(step_ms, on_orange)
+
+        def on_orange():
+            # ORANGE만 True 전달(RED는 None이라 그대로 유지)
+            self._set_beacons(red=True, orange=True, green=False)
+            self.after(step_ms, on_green)
+
+        def on_green():
+            # GREEN만 True 전달(RED/ORANGE는 None이라 그대로 유지)
+            self._set_beacons(red=True, orange=True, green=True)
+            # 모든 불이 켜진 상태를 hold_ms 유지
+            self.after(hold_ms, all_off)
+
+        def all_off():
+            self._set_beacons(red=False, orange=False, green=False)
+
+        # 살짝 딜레이 후 시작
+        self.after(50, on_red)
+
+
+    # ======================================================================
+    def _set_recent_diff(self, rows):
+        """
+        rows: [(ts, m1_g, m1_s, m1_p, m2_g, m2_s, m2_p), ...] (최신순 최대 50)
+        - 기존 아이템과 비교해서 변경/추가만 반영 (깜빡임 최소화)
+        """
+        try:
+            new_keys = [("|".join(map(str, r))) for r in rows]
+            items = self.tree.get_children()
+            cur_values = [self.tree.item(i, "values") for i in items]
+            cur_keys = [("|".join(map(str, v))) for v in cur_values]
+
+            if cur_keys == new_keys:
+                return
+
+            # 공통 prefix 유지
+            prefix_len = 0
+            for a,b in zip(cur_keys, new_keys):
+                if a == b:
+                    prefix_len += 1
+                else:
+                    break
+
+            # 기존 과잉 제거
+            for i in range(len(items)-1, prefix_len-1, -1):
+                self.tree.delete(items[i])
+
+            # 부족분 삽입
+            for i in range(prefix_len, len(rows)):
+                self.tree.insert('', 'end', values=rows[i])
+
+        except Exception:
+            try:
+                self.tree.delete(*self.tree.get_children())
+                for r in rows:
+                    self.tree.insert('', 'end', values=r)
+            except Exception:
+                pass
 
     # === 장치 패널(임베디드) ===
     def _build_device_panel(self, root):
@@ -1787,43 +2022,48 @@ class App(tk.Tk):
         except Exception:
             pass
 
-        # === 하드웨어 START/STOP 버튼 엣지 처리 (디바운스 + STOP 우선 락) ===
+        # === 하드웨어 START/STOP 버튼 처리 (3초 레벨 디바운스 + STOP 우선) ===
         try:
             b_start = bool(st.get("start_button", False))
             b_stop  = bool(st.get("stop_button",  False))
             now = time.time()
 
-            # STOP: "눌려있는 동안" 언제든 정지 (레벨 기반) + 디바운스
-            if b_stop:
-                if (now - self._last_stop_edge) >= self._btn_debounce:
+            # ---- STOP: Rising-edge + 3초 레벨 디바운스 ----
+            if b_stop and not self._prev_stop_btn:
+                if now >= self._stop_ignore_until:
+                    self._stop_ignore_until = now + self._stop_db_sec     # 3초간 추가 입력 무시
                     self._last_stop_edge = now
-                    self._stop_latched_until = now + 1.0  # STOP 후 1초간 START 무시
+                    self._stop_latched_until = now + 1.0                  # (기존) 1초 START 락
                     # UI STOP 루틴 호출 (워커/컨베이어 정지 포함)
                     self.on_stop()
-                    # 안전하게 비콘/컨베이어 확실히 OFF 보장
+                    # 안전하게 비콘/컨베이어 확실히 OFF
                     try:
                         self._set_beacons(red=False, orange=False, green=False)
-                    except Exception:
-                        pass
+                    except Exception: pass
                     try:
-                        if self.hw: 
+                        if self.hw:
                             self.hw.set_relay(6, False)  # Conveyor OFF
-                            # (선택) 펌웨어/PLC에 STOP 신호도 보내고 싶으면:
                             if hasattr(self.hw, "system_stop"):
                                 self.hw.system_stop()
                         if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
                             self._relay_vars[6].set(False)
                             self._refresh_relay_visual(6)
-                    except Exception:
-                        pass
+                    except Exception: pass
 
-            # START: Rising edge → (STOP 락 해제되고, STOP과 동시가 아니며, arming 끝난 뒤)만 RUN
+            # ---- START: Rising-edge + 3초 레벨 디바운스 + 모델 토글 ----
             if b_start and not self._prev_start_btn:
-                if (now - self._last_start_edge) >= self._btn_debounce:
+                if now >= self._start_ignore_until:
+                    self._start_ignore_until = now + self._start_db_sec   # 3초간 추가 입력 무시
                     self._last_start_edge = now
-                    # 동시에 STOP 눌린 상태 무시 + STOP 락 기간 무시 + arming 완료 필요 + 현재 미동작일 때만
-                    if self._armed and (not b_stop) and (now >= self._stop_latched_until) and (not self._is_running):
-                        self.on_run(1)
+                    # STOP과 동시가 아니고, STOP 락 해제되었고, arming 완료만 확인
+                    if self._armed and (not b_stop) and (now >= self._stop_latched_until):
+                        if not self._is_running or self.active_model == 0:
+                            # 처음 시작 → Model 1
+                            self.on_run(1)
+                        else:
+                            # 토글: 1 ↔ 2
+                            next_model = 2 if self.active_model == 1 else 1
+                            self.on_run(next_model)
 
             # 이전 상태 저장 (엣지 검출용)
             self._prev_start_btn = b_start
@@ -2059,43 +2299,67 @@ class App(tk.Tk):
 
     def _on_close(self):
         self.destroy()
+        
+    def _buzzer_set(self, on: bool):
+        # UI 패널 기준 릴레이 #4가 버저
+        try:
+            if getattr(self, "hw", None):
+                self.hw.set_relay(4, bool(on))
+        except Exception:
+            pass
+
+    def _beep_pattern(self, pattern: str):
+        # 릴레이 특성 고려: 짧게 '딸깍' 수준
+        import time
+        def pulse(dt=0.1):
+            self._buzzer_set(True)
+            time.sleep(max(0.01, dt))
+            self._buzzer_set(False)
+
+        if pattern == "sev":
+            # 0.1s → (0.5s 휴지) → 0.1s (2회)
+            pulse(0.1); time.sleep(0.5); pulse(0.1)
+        elif pattern == "par":
+            # 0.1s 1회
+            pulse(0.1)
+
+    def _maybe_beep(self, sensor_id: int):
+        now = time.time()
+        arm = self._buzz_arm
+        if arm["sensor"] == sensor_id and now <= arm["deadline"] and arm["pattern"]:
+            # 비동기로 울려서 흐름 안막히게
+            self._bg(self._beep_pattern, arm["pattern"])
+            # 1회 사용 후 소진
+            self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}
 
     def _on_decision(self, grade, ratio, has_sticker):
-        """
-        모델 판정 결과 콜백
-        grade: "OK", "NG30", "NG80", "NG_STICKER"
-        ratio: stain 비율(%)
-        has_sticker: 스티커 유무(True/False)
-        """
         print(f"[DECISION] {grade}, stain={ratio:.1f}%, sticker={has_sticker}")
         now = time.time()
 
-        # 규칙 요약:
-        # CAM1: no-sticker OR stain >= 30  → 3초 이내 S1 감지시 0.3s 뒤 Act1 + RED 0.5s x2(총 2초)
-        # CAM2: sticker AND 0 < stain <=30 → 3초 이내 S2 감지시 0.3s 뒤 Act2 + ORANGE 0.5s x1(총 1초)
-        # CAM2: sticker AND stain == 0     → 3초 이내 S2 통과 시 GREEN 1.0s x1(총 1초), 액츄에이터 없음
-
-        # 1) CAM1 조건: no-sticker 또는 stain >= 30
+        # 1) CAM1: no-sticker 또는 stain >= 30  → sev (Act1/RED)
         if (not has_sticker) or (ratio >= 30.0):
             self._arm1_deadline = now + 3.0
-            self._arm1_cond = "sev"   # RED 패턴 + Act1
+            self._arm1_cond = "sev"
+            # 단일 버저: CAM1을 대상으로 ARM
+            self._buzz_arm = {"sensor": 1, "pattern": "sev", "deadline": now + 3.0}
 
-        # 2) CAM2 조건: sticker AND 0 < stain <= 30
+        # 2) CAM2: sticker AND 0 < stain <= 30 → par (Act2/ORANGE)
         elif has_sticker and (0.0 < ratio <= 30.0):
             self._arm2_deadline = now + 3.0
-            self._arm2_cond = "par"   # ORANGE 패턴 + Act2
+            self._arm2_cond = "par"
+            # 단일 버저: CAM2만 ARM  ← (요청: 이 경우 CAM1에선 버저 금지)
+            self._buzz_arm = {"sensor": 2, "pattern": "par", "deadline": now + 3.0}
 
-        # 3) CAM2 조건: sticker AND stain == 0
+        # 3) CAM2: sticker AND stain == 0 → good (GREEN only, buzzer off)
         elif has_sticker and ratio == 0.0:
             self._arm2_deadline = now + 3.0
-            self._arm2_cond = "good"  # GREEN 패턴(액츄에이터 없음)
-
-        # 그 외는 무시
+            self._arm2_cond = "good"
+            # 버저 ARM 없음
+            self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}
 
 # === Camera controls (3초 지연) ===
 def delayed_camera_setup():
     time.sleep(3)
-    print("[INFO] Applying camera controls after 3s...")
     cmds = [
         ["v4l2-ctl", "-d", "/dev/video0", "-c", "auto_exposure=1", "-c", "exposure_dynamic_framerate=0",
          "-c", "white_balance_automatic=0", "-c", "focus_automatic_continuous=0"],
@@ -2108,7 +2372,6 @@ def delayed_camera_setup():
     ]
     for cmd in cmds:
         subprocess.run(cmd, check=False)
-        print(f"[CAMERA INIT DONE] {' '.join(cmd)}")
 
 # =========================
 # Entrypoint
