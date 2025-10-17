@@ -1234,6 +1234,12 @@ class App(tk.Tk):
         self._prev_s2 = False
         self._pending1 = None
         self._pending2 = None
+        self._prev_start_btn = False   # 하드웨어 START 버튼 직전 상태
+        self._prev_stop_btn  = False   # 하드웨어 STOP  버튼 직전 상태
+        self._btn_debounce = float(os.getenv('BTN_DEBOUNCE_SEC', '0.15'))  # 150ms
+        self._last_start_edge = 0.0
+        self._last_stop_edge  = 0.0
+        self._stop_latched_until = 0.0   # STOP 후 이 시각까지 START 무시
 
         # 실시간 카운터(M1,M2) + DB 이벤트 옵션
         self._counts = {
@@ -1332,6 +1338,10 @@ class App(tk.Tk):
             if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
                 self._relay_vars[6].set(True)
                 self._refresh_relay_visual(6)
+        except Exception:
+            pass
+        try:
+            self._set_beacons(red=False, orange=False, green=False)
         except Exception:
             pass
 
@@ -1777,6 +1787,50 @@ class App(tk.Tk):
         except Exception:
             pass
 
+        # === 하드웨어 START/STOP 버튼 엣지 처리 (디바운스 + STOP 우선 락) ===
+        try:
+            b_start = bool(st.get("start_button", False))
+            b_stop  = bool(st.get("stop_button",  False))
+            now = time.time()
+
+            # STOP: "눌려있는 동안" 언제든 정지 (레벨 기반) + 디바운스
+            if b_stop:
+                if (now - self._last_stop_edge) >= self._btn_debounce:
+                    self._last_stop_edge = now
+                    self._stop_latched_until = now + 1.0  # STOP 후 1초간 START 무시
+                    # UI STOP 루틴 호출 (워커/컨베이어 정지 포함)
+                    self.on_stop()
+                    # 안전하게 비콘/컨베이어 확실히 OFF 보장
+                    try:
+                        self._set_beacons(red=False, orange=False, green=False)
+                    except Exception:
+                        pass
+                    try:
+                        if self.hw: 
+                            self.hw.set_relay(6, False)  # Conveyor OFF
+                            # (선택) 펌웨어/PLC에 STOP 신호도 보내고 싶으면:
+                            if hasattr(self.hw, "system_stop"):
+                                self.hw.system_stop()
+                        if hasattr(self, "_relay_vars") and 6 in self._relay_vars:
+                            self._relay_vars[6].set(False)
+                            self._refresh_relay_visual(6)
+                    except Exception:
+                        pass
+
+            # START: Rising edge → (STOP 락 해제되고, STOP과 동시가 아니며, arming 끝난 뒤)만 RUN
+            if b_start and not self._prev_start_btn:
+                if (now - self._last_start_edge) >= self._btn_debounce:
+                    self._last_start_edge = now
+                    # 동시에 STOP 눌린 상태 무시 + STOP 락 기간 무시 + arming 완료 필요 + 현재 미동작일 때만
+                    if self._armed and (not b_stop) and (now >= self._stop_latched_until) and (not self._is_running):
+                        self.on_run(1)
+
+            # 이전 상태 저장 (엣지 검출용)
+            self._prev_start_btn = b_start
+            self._prev_stop_btn  = b_stop
+        except Exception:
+            pass
+
         # 센서 램프
         try:
             self._sync_start_stop_lamps()  # START/STOP은 시스템 상태 기준
@@ -2038,9 +2092,10 @@ class App(tk.Tk):
 
         # 그 외는 무시
 
-# === Camera controls ===
+# === Camera controls (3초 지연) ===
 def delayed_camera_setup():
-    time.sleep(2.5)
+    time.sleep(3)
+    print("[INFO] Applying camera controls after 3s...")
     cmds = [
         ["v4l2-ctl", "-d", "/dev/video0", "-c", "auto_exposure=1", "-c", "exposure_dynamic_framerate=0",
          "-c", "white_balance_automatic=0", "-c", "focus_automatic_continuous=0"],
