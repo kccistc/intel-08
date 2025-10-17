@@ -113,42 +113,76 @@ class PyDuino:
 
     # Rx Thread
     def __receiver(self):
+        import time
+        # 초기 입력핀 감시 등록(기존 로직 유지)
         for idx in self.__init_input_pins:
             self.__values[idx] = 0xff
             self.watch(idx, self.__wait_for_input_status)
 
         while self.__force_stop is False:
-            packet = self.__receive_packet()
-            if self.debug:
-                self.logger.info(packet)
-            if packet is None:
+            try:
+                packet = self.__receive_packet()
+            except Exception as e:
+                # 시리얼 분리/중복접근 등 치명 오류 → 1회 로깅 후 조용히 종료
+                try:
+                    from serial import SerialException
+                except Exception:
+                    SerialException = Exception
+                if isinstance(e, (SerialException, OSError)):
+                    if self.debug:
+                        try: self.logger.warning("Serial disconnected/busy: %s", e)
+                        except Exception: pass
+                    # 상태 플래그(옵션)
+                    try: self._connected = False
+                    except Exception: pass
+                    break
+                # 기타 오류는 소프트 리트라이
+                time.sleep(0.02)
                 continue
 
-            # update pin status
+            if packet is None:
+                # 타임아웃/빈 읽기 → 살짝 쉬고 계속
+                time.sleep(0.02)
+                continue
+
+            # 정상 패킷 처리
             pin, value, packet_id = packet
             self.__values[pin] = value
 
-            # run callback
             if packet_id == PyDuino.PACKET_ID_INTERRUPT:
                 self.__watcher.get(pin, _dummy)(*packet)
             else:
-                # TODO: check last packet id
                 with self.__tx_cv:
                     self.__tx_cv.notify()
 
     def __receive_packet(self):
         arduino = self.__arduino
 
-        data = arduino.read()
-        if len(data) == 0 or data[0] != PyDuino.PACKET_START:
+        # 안전 타임아웃 보정(0/None이면 짧게 설정)
+        try:
+            if getattr(arduino, "timeout", None) in (None, 0):
+                arduino.timeout = 0.2
+        except Exception:
+            pass
+
+        # 첫 바이트 읽기
+        try:
+            data = arduino.read()
+        except Exception:
+            # 상위에서 예외 처리
+            raise
+        if not data or data[0] != PyDuino.PACKET_START:
             return None
 
+        # 나머지 4바이트 조립(타임아웃이면 None 반환)
         packet = []
         while len(packet) != 4:
-            data = arduino.read()
-            if len(data) == 0:
-                return None  # Timeout
-
+            try:
+                data = arduino.read()
+            except Exception:
+                raise
+            if not data:
+                return None  # Timeout → 상위 루프가 부드럽게 스킵
             packet.append(data[0])
 
         packet_id, pin, value, packet_end = packet
