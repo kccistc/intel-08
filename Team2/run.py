@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, time, warnings, threading, queue
+import os, sys, time, warnings, threading, queue, subprocess
 from datetime import datetime, timedelta
 
 # iotdemo 경로 우선 추가 (사용자 제공 위치)
@@ -2038,9 +2038,33 @@ class App(tk.Tk):
 
         # 그 외는 무시
 
+# === Camera controls ===
+def delayed_camera_setup():
+    time.sleep(2.5)
+    cmds = [
+        ["v4l2-ctl", "-d", "/dev/video0", "-c", "auto_exposure=1", "-c", "exposure_dynamic_framerate=0",
+         "-c", "white_balance_automatic=0", "-c", "focus_automatic_continuous=0"],
+        ["v4l2-ctl", "-d", "/dev/video0", "-c", "exposure_time_absolute=60", "-c", "gain=128",
+         "-c", "white_balance_temperature=4500", "-c", "focus_absolute=70"],
+        ["v4l2-ctl", "-d", "/dev/video2", "-c", "auto_exposure=1", "-c", "exposure_dynamic_framerate=0",
+         "-c", "white_balance_automatic=0", "-c", "focus_automatic_continuous=0"],
+        ["v4l2-ctl", "-d", "/dev/video2", "-c", "exposure_time_absolute=60", "-c", "gain=128",
+         "-c", "white_balance_temperature=4500", "-c", "focus_absolute=70"],
+    ]
+    for cmd in cmds:
+        subprocess.run(cmd, check=False)
+        print(f"[CAMERA INIT DONE] {' '.join(cmd)}")
+
 # =========================
 # Entrypoint
 # =========================
 if __name__ == "__main__":
     warnings.filterwarnings("ignore", category=RuntimeWarning)
-    App().mainloop()
+
+    # GUI 시작
+    app = App()
+
+    # ✅ 3초 후 백그라운드로 카메라 세팅
+    threading.Thread(target=delayed_camera_setup, daemon=True).start()
+
+    app.mainloop()
