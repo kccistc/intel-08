@@ -8,7 +8,7 @@ from sys import platform
 from time import sleep
 from typing import Optional, Union
 
-from iotdemo.common.debounce import debounce
+from .debounce import debounce
 from .pins import Inputs, Outputs
 from .pyduino import PyDuino
 from .pyft232 import PyFt232
@@ -231,27 +231,13 @@ class FactoryController:
         if self.debug:
             self.logger.info("Start System")
 
-        if self.__device_name == 'ft232':
-            self.__set(PyFt232.PKT_CMD_START, PyFt232.PKT_CMD_START_START)
-            self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
-            self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
-            self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
-            self.__set(PyFt232.PKT_CMD_SPEED, PyFt232.PKT_CMD_SPEED_UP)
-        else:
-            self.red = False
-            self.green = False
-            self.conveyor = False
+        self.conveyor = False
 
     def system_stop(self) -> None:
         if self.debug:
             self.logger.info("Stop System")
 
-        if self.__device_name == 'ft232':
-            self.__set(PyFt232.PKT_CMD_START, PyFt232.PKT_CMD_START_STOP)
-        else:
-            self.red = True
-            self.green = False
-            self.conveyor = False
+        self.conveyor = True
 
     def close(self):
         if self.debug:
