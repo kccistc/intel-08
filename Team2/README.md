@@ -1,3 +1,5 @@
+![Image](https://github.com/user-attachments/assets/f3a97543-363d-4e7a-a2a8-e31d1d17ad0f)
+
 # Intel Geti + AI QC Conveyor
 인텔 Geti + 인공지능 QC 컨베이어
 

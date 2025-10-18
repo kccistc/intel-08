@@ -239,6 +239,24 @@ def softmax(x, axis=1):
     e = np.exp(x)
     return e / np.sum(e, axis=axis, keepdims=True)
 
+def _prepare_cls_input(bgr, size, scale=255.0):
+    # 중앙 정사각형 크롭 → resize → RGB → NCHW float32 [0..1]
+    h, w = bgr.shape[:2]
+    s = min(h, w)
+    y0 = (h - s) // 2; x0 = (w - s) // 2
+    crop = bgr[y0:y0+s, x0:x0+s]
+    img  = cv2.resize(crop, (size, size), interpolation=cv2.INTER_LINEAR)
+    rgb  = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32) / float(scale or 255.0)
+    return rgb.transpose(2,0,1)[None]
+
+def _argmax_logits(arr):
+    X = np.asarray(arr)
+    X = X.reshape(1, -1) if X.ndim != 2 else X
+    X = X - X.max(axis=1, keepdims=True)
+    e = np.exp(X); probs = e / e.sum(axis=1, keepdims=True)
+    idx = int(np.argmax(probs[0])); conf = float(probs[0, idx])
+    return idx, conf
+
 # ---------- ORT helpers ----------
 def ort_session(path: str):
     if not os.path.isfile(path):
@@ -542,18 +560,37 @@ class DecideWorker(threading.Thread):
         self.seg_map    = parse_seg_map(self.cfg['seg_map'], num_classes_hint=max(3, len(self.seg_labels) or 3))  # snap 스타일:contentReference[oaicite:12]{index=12}
         self.stain_disp_id = self.seg_map.get(self.cfg['stain_id'], self.cfg['stain_id'])
         self.sticker_disp_id = self.seg_map.get(self.cfg['sticker_id'], self.cfg['sticker_id'])
+
+        # --- [추가] 색상 분류 세션(옵션) ---
+        self.cls_sess = None
+        self.cls_in = None
+        self.cls_out = None
+        self.cls_labels = [s.strip() for s in (self.cfg.get('cls_labels') or '').split(',') if s.strip()]
+        self.cls_size = int(self.cfg.get('cls_size', 224))
+        self.expected_color = (self.cfg.get('expected_color') or '').strip().lower() or None
+        self.cls_map = parse_seg_map(self.cfg.get('cls_map',''), num_classes_hint=max(3, len(self.cls_labels) or 3))
+        try:
+            cls_path = self.cfg.get('cls_path')
+            if cls_path and os.path.isfile(cls_path):
+                self.cls_sess = ort_session(cls_path)
+                self.cls_in   = self.cls_sess.get_inputs()[0].name
+                self.cls_out  = self.cls_sess.get_outputs()[0].name
+        except Exception:
+            self.cls_sess = None
     
     def stop(self):
         self._stop.set()
 
     def run(self):
         # 로그/이미지 디렉토리
-        log_path = "captures/log/decisions.csv"
+        log_dir = "captures/log"
+        os.makedirs(log_dir, exist_ok=True)
+        log_path_v2 = os.path.join(log_dir, "decisions_v2.csv")
         if self.cfg.get('log_csv', 1):
-            os.makedirs("captures/log", exist_ok=True)
-            if not os.path.isfile(log_path):
-                with open(log_path,"w") as f:
-                    f.write("ts,grade,stain_pct\n")
+            if not os.path.isfile(log_path_v2):
+                with open(log_path_v2, "w") as f:
+                    # v2: ts,grade,color,color_conf,sticker,stain_pct
+                    f.write("ts,grade,color,color_conf,sticker,stain_pct\n")
         if self.cfg.get('save_annotated', 1):
             os.makedirs("captures/annotated", exist_ok=True)
 
@@ -563,17 +600,22 @@ class DecideWorker(threading.Thread):
             except queue.Empty:
                 continue
             try:
-                grade, ratio, annotated, has_sticker = self._analyze_one(snap_bgr)  # [PATCH] sticker flag 수신
+                grade, ratio, annotated, has_sticker, pred_color, pred_conf = self._analyze_one(snap_bgr)
 
+                # 저장 파일명에 color 태그 포함
                 if self.cfg.get('save_annotated', 1):
-                    sticker_tag = "yes" if has_sticker else "no"     # [PATCH] 파일명에 sticker 여부 포함
-                    outp = f"captures/annotated/{grade}_sticker-{sticker_tag}_{ratio:.1f}pct_{ts_ms}.jpg"
+                    color_tag   = f"color-{pred_color}" if pred_color else "color-NA"
+                    sticker_tag = "yes" if has_sticker else "no"
+                    outp = f"captures/annotated/{grade}_{color_tag}_sticker-{sticker_tag}_{ratio:.1f}pct_{ts_ms}.jpg"
                     cv2.imwrite(outp, annotated)
 
+                # CSV(v2): ts,grade,color,color_conf,sticker,stain_pct
                 if self.cfg.get('log_csv', 1):
-                    with open(log_path,"a") as f:
-                        f.write(f"{ts_ms},{grade},{ratio:.3f}\n")
+                    cc = f"{pred_conf:.3f}" if (pred_conf is not None) else ""
+                    with open(log_path_v2, "a") as f:
+                        f.write(f"{ts_ms},{grade},{pred_color or ''},{cc},{'1' if has_sticker else '0'},{ratio:.3f}\n")
 
+                # 기존 콜백(시그니처 그대로)
                 if callable(self.on_decision):
                     self.on_decision(grade, ratio, has_sticker)
             except Exception as e:
@@ -635,18 +677,31 @@ class DecideWorker(threading.Thread):
 
         if det.shape[0]==0:
             _label_badge(annotated, 12, 40, "NO_CAP", (40,40,40), WHITE)
-            return "NO_CAP", 0.0, annotated, False  # [PATCH] has_sticker=False
+            return "NO_CAP", 0.0, annotated, False,None,None  # [PATCH] has_sticker=False
 
         # 최고 score 1개 ROI
         x1,y1,x2,y2,score,cls = map(float, det[np.argmax(det[:,4])][:6])
         gx1=int(np.clip((x1-d_l)/d_r,0,W-1)); gy1=int(np.clip((y1-d_t)/d_r,0,H-1))
         gx2=int(np.clip((x2-d_l)/d_r,0,W-1)); gy2=int(np.clip((y2-d_t)/d_r,0,H-1))
         if gx2<=gx1 or gy2<=gy1:
-            return "NO_CAP", 0.0, annotated, False
+            return "NO_CAP", 0.0, annotated, False, None, None
         roi = annotated[gy1:gy2, gx1:gx2]
         if roi.size==0:
-            return "NO_CAP", 0.0, annotated, False
-
+            return "NO_CAP", 0.0, annotated, False, None, None
+        
+        # ---------- [추가] 색상 분류 ----------
+        pred_color = None; pred_conf = None
+        if self.cls_sess is not None:
+            try:
+                cls_in = _prepare_cls_input(roi, self.cls_size, scale=(self.cfg.get('scale') or 255.0))
+                logits = self.cls_sess.run([self.cls_out], {self.cls_in: cls_in})[0]
+                raw_idx, conf = _argmax_logits(logits)
+                idx = self.cls_map.get(int(raw_idx), int(raw_idx)) if hasattr(self, 'cls_map') and isinstance(self.cls_map, dict) else int(raw_idx)
+                pred_color = (self.cls_labels[idx] if 0 <= idx < len(self.cls_labels) else str(idx)).lower()
+                pred_color = (pred_color or 'unknown').lower()
+                pred_conf  = conf
+            except Exception:
+                pass
         # ---------- seg ----------
         s_img, s_r, s_l, s_t = letterbox(roi, self.cfg['seg_size'])
         s_rgb = cv2.cvtColor(s_img, cv2.COLOR_BGR2RGB)
@@ -679,8 +734,23 @@ class DecideWorker(threading.Thread):
             stain_cid=self.stain_disp_id
         )
 
+        # ---------- [추가] COLOR 배지(프리뷰/저장 공통) ----------
+        color_mismatch = False
+        if self.expected_color and pred_color:
+            color_mismatch = (pred_color != self.expected_color)
+
+        if pred_color:
+            badge_txt = f"COLOR: {pred_color.upper()}"
+            if pred_conf is not None:
+                badge_txt += f" ({pred_conf*100:.0f}%)"
+            _label_badge(
+                annotated,
+                max(0, gx1), max(0, gy1-36),
+                badge_txt,
+                (0,0,255) if color_mismatch else (80,80,80),
+                WHITE
+            )
         # ---------- STICKER 여부 판단 + 상단 배지 출력 [PATCH] ----------
-        sticker_id = self.seg_map.get(1, 1)
         has_sticker = bool(np.any(mask_roi == self.sticker_disp_id))
         badge_text = f"STICKER: {'YES' if has_sticker else 'NO'}"
         badge_bg   = (40,180,40) if has_sticker else (50,50,200)
@@ -704,7 +774,7 @@ class DecideWorker(threading.Thread):
         stain_full = np.zeros((H,W), np.uint8)
         stain_full[gy1:gy2, gx1:gx2] = np.where(mask_roi==self.stain_disp_id, self.stain_disp_id, 0)
 
-# [PATCH] 픽셀 카운트도 받는다
+        # [PATCH] 픽셀 카운트도 받는다
         ratio, stain_px, cap_px = draw_cap_circle_and_ratio(
             annotated, cx, cy, dyn_diam, stain_full, stain_id=self.stain_disp_id
         )
@@ -724,22 +794,36 @@ class DecideWorker(threading.Thread):
             (255,255,255),
             (255,255,255),
         ]
+        # ---------- [추가] 메트릭 첫 줄에 color ----------
+        if pred_color:
+            # 숫자일 경우 라벨 이름으로 변환
+            if isinstance(pred_color, (int, np.integer)) and hasattr(self, "cls_labels"):
+                if 0 <= pred_color < len(self.cls_labels):
+                    pred_color = self.cls_labels[pred_color]
+                else:
+                    pred_color = str(pred_color)
+            lines.insert(0, f"color: {pred_color} ({pred_conf*100:.0f}% )" if pred_conf is not None else f"color: {pred_color}")
+            colors.insert(0, (0,0,255) if color_mismatch else (255,255,255))
+
         put_lines_top_left(annotated, lines, colors)
 
         # ---------- 등급 판정 ----------
-        if not has_sticker:
-            grade = "NG_STICKER"          # 스티커 없음은 강제 불량
-            ratio = float(ratio)          # (표시/저장용으로 유지)
+        if color_mismatch:
+            grade = "NG80"            # 색상 불일치 = 완전불량(강제)
+        elif not has_sticker:
+            grade = "NG_STICKER"      # 스티커 없음 = 불량
+        elif ratio <= 0.0:
+            grade = "OK"
+        elif ratio <= 30.0:
+            grade = "NG30"
         else:
-            if   ratio <= 0.0: grade = "OK"
-            elif ratio <= 30.: grade = "NG30"
-            else:              grade = "NG80"
+            grade = "NG80"
 
         # 중앙 배지: 등급 | STAIN xx.x%
         _label_badge(annotated, max(0,cx-60), max(0,cy-80), f"{grade} | STAIN {ratio:.1f}%", (40,40,40), WHITE)
         draw_box(annotated, gx1, gy1, gx2, gy2, score, cls, self.det_labels, color=PINK)
 
-        return grade, ratio, annotated, has_sticker   # [PATCH] sticker flag 반환
+        return grade, ratio, annotated, has_sticker, pred_color, pred_conf   # [PATCH] sticker flag 반환
 
 
 # =========================
@@ -1006,6 +1090,7 @@ class App(tk.Tk):
         # 신호등(비콘) 상태 추적
         self._last_beacon = 'none'
         self._beacon_after = None
+        self._beacon_busy = False  # 부팅 시퀀스 중에는 비콘 제어 잠금
 
         # 하드웨어 컨트롤러
         self.hw = HW(port=None, debug=True)
@@ -1134,6 +1219,12 @@ class App(tk.Tk):
         # Detection workers: CAM1(모델1), CAM2(모델2)
         self.det_cfg_base = {
             # 모델 2 입니다.
+            # --- [추가] 색상 분류(classification) 관련 ---
+            'cls_path':   os.path.expanduser(os.getenv('CLASS_MODEL',  os.path.join(os.path.dirname(os.path.abspath(__file__)), "class.onnx"))),
+            'cls_labels': os.getenv('CLASS_LABELS', 'pink,purple'),
+            'cls_size':   int(os.getenv('CLASS_SIZE', '224')),
+            'cls_map': os.getenv('CLASS_MAP', '1:0,2:1'),
+            'expected_color': None,   # 개별 모델 cfg에서 채움 (model1=pink, model2=purple)
             'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  'det2.onnx')),
             'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  'seg2.onnx')),
             'det_size':  int(os.getenv('DET_SIZE', '640')),
@@ -1165,21 +1256,19 @@ class App(tk.Tk):
         DEFAULT_DET_LOCAL = os.path.join(model_dir, "det.onnx")
         DEFAULT_SEG_LOCAL = os.path.join(model_dir, "seg.onnx")
 
+      # Model 1 (핑크 전용)
         self.det_cfg_m1 = dict(self.det_cfg_base)
-        self.det_cfg_m1['det_path'] = os.path.expanduser(
-        os.getenv('DET_MODEL_M1', os.getenv('DET_MODEL', DEFAULT_DET_LOCAL))
-        )
-        self.det_cfg_m1['seg_path'] = os.path.expanduser(
-        os.getenv('SEG_MODEL_M1', os.getenv('SEG_MODEL', DEFAULT_SEG_LOCAL))
-        )
+        self.det_cfg_m1['det_path'] = os.path.expanduser(os.getenv('DET_MODEL_M1', os.getenv('DET_MODEL', DEFAULT_DET_LOCAL)))
+        self.det_cfg_m1['seg_path'] = os.path.expanduser(os.getenv('SEG_MODEL_M1', os.getenv('SEG_MODEL', DEFAULT_SEG_LOCAL)))
+        self.det_cfg_m1['cls_path'] = os.path.expanduser(os.getenv('CLASS_MODEL_M1', self.det_cfg_base['cls_path']))
+        self.det_cfg_m1['expected_color'] = os.getenv('EXPECTED_COLOR_M1', 'pink')
 
+        # Model 2 (퍼플 전용)
         self.det_cfg_m2 = dict(self.det_cfg_base)
-        self.det_cfg_m2['det_path'] = os.path.expanduser(
-        os.getenv('DET_MODEL_M2', os.getenv('DET_MODEL', self.det_cfg_base['det_path']))
-        )
-        self.det_cfg_m2['seg_path'] = os.path.expanduser(
-        os.getenv('SEG_MODEL_M2', os.getenv('SEG_MODEL', self.det_cfg_base['seg_path']))
-        )
+        self.det_cfg_m2['det_path'] = os.path.expanduser(os.getenv('DET_MODEL_M2', os.getenv('DET_MODEL', self.det_cfg_base['det_path'])))
+        self.det_cfg_m2['seg_path'] = os.path.expanduser(os.getenv('SEG_MODEL_M2', os.getenv('SEG_MODEL', self.det_cfg_base['seg_path'])))
+        self.det_cfg_m2['cls_path'] = os.path.expanduser(os.getenv('CLASS_MODEL_M2', self.det_cfg_base['cls_path']))
+        self.det_cfg_m2['expected_color'] = os.getenv('EXPECTED_COLOR_M2', 'purple')
 
 
         self.worker1 = None
@@ -1751,6 +1840,8 @@ class App(tk.Tk):
         - par(ORANGE):0.5s ON → 0.5s OFF                       (총 1.0s)
         - good(GREEN):1.0s ON                                  (총 1.0s)
         """
+        if getattr(self, "_beacon_busy", False):
+            return
         # 먼저 모두 OFF
         try:
             self._set_beacons(red=False, orange=False, green=False)
@@ -1843,6 +1934,9 @@ class App(tk.Tk):
             self._blink_green(count=2, on_ms=500, off_ms=200)
 
     def _maybe_blink_beacon(self, rate: float, on_ms: int = 800):
+        # 부팅 시퀀스(혹은 다른 배타적 제어) 중엔 개입 금지
+        if getattr(self, "_beacon_busy", False):
+            return
         desired = 'none'
         if rate >= 100.0:
             desired = 'red'
@@ -1881,6 +1975,17 @@ class App(tk.Tk):
         앱 시작시: RED -> ORANGE -> GREEN 순서로 "누적" 켠 뒤,
         GREEN까지 켜진 상태로 hold_ms 유지하고 모두 OFF.
         """
+        # === 잠금 시작 ===
+        self._beacon_busy = True
+
+        # 기존에 깜빡임 예약이 걸려 있었다면 취소 (중복 개입 차단)
+        try:
+            if getattr(self, "_beacon_after", None):
+                self.after_cancel(self._beacon_after)
+                self._beacon_after = None
+        except Exception:
+            pass
+
         try:
             # 모두 끈 상태에서 시작
             self._set_beacons(red=False, orange=False, green=False)
@@ -1905,7 +2010,8 @@ class App(tk.Tk):
 
         def all_off():
             self._set_beacons(red=False, orange=False, green=False)
-
+            # === 잠금 해제 ===
+            self._beacon_busy = False
         # 살짝 딜레이 후 시작
         self.after(50, on_red)
 
@@ -2150,6 +2256,7 @@ class App(tk.Tk):
         info = self._pending1; self._pending1 = None
         self._act1_last = time.time()
         self._pulse_actuator(7, ms=int(os.getenv('ACT1_PULSE_MS', '250')))
+        self._bg(self._beep_pattern, "sev")
         if info:
             self._record_event(kind=info.get("kind","sev"))
 
@@ -2157,6 +2264,7 @@ class App(tk.Tk):
         info = self._pending2; self._pending2 = None
         self._act2_last = time.time()
         self._pulse_actuator(8, ms=int(os.getenv('ACT2_PULSE_MS', '250')))
+        self._bg(self._beep_pattern, "par")
         if info:
             self._record_event(kind=info.get("kind","par"))
 
@@ -2317,11 +2425,11 @@ class App(tk.Tk):
             self._buzzer_set(False)
 
         if pattern == "sev":
-            # 0.1s → (0.5s 휴지) → 0.1s (2회)
-            pulse(0.1); time.sleep(0.5); pulse(0.1)
+            # 0.1s → (0.5s 휴지) → 0.1s → (0.5s 휴지)
+            pulse(0.1); time.sleep(0.5); pulse(0.1); time.sleep(0.5)
         elif pattern == "par":
-            # 0.1s 1회
-            pulse(0.1)
+            # 0.1s → (0.5s 휴지)
+            pulse(0.1); time.sleep(0.5)
 
     def _maybe_beep(self, sensor_id: int):
         now = time.time()
@@ -2336,26 +2444,25 @@ class App(tk.Tk):
         print(f"[DECISION] {grade}, stain={ratio:.1f}%, sticker={has_sticker}")
         now = time.time()
 
-        # 1) CAM1: no-sticker 또는 stain >= 30  → sev (Act1/RED)
-        if (not has_sticker) or (ratio >= 30.0):
+        # NEW: DecideWorker가 준 grade 로 액추에이터 제어 (색상 불일치 포함)
+        if grade in ("NG80", "NG_STICKER"):
+            # 완전불량 → Actuator 1 (RED)
             self._arm1_deadline = now + 3.0
             self._arm1_cond = "sev"
-            # 단일 버저: CAM1을 대상으로 ARM
             self._buzz_arm = {"sensor": 1, "pattern": "sev", "deadline": now + 3.0}
 
-        # 2) CAM2: sticker AND 0 < stain <= 30 → par (Act2/ORANGE)
-        elif has_sticker and (0.0 < ratio <= 30.0):
+        elif grade == "NG30":
+            # 부분불량 → Actuator 2 (ORANGE)
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "par"
-            # 단일 버저: CAM2만 ARM  ← (요청: 이 경우 CAM1에선 버저 금지)
             self._buzz_arm = {"sensor": 2, "pattern": "par", "deadline": now + 3.0}
 
-        # 3) CAM2: sticker AND stain == 0 → good (GREEN only, buzzer off)
-        elif has_sticker and ratio == 0.0:
+        else:  # "OK"
+            # 정상품 → GREEN만 (버저 ARM 없음)
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "good"
-            # 버저 ARM 없음
             self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}
+
 
 # === Camera controls (3초 지연) ===
 def delayed_camera_setup():
