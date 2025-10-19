@@ -500,7 +500,7 @@ class DetectionWorker(threading.Thread):
 
         if inside_ok:
             now = time.time()
-            cooldown = float(self.cfg.get('capture_cooldown', 1.5))
+            cooldown = float(self.cfg.get('capture_cooldown', 0.2))
             if now - self._last_capture_ts >= cooldown:
                 ts_ms = int(now * 1000)
 
@@ -1244,7 +1244,7 @@ class App(tk.Tk):
             'box':       os.getenv('BOX', ''),                      # "x,y,w,h" (px)
             'capture_box': os.getenv('CAPTURE_BOX', '0.3,0.3'),     # 중앙 비율 (백업)
             'gate_mode': os.getenv('GATE_MODE', 'full'),            # full|center
-            'capture_cooldown': float(os.getenv('CAPTURE_COOLDOWN', '1.5')),
+            'capture_cooldown': float(os.getenv('CAPTURE_COOLDOWN', '0.2')),
             'dynamic_diam_k': float(os.getenv('DYN_DIAM_K', '0.90')),  # 검출박스 기반 지름 스케일
             
             'save_raw_caps': int(os.getenv('SAVE_RAW_CAPS', '0')),   # 게이트 통과시 원본컷 저장
@@ -1314,7 +1314,7 @@ class App(tk.Tk):
         # === 액츄에이터 제어용: 디바운스 + 지연(arming) ===
         self._act1_last = 0.0
         self._act2_last = 0.0
-        self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.8'))  # 0.8초 디바운스
+        self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.2'))  # 0.8초 디바운스
         self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.3'))        # 0.5초 지연(감지 후)
         
         # --- [추가] 센서 게이팅용 3초 무장 창 ---
