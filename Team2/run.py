@@ -1144,7 +1144,6 @@ class App(tk.Tk):
         ttk.Label(top, text="RUN:").pack(side='left', padx=(0,6))
         self.win_var = tk.StringVar(value='5m')
         self.win_box = ttk.Combobox(top, textvariable=self.win_var, values=['5m','30m','1h','1d'], width=6, state='readonly')
-        self.win_box.bind("<<ComboboxSelected>>", lambda e: self.refresh())
         self.btn_m1.pack(side='left', padx=4); self.btn_m2.pack(side='left', padx=4); self.btn_stop.pack(side='left', padx=4)
         self.win_box.pack(side='left'); ttk.Label(top, text="  상태:").pack(side='left', padx=(16,4)); self.status_lbl.pack(side='left')
 
@@ -1225,8 +1224,8 @@ class App(tk.Tk):
             'cls_size':   int(os.getenv('CLASS_SIZE', '224')),
             'cls_map': os.getenv('CLASS_MAP', '1:0,2:1'),
             'expected_color': None,   # 개별 모델 cfg에서 채움 (model1=pink, model2=purple)
-            'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  'det2.onnx')),
-            'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  'seg2.onnx')),
+            'det_path':  os.path.expanduser(os.getenv('DET_MODEL',  'det.onnx')),
+            'seg_path':  os.path.expanduser(os.getenv('SEG_MODEL',  'seg.onnx')),
             'det_size':  int(os.getenv('DET_SIZE', '640')),
             'seg_size':  int(os.getenv('SEG_SIZE', '512')),
             'det_conf':  float(os.getenv('DET_CONF', '0.35')),
@@ -1306,6 +1305,12 @@ class App(tk.Tk):
             self.tree.column(col, width=w, anchor='center')
         self.tree.pack(fill='both', expand=True, padx=6, pady=6)
 
+        self._fill_recent50_once()
+
+        # (너의 Treeview 생성 블록 바로 아래)
+        self._recent_last_key = None                # ← 마지막으로 본 (id,ts) 키 저장
+        self.after(300, self._recent_tick)          # ← 0.3초 뒤부터 주기 갱신 시작
+                
         # 장치 패널 — 가로 전체
         self._build_device_panel(root)
         # 처음 화면에 STOP 램프가 반드시 들어오도록
@@ -1350,10 +1355,8 @@ class App(tk.Tk):
             2: {"good":0, "sev":0, "par":0},
         }
         self._write_db_on_event = bool(int(os.getenv("WRITE_DB_ON_EVENT", "1")))
-        self._refreshing = False
         # timers
         self.after(120, self.update_camera)
-        self.after(300, self.refresh)
         self.after(200, self._poll_device_panel)
         self.after(180, self._logic_loop)  # stain% & 센서 연동 로직
         self.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -1382,6 +1385,64 @@ class App(tk.Tk):
     def _row(self, parent, r, name, var):
         ttk.Label(parent, text=name, width=16).grid(row=r, column=0, sticky='w', padx=4, pady=2)
         ttk.Label(parent, textvariable=var, width=12).grid(row=r, column=1, sticky='w', padx=4, pady=2)
+
+    def _fill_recent50_once(self):
+        """
+        DB에서 최근 50건을 읽어 Treeview를 '필요할 때만' 갱신한다.
+        - 맨 위 (id, ts)가 이전과 같으면 아무 것도 하지 않음 → 깜빡임 최소화
+        - 바뀌었을 때만 전체 갱신
+        """
+        try:
+            rows, _ = db_query(f'''
+                SELECT id, ts, m1_good, m1_sev, m1_par, m2_good, m2_sev, m2_par
+                FROM {DB_TABLE_6}
+                ORDER BY ts DESC, id DESC
+                LIMIT 50
+            ''')
+        except Exception:
+            rows = []
+
+        # 표시용으로 가공
+        recent_rows = [
+            (
+                ts.strftime('%Y-%m-%d %H:%M:%S'),
+                int(m1g or 0), int(m1s or 0), int(m1p or 0),
+                int(m2g or 0), int(m2s or 0), int(m2p or 0)
+            )
+            for _id, ts, m1g, m1s, m1p, m2g, m2s, m2p in rows
+        ]
+
+        # 변경 확인용 키: 맨 위 레코드의 (id,ts) 조합
+        new_top_key = None
+        if rows:
+            _id0, ts0 = rows[0][0], rows[0][1]
+            new_top_key = f"{_id0}:{ts0.strftime('%Y-%m-%d %H:%M:%S')}"
+
+        # 이전과 동일하면 무변경 → 리턴
+        if new_top_key and getattr(self, "_recent_last_key", None) == new_top_key:
+            return False
+
+        # 여기서만 전체 리프레시 (변경 있을 때만 실행되므로 깜빡임 최소화)
+        try:
+            for iid in self.tree.get_children(""):
+                self.tree.delete(iid)
+        except Exception:
+            pass
+
+        for row in recent_rows:
+            self.tree.insert("", "end", values=row)
+
+        self._recent_last_key = new_top_key
+        return True
+
+    def _recent_tick(self):
+        """최근 50건을 필요할 때만 갱신하고, 다음 주기를 예약한다."""
+        try:
+            self._fill_recent50_once()  # 변경 없으면 내부에서 아무 것도 안 함
+        except Exception:
+            pass
+        # 1초 간격으로 폴링 (원하면 1500~2000ms로 늘려도 됨)
+        self.after(1000, self._recent_tick)
 
     def _model_panel_simple(self, parent, title, vars_dict):
         lf = ttk.LabelFrame(parent, text=title)
@@ -1414,7 +1475,6 @@ class App(tk.Tk):
         
         self._is_running = True
         self.active_model = model_id
-        self._is_running = True
         self._sync_start_stop_lamps()
         
         self._set_beacons(red=False, orange=False, green=False)
@@ -1644,180 +1704,6 @@ class App(tk.Tk):
         except Exception:
             pass
 
-
-    # === 데이터 새로고침 (DB 전용) - 비동기 ===
-    def refresh(self):
-        # 주기 스케줄 (자체 재호출)
-        try:
-            self.k_updated.set(datetime.now().strftime('%H:%M:%S'))
-        except Exception:
-            pass
-
-        if self._refreshing:
-            self.after(1500, self.refresh)
-            return
-
-        self._refreshing = True
-        # DB는 백그라운드에서, UI는 after(0, ...)로
-        self._bg(self._refresh_async)
-        self.after(1500, self.refresh)
-
-    def _refresh_async(self):
-        try:
-            mins = self._win_minutes()
-            ok_payload = None
-
-            # 6-cols 집계 + 최근 목록 시도
-            try:
-                rows_sum, _ = db_query(f'''
-                    SELECT
-                    COALESCE(SUM(m1_good),0), COALESCE(SUM(m1_sev),0), COALESCE(SUM(m1_par),0),
-                    COALESCE(SUM(m2_good),0), COALESCE(SUM(m2_sev),0), COALESCE(SUM(m2_par),0)
-                    FROM {DB_TABLE_6}
-                    WHERE ts >= NOW() - INTERVAL {mins} MINUTE
-                ''')
-                m1_g,m1_s,m1_p,m2_g,m2_s,m2_p = [int(x or 0) for x in rows_sum[0]]
-
-                rows_recent, _ = db_query(f'''
-                    SELECT ts, m1_good, m1_sev, m1_par, m2_good, m2_sev, m2_par
-                    FROM {DB_TABLE_6}
-                    ORDER BY ts DESC, id DESC
-                    LIMIT 50
-                ''')
-                recent_rows = [
-                    (ts.strftime('%Y-%m-%d %H:%M:%S'),
-                    int(m1g or 0), int(m1s or 0), int(m1p or 0),
-                    int(m2g or 0), int(m2s or 0), int(m2p or 0))
-                    for ts,m1g,m1s,m1p,m2g,m2s,m2p in rows_recent
-                ]
-                ok_payload = (
-                    {'good':m1_g,'sev':m1_s,'par':m1_p},
-                    {'good':m2_g,'sev':m2_s,'par':m2_p},
-                    recent_rows
-                )
-            except Exception:
-                ok_payload = None
-
-            if ok_payload is not None:
-                self.after(0, lambda p=ok_payload: self._apply_6col_to_ui(*p))
-                return
-
-            # === 레거시 테이블 경로 ===
-            try:
-                rows, _ = db_query(f'''
-                    SELECT model,
-                        SUM(good)        AS good,
-                        SUM(sev_contam)  AS sev_contam,
-                        SUM(sev_damage)  AS sev_damage,
-                        SUM(par_contam)  AS par_contam,
-                        SUM(par_damage)  AS par_damage
-                    FROM qc_agg
-                    WHERE ts >= NOW() - INTERVAL {mins} MINUTE
-                    GROUP BY model
-                ''')
-                agg={'M1': {'good':0,'sev':0,'par':0},
-                    'M2': {'good':0,'sev':0,'par':0}}
-                for model, g, sc, sd, pc, pd in rows:
-                    agg[model]={'good':int(g or 0),'sev':int(sc or 0)+int(sd or 0),'par':int(pc or 0)+int(pd or 0)}
-
-                rows_recent,_=db_query('''
-                    SELECT ts, model, good, (sev_contam+sev_damage) AS sev, (par_contam+par_damage) AS par
-                    FROM qc_agg
-                    ORDER BY ts DESC, id DESC
-                    LIMIT 50
-                ''')
-                recent_rows=[]
-                for ts,model,g,sev,par in rows_recent:
-                    tsf = ts.strftime('%Y-%m-%d %H:%M:%S')
-                    if model=='M1':
-                        recent_rows.append((tsf,int(g or 0),int(sev or 0),int(par or 0),0,0,0))
-                    else:
-                        recent_rows.append((tsf,0,0,0,int(g or 0),int(sev or 0),int(par or 0)))
-
-                self.after(0, lambda: self._apply_legacy_to_ui(agg, recent_rows))
-            finally:
-                self.after(0, lambda: setattr(self, "_refreshing", False))
-        except Exception:
-            self.after(0, lambda: setattr(self, "_refreshing", False))
-
-    def _apply_6col_to_ui(self, m1_counts, m2_counts, recent_rows):
-        self._update_from_counts(m1_counts, m2_counts)
-        self._set_recent_diff(recent_rows)
-
-    def _apply_legacy_to_ui(self, agg, recent_rows):
-        self._update_from_counts(agg['M1'], agg['M2'])
-        self._set_recent_diff(recent_rows)
-
-    def _refresh_from_6col(self):
-        try:
-            mins = self._win_minutes()
-            rows, _ = db_query(f'''
-                SELECT
-                  COALESCE(SUM(m1_good),0), COALESCE(SUM(m1_sev),0), COALESCE(SUM(m1_par),0),
-                  COALESCE(SUM(m2_good),0), COALESCE(SUM(m2_sev),0), COALESCE(SUM(m2_par),0)
-                FROM {DB_TABLE_6}
-                WHERE ts >= NOW() - INTERVAL {mins} MINUTE
-            ''')
-            if not rows:
-                return True
-            m1_g,m1_s,m1_p,m2_g,m2_s,m2_p = [int(x or 0) for x in rows[0]]
-            self._update_from_counts(
-                {'good':m1_g,'sev':m1_s,'par':m1_p},
-                {'good':m2_g,'sev':m2_s,'par':m2_p},
-            )
-
-            rows,_=db_query(f'''
-                SELECT ts, m1_good, m1_sev, m1_par, m2_good, m2_sev, m2_par
-                FROM {DB_TABLE_6}
-                ORDER BY ts DESC, id DESC
-                LIMIT 50
-            ''')
-            recent_rows=[(ts.strftime('%Y-%m-%d %H:%M:%S'),
-                          int(m1g or 0), int(m1s or 0), int(m1p or 0),
-                          int(m2g or 0), int(m2s or 0), int(m2p or 0))
-                         for ts,m1g,m1s,m1p,m2g,m2s,m2p in rows]
-            self._set_recent(recent_rows)
-            return True
-        except Exception:
-            return False
-
-    def _refresh_from_legacy(self):
-        try:
-            mins = self._win_minutes()
-            rows, _ = db_query(f'''
-                SELECT model,
-                       SUM(good)        AS good,
-                       SUM(sev_contam)  AS sev_contam,
-                       SUM(sev_damage)  AS sev_damage,
-                       SUM(par_contam)  AS par_contam,
-                       SUM(par_damage)  AS par_damage
-                FROM qc_agg
-                WHERE ts >= NOW() - INTERVAL {mins} MINUTE
-                GROUP BY model
-            ''')
-            agg={'M1': {'good':0,'sev':0,'par':0},
-                 'M2': {'good':0,'sev':0,'par':0}}
-            for model, g, sc, sd, pc, pd in rows:
-                agg[model]={'good':int(g or 0),'sev':int(sc or 0)+int(sd or 0),'par':int(pc or 0)+int(pd or 0)}
-            self._update_from_counts(agg['M1'], agg['M2'])
-
-            rows,_=db_query('''
-                SELECT ts, model, good, (sev_contam+sev_damage) AS sev, (par_contam+par_damage) AS par
-                FROM qc_agg
-                ORDER BY ts DESC, id DESC
-                LIMIT 50
-            ''')
-            recent_rows=[]
-            for ts,model,g,sev,par in rows:
-                tsf = ts.strftime('%Y-%m-%d %H:%M:%S')
-                if model=='M1':
-                    recent_rows.append((tsf,int(g or 0),int(sev or 0),int(par or 0),0,0,0))
-                else:
-                    recent_rows.append((tsf,0,0,0,int(g or 0),int(sev or 0),int(par or 0)))
-            self._set_recent(recent_rows)
-        except Exception:
-            pass
-
     # ==== Beacon helpers ==================================================
     def _set_beacons(self, red=None, orange=None, green=None):
         mapping = {1: red, 2: orange, 3: green}
@@ -2017,43 +1903,82 @@ class App(tk.Tk):
 
 
     # ======================================================================
-    def _set_recent_diff(self, rows):
+    # App 클래스 안에 추가 (기존 _set_recent가 있다면 이 버전으로 교체)
+    def _set_recent(self, recent_rows):
         """
-        rows: [(ts, m1_g, m1_s, m1_p, m2_g, m2_s, m2_p), ...] (최신순 최대 50)
-        - 기존 아이템과 비교해서 변경/추가만 반영 (깜빡임 최소화)
+        recent_rows: 최신이 앞쪽에 오는 리스트.
+        트리에 데이터가 없을 때만 전체 채우고,
+        그 외에는 깜빡임 없이 차분 적용(_set_recent_diff)으로 위임.
         """
         try:
-            new_keys = [("|".join(map(str, r))) for r in rows]
-            items = self.tree.get_children()
-            cur_values = [self.tree.item(i, "values") for i in items]
-            cur_keys = [("|".join(map(str, v))) for v in cur_values]
-
-            if cur_keys == new_keys:
-                return
-
-            # 공통 prefix 유지
-            prefix_len = 0
-            for a,b in zip(cur_keys, new_keys):
-                if a == b:
-                    prefix_len += 1
-                else:
-                    break
-
-            # 기존 과잉 제거
-            for i in range(len(items)-1, prefix_len-1, -1):
-                self.tree.delete(items[i])
-
-            # 부족분 삽입
-            for i in range(prefix_len, len(rows)):
-                self.tree.insert('', 'end', values=rows[i])
-
+            children = self.tree.get_children("")
         except Exception:
+            children = ()
+        if not children:
+            # 최초 1회만 풀 렌더 (깜빡임 거의 없음)
+            for row in recent_rows:
+                self.tree.insert("", "end", values=row)
+            return
+        # 이후부터는 차분 적용
+        self._set_recent_diff(recent_rows)
+
+    def _update_row_if_changed(self, iid, new_values):
+        """iid 행의 값이 new_values와 다르면 그 행만 갱신(깜빡임 없음)."""
+        try:
+            cur = self.tree.item(iid, "values")
+            # values는 튜플/리스트 문자열들이라 문자열 비교로 충분
+            if tuple(map(str, cur)) != tuple(map(str, new_values)):
+                self.tree.item(iid, values=new_values)
+        except Exception:
+            pass
+
+    def _set_recent_diff(self, recent_rows):
+        """
+        깜빡임 없이 신규만 위로 추가, 기존 동일 타임스탬프는 값만 갱신.
+        최신이 앞쪽(0번)으로 온다는 가정.
+        """
+        try:
+            children = list(self.tree.get_children(""))
+        except Exception:
+            children = []
+
+        # 현재 트리 최상단 ts
+        top_ts = None
+        if children:
             try:
-                self.tree.delete(*self.tree.get_children())
-                for r in rows:
-                    self.tree.insert('', 'end', values=r)
+                top_ts = self.tree.item(children[0], "values")[0]
             except Exception:
-                pass
+                top_ts = None
+
+        # 1) 위쪽으로 새로 추가할 개수 계산
+        #    recent_rows는 최신이 앞쪽이므로, 기존 top_ts를 만날 때까지가 "신규"
+        new_count = 0
+        for row in recent_rows:
+            ts = row[0]
+            if top_ts is not None and str(ts) == str(top_ts):
+                break
+            new_count += 1
+
+        # 2) 신규를 역순으로 맨 위에 insert (시간 오름차순 유지 위해 역순)
+        if new_count > 0:
+            for row in reversed(recent_rows[:new_count]):
+                self.tree.insert("", 0, values=row)
+
+        # 3) 겹치는 구간(=이미 트리에 있는 범위)은 값이 바뀌었으면 그 행만 갱신
+        #    recent_rows[new_count:] 를 트리 상단부터 차례로 대응시켜 비교 갱신
+        start = new_count
+        iids = list(self.tree.get_children(""))
+        for idx, row in enumerate(recent_rows[start:], start=0):
+            if idx >= len(iids):
+                break
+            self._update_row_if_changed(iids[idx], row)
+
+        # 4) 행 수 50개로 유지 (초과분은 아래쪽부터 삭제)
+        MAX_N = 50
+        iids = list(self.tree.get_children(""))
+        if len(iids) > MAX_N:
+            for iid in iids[MAX_N:]:
+                self.tree.delete(iid)
 
     # === 장치 패널(임베디드) ===
     def _build_device_panel(self, root):
