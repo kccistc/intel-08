@@ -23,11 +23,11 @@
 |                          [팀장]<br />프로젝트 총괄, ROS 구현,<br />데이터셋 제작, 형상 관리                          |                          [부팀장]<br />AI 모델링, ROS 구현,<br />웹 화면 구현                          |                                STM32 보드 차량<br />제작 및 배선,CAN 통신                                |
 
 
-|                                         허진경                                          |                                      김영교                                      |
+|                                          김영교                                         |                                      허진경                                      |
 | :-------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
-|   <img width="100px" src="https://avatars.githubusercontent.com/u/228847706?v=4"/>   |   <img width="100px" src="https://avatars.githubusercontent.com/u/221326759?v=4" />   |
-|                       [@Heo157](https://github.com/Heo157)                        |           [@mmc47047](https://github.com/mmc47047)           |
-|         AGL 빌드          |            멀티캐스트 통신,<br />시스템 자동화            |
+|   <img width="100px" src="https://avatars.githubusercontent.com/u/221326759?v=4" />   |   <img width="100px" src="https://avatars.githubusercontent.com/u/228847706?v=4"/>   |
+|                        [@mmc47047](https://github.com/mmc47047)                       |           [@Heo157](https://github.com/Heo157)           |
+|         멀티캐스트 통신,<br />시스템 자동화          |            AGL 빌드            |
 
 ## 🖱 사용 기술
 
