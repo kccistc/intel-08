@@ -9,6 +9,7 @@
 - **자동 항해 일지 작성 및 브리핑**
 
 **개발 기간**: 2025.09.26 ~ 2025.10.22
+**개발 환경**: Jetson Nano / Raspberry Pi 5 / Python / MQTT
 
 ## 2. 안개 제거 Dehazing
 
