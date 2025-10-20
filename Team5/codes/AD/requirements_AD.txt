@@ -1,0 +1,7 @@
+paho-mqtt
+opencv-python
+numpy
+openvino
+torch
+torchvision
+Pillow

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>해양 시스템 통합 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .data-card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        /* 스크롤바 커스터마이징 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* slate-300 */
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #f1f5f9; /* slate-100 */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-4xl font-extrabold text-blue-800 tracking-tight">⚓ 해양 시스템 통합 대시보드</h1>
+            <p class="text-gray-500 mt-1">MQTT & SocketIO 실시간 데이터 모니터링 및 LLM 보고서</p>
+        </header>
+
+        <!-- 메인 그리드 레이아웃 (데스크톱 2열, 모바일 1열) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- 좌측: 실시간 상태 및 LLM -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- 섹션 1: IMU & Vision 실시간 상태 -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- IMU Roll -->
+                    <div id="imu-roll-card" class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                        <div class="text-sm font-semibold text-gray-500">선체 기울기 (Roll)</div>
+                        <div class="text-4xl font-bold mt-2 text-blue-700 flex items-baseline">
+                            <span id="imu-roll">0.00</span>
+                            <span class="text-xl ml-1">°</span>
+                        </div>
+                        <p id="roll-status" class="text-xs mt-1 text-green-500 font-medium">안정적</p>
+                    </div>
+                    <!-- IMU Pitch -->
+                    <div id="imu-pitch-card" class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                        <div class="text-sm font-semibold text-gray-500">선체 상하 동요 (Pitch)</div>
+                        <div class="text-4xl font-bold mt-2 text-gray-800 flex items-baseline">
+                            <span id="imu-pitch">0.00</span>
+                            <span class="text-xl ml-1">°</span>
+                        </div>
+                        <p class="text-xs mt-1 text-gray-400 font-medium">실시간 데이터</p>
+                    </div>
+                    <!-- IMU Yaw -->
+                    <div id="imu-yaw-card" class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                        <div class="text-sm font-semibold text-gray-500">선수 방향 (Yaw)</div>
+                        <div class="text-4xl font-bold mt-2 text-gray-800 flex items-baseline">
+                            <span id="imu-yaw">0.00</span>
+                            <span class="text-xl ml-1">°</span>
+                        </div>
+                        <p class="text-xs mt-1 text-gray-400 font-medium">최종 업데이트:</p>
+                        <span id="imu-ts" class="text-xs text-gray-400"></span>
+                    </div>
+                </section>
+
+                <!-- 섹션 2: LLM 항해 보고서 -->
+                <section class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center mb-4">
+                        <svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-1.385l3.5-3.5L16.385 10 20 6.385V5.5a1.5 1.5 0 00-1.5-1.5h-11a1.5 1.5 0 00-1.5 1.5v13a1.5 1.5 0 001.5 1.5H8.5V17zM18.5 10l-3.5 3.5m0 0l-3.5 3.5m3.5-3.5V17"></path></svg>
+                        LLM 항해 보고서 & 응답
+                    </h2>
+                    <div id="llm-output-area" class="border border-gray-300 bg-gray-50 p-4 rounded-lg min-h-[150px] relative">
+                        <p id="llm-message" class="text-gray-700 leading-relaxed italic">
+                            음성 명령 (예: "최근 30분 요약해줘")이 수신되면 여기에 LLM의 보고서가 나타납니다.
+                        </p>
+                        <p id="llm-context" class="text-xs text-gray-400 mt-2 text-right"></p>
+                    </div>
+                </section>
+
+                <!-- 섹션 3: Vision/AD/PE 실시간 감지 현황 -->
+                <section class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center mb-4">
+                        <svg class="w-6 h-6 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.552-4.552a1.5 1.5 0 012.112 2.112L17.112 12m-2.112-2.112V6a1.5 1.5 0 00-1.5-1.5h-6A1.5 1.5 0 005.5 6v10.5a1.5 1.5 0 001.5 1.5h3.5"></path></svg>
+                        Vision 모듈 실시간 감지 (AD/PE)
+                    </h2>
+                    <div id="vision-raw-list" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                        <p class="text-sm text-gray-400">Vision/AD/PE 모듈에서 전송된 RAW 감지 데이터가 여기에 표시됩니다.</p>
+                    </div>
+                </section>
+                
+            </div>
+
+            <!-- 우측: 이벤트 로그 및 알림 기록 -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- 섹션 4: 실시간 알림 기록 (ALERT/CRITICAL) -->
+                <section class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                    <h2 class="text-2xl font-bold text-red-600 flex items-center mb-4">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.332 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        실시간 알림 (ALERT / CRITICAL)
+                    </h2>
+                    <div id="alert-history" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                        <div class="bg-blue-100 text-blue-800 p-3 rounded-md text-sm">시스템 시작됨. 알림 대기 중...</div>
+                    </div>
+                </section>
+
+                <!-- 섹션 5: 전체 이벤트 로그 -->
+                <section class="data-card bg-white p-6 rounded-xl border border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center mb-4">
+                        <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        전체 시스템 이벤트 로그 (DB 저장 완료)
+                    </h2>
+                    <div id="event-log" class="text-xs space-y-1 max-h-96 overflow-y-auto custom-scrollbar bg-gray-800 text-gray-200 p-3 rounded-md">
+                        <div class="text-gray-400">서버 연결 중...</div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO 클라이언트 라이브러리 로드 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script>
+        // Flask-SocketIO는 현재 호스트에 자동으로 연결됩니다.
+        const socket = io();
+
+        const imuRoll = document.getElementById('imu-roll');
+        const imuPitch = document.getElementById('imu-pitch');
+        const imuYaw = document.getElementById('imu-yaw');
+        const imuTs = document.getElementById('imu-ts');
+        const rollStatus = document.getElementById('roll-status');
+        const imuRollCard = document.getElementById('imu-roll-card');
+        
+        const eventLog = document.getElementById('event-log');
+        const alertHistory = document.getElementById('alert-history');
+        const llmMessage = document.getElementById('llm-message');
+        const llmContext = document.getElementById('llm-context');
+        const visionRawList = document.getElementById('vision-raw-list');
+
+        let isInitialLog = true;
+        
+        // --- 유틸리티 함수 ---
+        function formatTime(ts) {
+            // ts: "YYYY-MM-DD HH:MM:SS.ffffff" 또는 ISO 8601 형식 처리
+            try {
+                const parts = ts.split(' ');
+                if (parts.length > 1) {
+                    return parts[1].split('.')[0]; // HH:MM:SS
+                }
+                const isoTimeMatch = ts.match(/T(\d{2}:\d{2}:\d{2})/);
+                if (isoTimeMatch) {
+                    return isoTimeMatch[1];
+                }
+                return ts; // Fallback
+            } catch (e) {
+                return ts;
+            }
+        }
+
+        // --- SocketIO 이벤트 핸들러 ---
+        socket.on('connect', function() {
+            console.log('SocketIO 연결 성공!');
+            // 연결 시 초기 로그 메시지 추가
+            eventLog.innerHTML = `<div class="text-green-400">✅ [${formatTime(new Date().toISOString())}] 서버 연결 성공! 실시간 데이터 수신 시작.</div>`;
+            isInitialLog = false; // 초기 메시지 제거 로직을 위한 플래그 업데이트
+        });
+        
+        // 1. LLM 요약 보고서 수신
+        socket.on('llm_summary', function(data) {
+            llmMessage.innerHTML = data.text;
+            llmContext.textContent = `[보고 시간: ${formatTime(data.time)}] 최근 ${data.minutes}분 간의 항해일지 요약.`;
+            llmMessage.className = 'text-gray-700 leading-relaxed font-medium';
+        });
+
+        // 2. LLM 질의응답 수신
+        socket.on('llm_response', function(data) {
+            llmMessage.innerHTML = `**Q:** ${data.query}<br>**A:** ${data.response}`;
+            llmContext.textContent = `[응답 시간: ${formatTime(data.time)}] 음성 질의 응답 결과.`;
+            // 응답 구분을 위해 푸른색 배경 추가
+            llmMessage.className = 'text-gray-700 leading-relaxed font-medium bg-blue-50 p-2 rounded'; 
+        });
+
+        // 3. IMU RAW 데이터 업데이트
+        socket.on('imu_update', function(data) {
+            const roll = parseFloat(data.data.roll || data.data.roll_angle).toFixed(2);
+            const pitch = parseFloat(data.data.pitch).toFixed(2);
+            const yaw = parseFloat(data.data.yaw).toFixed(2);
+            
+            imuRoll.textContent = roll;
+            imuPitch.textContent = pitch;
+            imuYaw.textContent = yaw;
+            imuTs.textContent = formatTime(data.ts);
+
+            // Roll 위험 상태 표시 로직 (핵심 추가/변경 사항)
+            const absRoll = Math.abs(roll);
+            // 기존 배경 클래스 초기화
+            imuRollCard.classList.remove('bg-red-100', 'bg-orange-100');
+            imuRollCard.classList.add('bg-white');
+            rollStatus.classList.remove('text-green-500', 'text-orange-600', 'text-red-600');
+            
+            if (absRoll > 30) {
+                rollStatus.textContent = 'CRITICAL: 전복 위험';
+                rollStatus.classList.add('text-red-600');
+                imuRollCard.classList.add('bg-red-100'); // 위험 경고 색상
+            } else if (absRoll > 15) {
+                rollStatus.textContent = 'WARNING: 과도한 롤링';
+                rollStatus.classList.add('text-orange-600');
+                imuRollCard.classList.add('bg-orange-100'); // 경고 색상
+            } else {
+                rollStatus.textContent = '안정적';
+                rollStatus.classList.add('text-green-500');
+            }
+        });
+
+        // 4. VISION/AD/PE RAW 데이터 업데이트
+        socket.on('vision_raw_update', function(data) {
+            const moduleName = data.module;
+            const ts = formatTime(data.ts);
+            const detections = data.data.detections || data.data.details || [];
+            
+            // Vision Raw 리스트를 최신 5개로 유지 (성능 관리)
+            let newContent = detections.map(d => {
+                const object = d.object_type || d.object || '알 수 없음';
+                const score = (d.confidence || d.score || 0) * 100;
+                return `<div class="text-xs p-2 bg-gray-100 rounded-lg">
+                            <span class="font-bold text-gray-700">(${ts}) ${moduleName}:</span> 
+                            ${object} (${score.toFixed(1)}%) - ${d.description || '감지됨'}
+                        </div>`;
+            }).join('');
+
+            // 새 내용 추가 및 최대 항목 유지
+            const maxItems = 5;
+            visionRawList.innerHTML = newContent + visionRawList.innerHTML;
+            
+            // 초기 메시지 삭제 및 항목 수 제한
+            while (visionRawList.children.length > maxItems || (visionRawList.lastChild && visionRawList.lastChild.textContent.includes('RAW 감지 데이터가 여기에 표시'))) {
+                 visionRawList.removeChild(visionRawList.lastChild);
+            }
+        });
+
+        // 5. 전체 이벤트 로그 수신 (DB 저장 후 호출됨)
+        socket.on('event_log', function(data) {
+            const logElement = document.createElement('div');
+            const ts = formatTime(data.ts);
+            
+            let colorClass = 'text-gray-300'; // 기본 INFO
+            // 중요도에 따른 색상 구분
+            if (data.action === 'ALERT' || data.action === 'CRITICAL') {
+                colorClass = 'text-red-400 font-bold';
+            } else if (data.module === 'LLM' || data.module === 'USER_STT') {
+                colorClass = 'text-blue-400';
+            } else if (data.action === 'RAW') {
+                colorClass = 'text-green-400';
+            }
+
+            logElement.className = `whitespace-nowrap overflow-hidden overflow-ellipsis ${colorClass}`;
+            logElement.textContent = `[${ts}] [${data.module}/${data.action}] ${data.payload}`;
+
+            // 새로운 로그를 맨 위에 추가 (가장 최근 로그가 위로)
+            eventLog.prepend(logElement);
+
+            // 초기 "서버 연결 중" 메시지 제거 (최초 1회만)
+            if (isInitialLog && eventLog.children.length > 1) {
+                eventLog.removeChild(eventLog.children[1]);
+                isInitialLog = false;
+            }
+        });
+
+        // 6. ALERT/CRITICAL 경고 수신
+        socket.on('alert_event', function(data) {
+            const alertElement = document.createElement('div');
+            const ts = formatTime(data.ts);
+            // 토픽 파싱을 통해 모듈과 액션 추출
+            const topicParts = data.topic.split('/');
+            const module = topicParts.length > 2 ? topicParts[2].toUpperCase() : 'UNKNOWN';
+            const action = topicParts.length > 3 ? topicParts[3].toUpperCase() : 'ALERT';
+
+            // 애니메이션 및 빨간색 배경 적용 (시각적 경고 극대화)
+            alertElement.className = 'bg-red-600 text-white p-3 rounded-md text-sm animate-pulse data-card';
+            alertElement.innerHTML = `
+                <span class="font-bold mr-2">🚨 ${action} 알림!</span> 
+                (${ts}) ${module}: ${data.payload.message || JSON.stringify(data.payload)}
+            `;
+            
+            // 새로운 알림을 맨 위에 추가
+            alertHistory.prepend(alertElement);
+
+            // 초기 메시지 제거
+            const initialMessage = alertHistory.querySelector('.bg-blue-100');
+            if (initialMessage) {
+                alertHistory.removeChild(initialMessage);
+            }
+        });
+        
+    </script>
+</body>
+</html>

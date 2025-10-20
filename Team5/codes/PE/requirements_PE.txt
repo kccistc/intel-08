@@ -1,0 +1,6 @@
+opencv-python
+numpy
+tensorflow>=2.8.0
+tensorflow-hub
+ultralytics
+paho-mqtt

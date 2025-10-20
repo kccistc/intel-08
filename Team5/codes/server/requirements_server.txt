@@ -1,0 +1,12 @@
+paho-mqtt
+SQLAlchemy
+pymysql
+python-dotenv
+openai
+gtts
+SpeechRecognition
+
+#PyAudio 설치 전에 아래 명령어 실행
+#sudo apt-get update
+#sudo apt-get install portaudio19-dev python3-dev
+PyAudio
