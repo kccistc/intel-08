@@ -1369,6 +1369,8 @@ class App(tk.Tk):
             
         self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}  # 단일 버저 ARM 슬롯
 
+        self._first_fire_done = False
+
     def destroy(self):
         try:
             if self.worker1: self.worker1.stop()
@@ -2369,25 +2371,34 @@ class App(tk.Tk):
         print(f"[DECISION] {grade}, stain={ratio:.1f}%, sticker={has_sticker}")
         now = time.time()
 
-        # NEW: DecideWorker가 준 grade 로 액추에이터 제어 (색상 불일치 포함)
         if grade in ("NG80", "NG_STICKER"):
-            # 완전불량 → Actuator 1 (RED)
+            # ARM 등록
             self._arm1_deadline = now + 3.0
             self._arm1_cond = "sev"
             self._buzz_arm = {"sensor": 1, "pattern": "sev", "deadline": now + 3.0}
+            # 첫번째만 즉시 발사
+            if not getattr(self, "_first_fire_done", False):
+                if (time.time() - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                    self._pending1 = {"when": time.time(), "kind": "sev"}
+                    self._do_act1()
 
         elif grade == "NG30":
-            # 부분불량 → Actuator 2 (ORANGE)
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "par"
             self._buzz_arm = {"sensor": 2, "pattern": "par", "deadline": now + 3.0}
+            if not getattr(self, "_first_fire_done", False):
+                if (time.time() - self._act2_last) >= self._act_debounce and self._pending2 is None:
+                    self._pending2 = {"when": time.time(), "kind": "par"}
+                    self._do_act2()
 
-        else:  # "OK"
-            # 정상품 → GREEN만 (버저 ARM 없음)
+        else:
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "good"
             self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}
+            if not getattr(self, "_first_fire_done", False):
+                self._record_event(kind="good")
 
+        self._first_fire_done = True
 
 # === Camera controls (3초 지연) ===
 def delayed_camera_setup():
