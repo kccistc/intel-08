@@ -1319,8 +1319,8 @@ class App(tk.Tk):
         # === 액츄에이터 제어용: 디바운스 + 지연(arming) ===
         self._act1_last = 0.0
         self._act2_last = 0.0
-        self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.2'))  # 0.8초 디바운스
-        self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.3'))        # 0.5초 지연(감지 후)
+        self._act_debounce = float(os.getenv('ACT_DEBOUNCE_SEC', '0.15'))  # 0.8초 디바운스
+        self._act_delay = float(os.getenv('ACT_DELAY_SEC', '0.12'))        # 0.5초 지연(감지 후)
         
         # --- [추가] 센서 게이팅용 3초 무장 창 ---
         self._arm1_deadline = 0.0   # CAM1 유효 마감시각 (epoch)
@@ -1331,6 +1331,8 @@ class App(tk.Tk):
         self._prev_s1 = False
         self._prev_s2 = False
         self._pending1 = None
+        self._edge_grace = float(os.getenv('EDGE_GRACE_SEC', '2.5'))  # ARM-센서 지연 허용(초)
+        self._last_edge = {1: 0.0, 2: 0.0}  # 최근 센서 라이징 시각 (CAM1=1, CAM2=2)
         self._pending2 = None
         self._prev_start_btn = False
         self._prev_stop_btn  = False
@@ -1474,6 +1476,19 @@ class App(tk.Tk):
             return
         
         self._is_running = True
+        try:
+            st0 = self.hw.get_sensors() if self.hw else {}
+            self._prev_s1 = bool(st0.get("sensor_1", st0.get("s1", False)))
+            self._prev_s2 = bool(st0.get("sensor_2", st0.get("s2", False)))
+        except Exception:
+            self._prev_s1 = False
+            self._prev_s2 = False
+        self._last_edge = {1: 0.0, 2: 0.0}
+        self._pending1 = None
+        self._pending2 = None
+        self._arm1_deadline = 0.0; self._arm1_cond = None
+        self._arm2_deadline = 0.0; self._arm2_cond = None
+
         self.active_model = model_id
         self._sync_start_stop_lamps()
         
@@ -2139,11 +2154,13 @@ class App(tk.Tk):
             # --- SENSOR 1: CAM1 (무장창 내에서만 유효) ---
             if s1 and not self._prev_s1 and self._is_running:
                 now = time.time()
+                self._last_edge[1] = now
                 if (self._arm1_cond == "sev") and (now <= self._arm1_deadline):
                     if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
                         self._pending1 = {"when": now, "kind": "sev"}
-                        delay_ms = int(self._act_delay * 1000)  # 0.3s
-                        self.after(delay_ms, self._do_act1)
+                        elapsed = max(0.0, now - self._last_edge[1])
+                        remain  = max(0.0, self._act_delay - elapsed)
+                        self.after(int(remain * 1000), self._do_act1)
                 # 트리거 이후 즉시 해제(중복 방지)
                 self._arm1_deadline = 0.0
                 self._arm1_cond = None
@@ -2151,13 +2168,15 @@ class App(tk.Tk):
             # --- SENSOR 2: CAM2 (무장창 내에서만 유효) ---
             if s2 and not self._prev_s2 and self._is_running:
                 now = time.time()
+                self._last_edge[2] = now
                 if (self._arm2_cond in ("par", "good")) and (now <= self._arm2_deadline):
                     # par: Act2 + 주황 패턴 / good: 액츄에이터 없이 green 패턴만
                     if self._arm2_cond == "par":
                         if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
                             self._pending2 = {"when": now, "kind": "par"}
-                            delay_ms = int(self._act_delay * 1000)  # 0.3s
-                            self.after(delay_ms, self._do_act2)
+                            elapsed = max(0.0, now - self._last_edge[2])
+                            remain  = max(0.0, self._act_delay - elapsed)
+                            self.after(int(remain * 1000), self._do_act2)
                     elif self._arm2_cond == "good":
                         # 0.3s 지연 후 GREEN 패턴만 1회
                         def _green_only():
@@ -2376,17 +2395,80 @@ class App(tk.Tk):
             self._arm1_cond = "sev"
             self._buzz_arm = {"sensor": 1, "pattern": "sev", "deadline": now + 3.0}
 
+            # --- [추가] 최근 엣지 백필 트리거(CAM1/Act1) ---
+            if (now - self._last_edge[1]) <= getattr(self, "_edge_grace", 0.6):
+                if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                    self._pending1 = {"when": now, "kind": "sev"}
+                    elapsed = max(0.0, now - self._last_edge[1])
+                    remain  = max(0.0, self._act_delay - elapsed)
+                    self.after(int(remain * 1000), self._do_act1)
+                # 중복 방지: ARM 1회성 소진
+                self._arm1_deadline = 0.0
+                self._arm1_cond = None
+            try:
+                if ((self._last_edge[1] > 0 and (now - self._last_edge[1]) <= getattr(self, '_edge_grace', 2.5))
+                    or bool((self.hw.get_sensors() if self.hw else {}).get('sensor_1', False))):
+                    if (now - self._act1_last) >= self._act_debounce and self._pending1 is None:
+                        self._pending1 = {"when": now, "kind": "sev"}
+                        elapsed = max(0.0, now - self._last_edge[1])
+                        remain  = max(0.0, self._act_delay - elapsed)
+                        self.after(int(remain * 1000), self._do_act1)
+                    self._arm1_deadline = 0.0
+                    self._arm1_cond = None
+            except Exception:
+                pass
+
         elif grade == "NG30":
             # 부분불량 → Actuator 2 (ORANGE)
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "par"
             self._buzz_arm = {"sensor": 2, "pattern": "par", "deadline": now + 3.0}
 
+            # --- [추가] 최근 엣지 백필 트리거(CAM2/Act2) ---
+            if (now - self._last_edge[2]) <= getattr(self, "_edge_grace", 0.6):
+                if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
+                    self._pending2 = {"when": now, "kind": "par"}
+                    elapsed = max(0.0, now - self._last_edge[2])
+                    remain  = max(0.0, self._act_delay - elapsed)
+                    self.after(int(remain * 1000), self._do_act2)
+                self._arm2_deadline = 0.0
+                self._arm2_cond = None
+            try:
+                if ((self._last_edge[2] > 0 and (now - self._last_edge[2]) <= getattr(self, '_edge_grace', 2.5))
+                    or bool((self.hw.get_sensors() if self.hw else {}).get('sensor_2', False))):
+                    if (now - self._act2_last) >= self._act_debounce and self._pending2 is None:
+                        self._pending2 = {"when": now, "kind": "par"}
+                        elapsed = max(0.0, now - self._last_edge[2])
+                        remain  = max(0.0, self._act_delay - elapsed)
+                        self.after(int(remain * 1000), self._do_act2)
+                    self._arm2_deadline = 0.0
+                    self._arm2_cond = None
+            except Exception:
+                pass
+
         else:  # "OK"
             # 정상품 → GREEN만 (버저 ARM 없음)
             self._arm2_deadline = now + 3.0
             self._arm2_cond = "good"
             self._buzz_arm = {"sensor": None, "pattern": None, "deadline": 0.0}
+
+            # --- [추가] 최근 엣지 백필 트리거(정상 → GREEN-only) ---
+            if (now - self._last_edge[2]) <= getattr(self, "_edge_grace", 0.6):
+                def _green_only():
+                    self._record_event(kind="good")
+                self.after(int(self._act_delay * 1000), _green_only)
+                self._arm2_deadline = 0.0
+                self._arm2_cond = None
+            try:
+                if ((self._last_edge[2] > 0 and (now - self._last_edge[2]) <= getattr(self, '_edge_grace', 2.5))
+                    or bool((self.hw.get_sensors() if self.hw else {}).get('sensor_2', False))):
+                    def _green_only():
+                        self._record_event(kind="good")
+                    self.after(int(self._act_delay * 1000), _green_only)
+                    self._arm2_deadline = 0.0
+                    self._arm2_cond = None
+            except Exception:
+                pass
 
 
 # === Camera controls (3초 지연) ===
