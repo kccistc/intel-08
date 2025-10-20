@@ -30,7 +30,7 @@ def sign_if_needed(payload_bytes:bytes, key:str):
 
 def main():
     ap = argparse.ArgumentParser(description="V2X Accident Alert - Multicast Server")
-    ap.add_argument("--mcast", default="239.20.20.20")
+    ap.add_argument("--mcast", default="239.20.20.21")
     ap.add_argument("--port", type=int, default=5520)
     ap.add_argument("--iface", default="")
     ap.add_argument("--hz", type=float, default=2.0)

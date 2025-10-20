@@ -26,6 +26,11 @@ sudo chmod 755 "$V2X_DIR" "$REC_DIR" "$ARCH_DIR"
 sudo touch "$LOG" || true
 sudo chmod 666 "$LOG" || true
 
+# Python 파일들 복사 추가
+echo "[2.5/7] Python 파일 복사"
+sudo cp *.py "$V2X_DIR/"
+sudo chmod +x "$V2X_DIR"/*.py
+
 echo "[3/7] 환경파일(.env)"
 sudo tee "$ENV_FILE" >/dev/null <<EOT
 V2X_KEY=$V2X_KEY

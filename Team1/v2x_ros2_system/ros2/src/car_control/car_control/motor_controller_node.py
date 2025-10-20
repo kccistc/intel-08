@@ -15,7 +15,7 @@ class MotorControllerNode(Node):
         # 시리얼 포트 설정
         try:
             # 자신의 STM32 시리얼 포트에 맞게 수정! (예: /dev/ttyACM0)
-            self.serial_port = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+            self.serial_port = serial.Serial('/dev/rfcomm0', 9600, timeout=1)
             self.get_logger().info('Serial port opened successfully.')
             time.sleep(2) # 포트 안정화를 위한 대기 시간
         except Exception as e:

@@ -22,7 +22,7 @@ ExecStart=/bin/bash -lc '\
     -v <PROJECT_ROOT>:/ws \
     -v /home/pi/v2v:<V2X_DIR>:ro \
     -w /ws \
-    ros:jazzy-ros-base \
+    ros:foxy-ros-base \
     bash -lc "source /opt/ros/$ROS_DISTRO/setup.bash && source /ws/install/setup.bash || true; python3 -u <V2X_DIR>/client.py --ros2 --topic /v2x/alert --qos reliable --depth 10" \
 '
 

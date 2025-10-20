@@ -122,7 +122,7 @@ docker run -it --rm --net=host --ipc=host \
   -v $(pwd):/ws \
   -v /opt/v2x:/opt/v2x:ro \
   -w /ws \
-  ros:jazzy-ros-base bash
+  ros:foxy-ros-base bash
 ⚙️ 7. systemd 서비스 복원
 GitHub에서 가져온 후:
 

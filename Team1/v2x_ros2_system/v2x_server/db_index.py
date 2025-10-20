@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import sqlite3, json, sys, os, time
-DB="/opt/v2x/v2x_index.sqlite3"
+
+# --- 수정된 부분 ---
+# 현재 스크립트의 위치를 기준으로 DB 경로를 절대 경로로 설정
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB = os.path.join(BASE_DIR, "v2x_index.sqlite3")
+# --- 수정 끝 ---
 
 
 SCHEMA="""
@@ -29,9 +34,8 @@ CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
 
 
 def ensure_db():
-
+    # 이제 DB 변수가 절대 경로이므로 os.path.dirname()이 항상 유효한 경로를 반환합니다.
     os.makedirs(os.path.dirname(DB), exist_ok=True)
-
     conn=sqlite3.connect(DB)
 
     conn.executescript(SCHEMA)

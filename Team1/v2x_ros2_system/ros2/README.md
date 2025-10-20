@@ -75,13 +75,13 @@ TTL 초과 메시지 무시
 
 컨테이너 이름: ros2_v2x
 
-이미지: ros:jazzy-ros-base
+이미지: ros:foxy-ros-base
 
 자동 실행 경로: /home/pi/ros2
 
 컨테이너 명령:
 
-bash -lc "source /opt/ros/jazzy/setup.bash && \
+bash -lc "source /opt/ros/foxy/setup.bash && \
           colcon build --symlink-install || true && \
           source install/setup.bash && \
           ros2 launch car_planning v2x_full_stack.launch.py enable_serial:=false"

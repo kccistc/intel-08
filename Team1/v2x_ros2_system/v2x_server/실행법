@@ -1,0 +1,27 @@
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ 
+echo $VIRTUAL_ENV
+/home/ksj/workspace/.venv
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ 
+python3 watch_and_broadcast.py
+
+
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ echo $VIRTUAL_ENV
+/home/ksj/CARLA_0.9.16/.venv
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ python3 carla_with_flask.py 
+
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ source /home/ksj/workspace/.venv/bin/activate
+(.venv) ksj@ksj-System-Product-Name:~/workspace/git-practice/intel-08/Team1/v2x_ros2_system/v2x_server$ streamlit run streamlit_app.py 
+
+watch_and_broadcast : 이벤트발생시 UDP통신발생
+
+carla_with_flask : Carla_Flask_Bridge에서 받아온 영상 모델로 처리 후 이벤트 발생
+
+도커 2~3개 : Carla, ROS2(파이 탑재), Carla_Flask_Bridge
+
+Carla_Flask_Bridge : carla 0.9.13 에 있는 영상 carla_with_flask 로 전송
+
+streamlit_app : 스트림릿, 웹페이지 생성
+
+
+emit_event : 예제 이벤트 발생
+

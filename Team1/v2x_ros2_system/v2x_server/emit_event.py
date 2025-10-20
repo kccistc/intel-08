@@ -41,7 +41,7 @@ evt = {
   "clip_hint": bool(args.clip_hint),
 
 }
-out = pathlib.Path("/opt/v2x/events") / f"{uuid.uuid4().hex}.json"
+out = pathlib.Path("events") / f"{uuid.uuid4().hex}.json"
 
 out.write_text(json.dumps(evt))
 

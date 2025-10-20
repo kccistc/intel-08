@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sqlite3, argparse, time
-DB="/opt/v2x/v2x_index.sqlite3"
+DB="v2x_index.sqlite3"
 ap=argparse.ArgumentParser()
 ap.add_argument("--recent", type=int, default=10, help="show last N")
 ap.add_argument("--since", type=float, default=0.0, help="min timestamp (epoch)")

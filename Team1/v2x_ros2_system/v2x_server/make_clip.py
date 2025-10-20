@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys, os, time, math, subprocess, argparse
-REC_DIR="/var/rec"; OUT_DIR="/var/archive"
+REC_DIR="rec"; OUT_DIR="archive"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 def pick_segments(t0, pre=300, post=300, segdur=10):

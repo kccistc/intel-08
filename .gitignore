@@ -2,3 +2,8 @@
 *.swp
 .venv*/
 .vscode/
+accident_cctv2/
+accident_cctv1/
+events/
+
+

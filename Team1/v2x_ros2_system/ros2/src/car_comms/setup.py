@@ -11,7 +11,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/v2x_alert_bridge.launch.py']),
     ],
-    install_requires=['setuptools', 'rclpy', 'car_msgs', 'std_msgs'],
+    install_requires=['setuptools'],
     zip_safe=True,
     maintainer='ksj',
     maintainer_email='seolihan651@gmail.com',
@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'v2x_alert_bridge = car_comms.v2x_alert_bridge:main',
+            'v2x_sub = car_comms.v2x_subscriber:main'
         ],
     },
 )

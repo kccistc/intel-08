@@ -25,8 +25,8 @@ ExecStart=<DOCKER_BIN> run --rm --name v2x-client \
   -e V2X_KEY=${V2X_KEY} \
   -e MCAST=${MCAST} -e PORT=${PORT} \
   -v <V2X_DIR>:<V2X_DIR> \
-  ros:jazzy-ros-base \
-  /bin/bash -lc 'source /opt/ros/jazzy/setup.bash; \
+  ros:foxy-ros-base \
+  /bin/bash -lc 'source /opt/ros/foxy/setup.bash; \
     python3 <V2X_DIR>/client.py \
       --mcast "${MCAST}" \
       --port "${PORT}" \

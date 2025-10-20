@@ -2,7 +2,12 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json, os, sqlite3, time, glob, urllib.parse, mimetypes, traceback
 
-DB="/opt/v2x/v2x_index.sqlite3"
+# 현재 폴더 기준으로 설정
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB = os.path.join(BASE_DIR, "v2x_index.sqlite3")
+EVENTS_DIR = os.path.join(BASE_DIR, "events")
+ARCHIVE_DIR = os.path.join(BASE_DIR, "archive")
+REC_DIR = os.path.join(BASE_DIR, "rec")
 
 HTML = """<!doctype html>
 <html>
@@ -111,8 +116,8 @@ def get_stats():
         conn=sqlite3.connect(DB); c=conn.cursor()
         r=c.execute("SELECT COUNT(*), MAX(ts) FROM events WHERE ts>=?", (now-3600,))
         recent, last_ts = r.fetchone(); conn.close()
-    clips=len(glob.glob("/var/archive/accident_*.mp4"))
-    segs=glob.glob("/var/rec/seg_*.mp4")
+    clips=len(glob.glob(os.path.join(ARCHIVE_DIR, "accident_*.mp4")))
+    segs=glob.glob(os.path.join(REC_DIR, "seg_*.mp4"))
     seg_last= int(max(os.path.getmtime(p) for p in segs)) if segs else 0
     return {"now":int(now),"events_last_hour":recent,"last_event_ts":int(last_ts or 0),
             "clips":clips,"last_segment_ts":seg_last}
@@ -141,7 +146,7 @@ class H(BaseHTTPRequestHandler):
 
             # serve archived clips
             if path.startswith("/clips/"):
-                p = "/var/archive/" + path.split("/clips/",1)[1]
+                p = os.path.join(ARCHIVE_DIR, path.split("/clips/",1)[1])
                 if not os.path.isfile(p): self.send_error(404); return
                 self.send_response(200)
                 self.send_header("Content-Type", mimetypes.guess_type(p)[0] or "application/octet-stream")
