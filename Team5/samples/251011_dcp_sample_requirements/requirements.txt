@@ -1,0 +1,14 @@
+# requirements for DCP_GAN_dehazing
+
+numpy==1.25.2
+torch==2.0.1
+torchvision==0.15.2
+Pillow==9.5.0
+opencv-python==4.12.0.88
+tqdm==4.67.1
+guided-filter-pytorch==3.7.5
+imageio==2.37.0
+requests==2.32.5
+PyYAML==6.0.3
+scipy==1.16.2
+scikit-image==0.25.2

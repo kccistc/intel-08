@@ -1,0 +1,179 @@
+ca16c2f Update README to show images without details tag
+5405e66 Update README.md
+e7793ed Update README.md
+64a314a Update images in README for dehazing section
+383f69f Update README.md
+be3d991 Update README.md
+4d0ad0d Update README.md
+0ab1cb0 Change image width in README from 600 to 800
+1ae0aa0 Change image widths in README.md
+d69d8b4 Adjust image sizes in README.md
+4e1d670 Update README.md
+08d357d Update README.md
+ea50390 rename png files
+6f3dd5b add screenshot
+8019979 clean and move docs
+6c54f9d remove video files
+0d7ec98 video file
+b406a5e GUI 경고 색 점멸 추가
+0b995ac Merge branch 'main' of https://github.com/intel-edge-ai-sw-8/2509_3rd_proj_dooreu
+7e6b9b9 Update Ctrl_Sea_Ctrl_Vision.pptx
+615866b Create a.txt
+2135570 imu 그래픽 추가
+5e98fce Merge branch 'main' of https://github.com/intel-edge-ai-sw-8/2509_3rd_proj_dooreu
+7bd7169 Update Ctrl_Sea_Ctrl_Vision.pptx
+88fd66c Update README.md
+f827372 Update README.md
+5a093ac Update team member section in README.md
+80e18cd Revise README with new project details
+690ecd0 기능고장 해결
+e1c9590 망한거
+6f19f50 IMU 실패
+0cf798b AD 이모지 삭제
+a538bc0 시스템로그 진짜최종 수정본
+649e2fe 시스템 로그 수정
+f3d94f4 시스템 로그 최종 수정
+845ebad 시스템 로그 재수정
+b458bac GUI 시스템 로그 수정
+96e7736 imu 센서 상태 추가
+9489034 imu 데이터 미출력 수정
+3e6ef00 gui 개선
+b3e48d9 gui 시스템 로그 및 항해일지 표기 안되던 오류 수정
+e31c137 웹 서버 항해일지 출력 오류 수정
+5d78960 gui 변경으로 인한 코드 수정들
+d84694b import 추가
+79d9b41 GUI 항해로그 탭 추가, 전체 비율 조정
+0bc8d36 GUI 잘림 현상 수정
+4d8ca44 Stop tracking summary.mp3 as per .gitignore
+57695c9 gui에 PE 클라이언트 포함
+9c78e49 add ppt sample
+bfbab60 학습 모델 변경, 새 gui 방식 수정본
+03e5f17 Delete docs directory
+7f34eb2 찐찐찐 최최최 종종종 PE
+4672d7e add ppt sample
+782cc82 remove ppt
+b4c579d add ppt sample
+6751831 gui 두번째 방식 화질 개선 및 지연 개선
+a2b2346 QGraphicsView + QGraphicsScene 방식 코드
+a31fc02 gui 깜빡임 수정 3
+1a8f27f gui 깜빡임 수정2
+5030f0a gui 화면 끊김 현상 수정
+4be8f03 gui 파일 수정
+a7bb7ed pyqt 서버 AD 카메라 출력 수정본
+4852635 git push 무시 파일 .mp3 추가
+2b381e4 Merge branch 'origin/main' after resolving conflicts
+dbc7a06 pyqt 서버 AD 카메라 출력을 위한 코드 수정
+5db9f82 gui 업데이트
+0b7886d 시간대 통일
+010b0c9 긴급 알람 발화 수정
+02d0efc pyqt 실행 코드
+51e4bad 정상 서버 코드
+a1fbc95 수정 안했는데 왜 커밋 해야하나요
+1fab9c5 서버 파일 임시 수정본3
+2b9fe4f 서버 파일 임시 수정본2
+777e350 flask + socket IO 웹 서버
+5eae6aa 서버 파일 임시 수정본
+4e0412d fastAPI test code
+bc6bfaf pyqy 테스트 파일
+3dd7048 text_to_speech 수정
+4149519 서버 원상복구
+e71a779 오류 수정
+de1f3c4 긴급 알람 프롬프터 수정
+87916a6 return 제거
+0484be3 server.py 오류 수정을 위한 테스트 버전 w/flask
+c2fabf9 PE code
+5d5e513 계정 아이디 비번 생셩
+90706a4 PE_client 확인
+ebe66b6 테스트
+510e5a4 html 실시간 코드 수정
+60688c0 SocketIO 서버 기능 추가
+043bc1c html 코드 추가
+5b71d8a ui 추가를 위한 코드 수정
+0ea0e63 pyqt 코드 수정
+1652972 pyqt 화면 출력 코드
+6816485 Create test.py
+28bd8d7 DB 저장
+76e04e3 DB 연결 끊김 현상 수정
+e3c6d1f 오타 수정
+ccb6d62 긴급 알람 코드 수정
+3c3ffab 긴급 알람 큐 적용 테스트
+e488dbe 기존 TOPIC으로 재변경
+dbdc544 vision_data 로그저장되지 않는 현상 수정
+735f65d vision_data에 로그가 누락되는 부분을 수정
+8e0f1e3 gitignore 추가
+7fb8581 카메라 인덱스 찾는 코드
+6c7a1a6 카메라 인덱스 지정 코드
+1df782c 카메라 설정 파일
+043b9b6 카메라 인덱스 고정 할당
+b51c82d move utils code
+a02c6f4 sh파일 수정
+2cd81bd 스피커 및 마이크 연결 확인 코드 추가
+2ac37fe requirements.txt 수정
+7710e78 stt 함수 추가
+4c7d120 stt 함수 추가
+bf141f1 LLM  요구 조건 수정
+d8aa867 로그 레벨이 추가된 서버 및 클라이언트 코드
+7180fe4 add requirements
+6ef9f24  클라이언트용 수정 코드 및 이름 수정
+69da113 PE 테스트 코드 수정
+7d50041 add requirements and gitignore
+a569a99 test_client_PE
+d7428e3 서버 AD 추가로 인한 오류 코드 수정
+321c5c3 add PE codes
+2fff8d6 AD 추가에 따른 인자 변경으로 인한 서버 수정
+02e05c0 라벨링 수정
+574b10e stop tracking .venv
+e68727a IMU 3축 코드 수정, AD 캠 오류 수정 및 서버랑 인자 맞추기
+60995a8 move models to folder models
+fca3ca9 웹캠 인식이 안돼서 V4L2백엔드 호출을 위한 코드수정
+b4bdf5f 파일 추가 및 파일 경로 코드 변경
+8d5ba97 클라이언트 코드로 변경, 이름 변경
+4abddd1 client_imu 추가에 따른 서버 코드 수정
+020d47d imu sensor code
+187dd2d server codes
+5b409be sensor
+a641d67 모듈 로그 추가할 수 있는 DB
+869d5e9 각 모듈별 DB 로그 데이터 추가 및 변수 변경
+308852e LLM 요약 방식 수정, TTS 전처리 수정
+c322398 LLM 요약 방식 변경, TTS 전처리 함수 수정
+a73ca06 hide cursor
+8b34358 TTS speed up and preprocessing
+28b3794 player change
+54aecd1 LLM model change
+4bbbb3a hiding dock not working
+3dcb590 try to hide dock
+e6080a8 show fullscreen
+02c479a add .venv
+cb1a15a add save_image.py
+fc0cbbe trash
+ff45179 server code modify
+06944dd Delete codes/AD/a.txt
+c91e2b3 Create dehazed_AD.py
+87c593a demo_dehaze_enhansed.py
+d10bdbe Also upload the code to the sample directory
+1466559 server code modifications
+27bb0c2 Move DB for test
+c11f492 commit: add Anomaly_Detection
+087cf01 Merge branch 'main' of github.com:intel-edge-ai-sw-8/2509_3rd_proj_dooreu
+61b0d34 251004_Anomaly_Object_Detection
+4242a25 calibration
+a335f06 commit: add server.py
+0f87d9e initial commit
+2419e5a initial commit
+df3c60a initial commit
+6c4bcc1 densefuse
+87d268b tts_offline.py
+fc4c39b 251002_TTS/
+fcd571b Update step1-4.py
+e876bef commit : use utc
+e43288b Update step7.py
+989dc1a 251002_server
+2d443ab 251002 Anomaly_Detection_Demo
+cddb9da add
+1bab812 rm
+532ce79 251001_DCP_GAN_dehazing
+28a3933 commit: re-dir and rename
+66b759f commit: add pyqt test codes
+c7dad5b commit: add 250930 sample codes
+0ea95c1 Update README.md
+c969c2b commit : add README
