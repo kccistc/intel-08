@@ -8,6 +8,11 @@
 
 ## 📦주요 기능
 
+<img src=https://github.com/user-attachments/assets/d3dfe0cb-f83b-430c-a839-fa51dcb1e784 width="500"/>
+<img src=https://github.com/user-attachments/assets/047c481b-90bd-446f-99c7-6dd43247493c width="500"/>
+
+<img src="https://github.com/user-attachments/assets/995aeaa4-8e05-4e69-aebe-60db998b305d" width="650"/>
+
 ### ⭐️ CCTV에서의 사고 차량 인식
 
 ### ⭐️ 차량 카메라에서 주변 상황 인식 및 위험 예측
