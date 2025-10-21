@@ -594,6 +594,38 @@ class DecideWorker(threading.Thread):
         if self.cfg.get('save_annotated', 1):
             os.makedirs("captures/annotated", exist_ok=True)
 
+        print("[DecideWorker] Warming up ONNX sessions...")
+        try:
+            # 1. Segmentation Model Warm-up (가장 무거울 가능성 높음)
+            # seg_size에 맞는 더미 입력 생성
+            dummy_seg_input = np.zeros(
+                (1, 3, self.cfg['seg_size'], self.cfg['seg_size']), 
+                dtype=np.float32
+            )
+            self.seg_sess.run([self.seg_out], {self.seg_in: dummy_seg_input})
+            print("[DecideWorker] Segmentation model warmed up.")
+            
+            # 2. Detection Model Warm-up (DecideWorker에서도 사용)
+            dummy_det_input = np.zeros(
+                (1, 3, self.cfg['det_size'], self.cfg['det_size']), 
+                dtype=np.float32
+            )
+            self.det_sess.run(self.det_outs, {self.det_in: dummy_det_input})
+            print("[DecideWorker] Detection model warmed up.")
+
+            # 3. Classification Model Warm-up (옵션, 있다면)
+            if self.cls_sess is not None:
+                dummy_cls_input = np.zeros(
+                    (1, 3, self.cls_size, self.cls_size), 
+                    dtype=np.float32
+                )
+                self.cls_sess.run([self.cls_out], {self.cls_in: dummy_cls_input})
+                print("[DecideWorker] Classification model warmed up.")
+                
+        except Exception as e:
+            print(f"[DecideWorker] WARNING: Failed to warm up session: {e}")
+        # ---------------------------------------------------
+
         while not self._stop.is_set():
             try:
                 ts_ms, snap_bgr = self.snap_q.get(timeout=0.25)
