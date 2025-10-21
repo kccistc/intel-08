@@ -67,10 +67,10 @@ with st.sidebar:
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("CCTV 1")
-    cctv1_placeholder = st.image(f"{FLASK_SERVER}/video_feed/cctv1", use_container_width=True)
+    cctv1_placeholder = st.image(f"{FLASK_SERVER}/video_feed/cctv1", width='stretch')
 with col2:
     st.subheader("CCTV 2")
-    cctv2_placeholder = st.image(f"{FLASK_SERVER}/video_feed/cctv2", use_container_width=True)
+    cctv2_placeholder = st.image(f"{FLASK_SERVER}/video_feed/cctv2", width='stretch')
 
 # --- 💡 수정: while True 루프를 제거하고 Streamlit의 실행 흐름 활용 ---
 status_url = f"{FLASK_SERVER}/api/status"

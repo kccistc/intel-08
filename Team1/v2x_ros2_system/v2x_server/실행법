@@ -25,3 +25,6 @@ streamlit_app : 스트림릿, 웹페이지 생성
 
 emit_event : 예제 이벤트 발생
 
+run_all.sh
+
+
