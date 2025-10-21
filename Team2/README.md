@@ -1,4 +1,4 @@
-![Image](https://github.com/user-attachments/assets/411e93cf-7c44-4275-8da3-ff0f78fb91d9)
+<img width="1260" height="891" alt="Image" src="https://github.com/user-attachments/assets/600a07b7-64cd-4822-b122-ef01c0ea5cd6" />
 
 # Intel Geti + AI QC Conveyor
 인텔 Geti + 인공지능 QC 컨베이어
