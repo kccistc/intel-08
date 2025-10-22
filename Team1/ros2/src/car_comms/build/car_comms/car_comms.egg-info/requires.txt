@@ -1,4 +1,0 @@
-car_msgs
-rclpy
-setuptools
-std_msgs

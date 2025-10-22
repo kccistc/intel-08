@@ -1,0 +1,37 @@
+[1.797s] Invoking command in '/home/ksj/ros2_fin/car_control': AMENT_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_fin/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_fin/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/car_control build --build-base /home/ksj/ros2_fin/build/car_control/build install --record /home/ksj/ros2_fin/build/car_control/install.log --single-version-externally-managed install_data
+[2.180s] running egg_info
+[2.181s] creating ../build/car_control/car_control.egg-info
+[2.200s] writing ../build/car_control/car_control.egg-info/PKG-INFO
+[2.200s] writing dependency_links to ../build/car_control/car_control.egg-info/dependency_links.txt
+[2.200s] writing entry points to ../build/car_control/car_control.egg-info/entry_points.txt
+[2.201s] writing requirements to ../build/car_control/car_control.egg-info/requires.txt
+[2.201s] writing top-level names to ../build/car_control/car_control.egg-info/top_level.txt
+[2.201s] writing manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'
+[2.252s] reading manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'
+[2.252s] writing manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'
+[2.253s] running build
+[2.254s] running build_py
+[2.254s] creating /home/ksj/ros2_fin/build/car_control/build
+[2.254s] creating /home/ksj/ros2_fin/build/car_control/build/lib
+[2.254s] creating /home/ksj/ros2_fin/build/car_control/build/lib/car_control
+[2.255s] copying car_control/motor_controller_node.py -> /home/ksj/ros2_fin/build/car_control/build/lib/car_control
+[2.255s] copying car_control/__init__.py -> /home/ksj/ros2_fin/build/car_control/build/lib/car_control
+[2.255s] running install
+[2.264s] running install_lib
+[2.297s] creating /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control
+[2.297s] copying /home/ksj/ros2_fin/build/car_control/build/lib/car_control/motor_controller_node.py -> /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control
+[2.297s] copying /home/ksj/ros2_fin/build/car_control/build/lib/car_control/__init__.py -> /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control
+[2.298s] byte-compiling /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control/motor_controller_node.py to motor_controller_node.cpython-312.pyc
+[2.299s] byte-compiling /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control/__init__.py to __init__.cpython-312.pyc
+[2.299s] running install_data
+[2.299s] creating /home/ksj/ros2_fin/install/car_control/share/ament_index
+[2.300s] creating /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index
+[2.300s] creating /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index/packages
+[2.300s] copying resource/car_control -> /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index/packages
+[2.300s] copying package.xml -> /home/ksj/ros2_fin/install/car_control/share/car_control
+[2.300s] running install_egg_info
+[2.328s] Copying ../build/car_control/car_control.egg-info to /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control-0.1.0-py3.12.egg-info
+[2.329s] running install_scripts
+[2.489s] Installing motor_controller_node script to /home/ksj/ros2_fin/install/car_control/lib/car_control
+[2.489s] writing list of installed files to '/home/ksj/ros2_fin/build/car_control/install.log'
+[2.567s] Invoked command in '/home/ksj/ros2_fin/car_control' returned '0': AMENT_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_fin/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_fin/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/car_control build --build-base /home/ksj/ros2_fin/build/car_control/build install --record /home/ksj/ros2_fin/build/car_control/install.log --single-version-externally-managed install_data

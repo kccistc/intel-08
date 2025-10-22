@@ -1,0 +1,519 @@
+[0.000000] (-) TimerEvent: {}
+[0.000554] (car_msgs) JobQueued: {'identifier': 'car_msgs', 'dependencies': OrderedDict()}
+[0.000604] (car_comms) JobQueued: {'identifier': 'car_comms', 'dependencies': OrderedDict({'car_msgs': '/home/ksj/ros2_fin/install/car_msgs'})}
+[0.000634] (car_control) JobQueued: {'identifier': 'car_control', 'dependencies': OrderedDict({'car_msgs': '/home/ksj/ros2_fin/install/car_msgs'})}
+[0.000654] (car_planning) JobQueued: {'identifier': 'car_planning', 'dependencies': OrderedDict({'car_msgs': '/home/ksj/ros2_fin/install/car_msgs'})}
+[0.000673] (car_msgs) JobStarted: {'identifier': 'car_msgs'}
+[0.012028] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'cmake'}
+[0.012433] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/ksj/ros2_fin/car_msgs', '-DCMAKE_INSTALL_PREFIX=/home/ksj/ros2_fin/install/car_msgs'], 'cwd': '/home/ksj/ros2_fin/build/car_msgs', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_msgs', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.100085] (-) TimerEvent: {}
+[0.172368] (car_msgs) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.200190] (-) TimerEvent: {}
+[0.300547] (-) TimerEvent: {}
+[0.323132] (car_msgs) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.358940] (car_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.400619] (-) TimerEvent: {}
+[0.475156] (car_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.488384] (car_msgs) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.490235] (car_msgs) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.490887] (car_msgs) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.499161] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.500722] (-) TimerEvent: {}
+[0.601067] (-) TimerEvent: {}
+[0.612593] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.620751] (car_msgs) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.620961] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.621272] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.629578] (car_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.701357] (-) TimerEvent: {}
+[0.805857] (-) TimerEvent: {}
+[0.906753] (-) TimerEvent: {}
+[1.007772] (-) TimerEvent: {}
+[1.108477] (-) TimerEvent: {}
+[1.202613] (car_msgs) StdoutLine: {'line': b'-- Found Python3: /home/ksj/.pyenv/shims/python3 (found version "3.12.3") found components: Interpreter \n'}
+[1.208550] (-) TimerEvent: {}
+[1.308910] (-) TimerEvent: {}
+[1.396874] (car_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)\n'}
+[1.409005] (-) TimerEvent: {}
+[1.409243] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.483045] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[1.509265] (-) TimerEvent: {}
+[1.555906] (car_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)\n'}
+[1.561391] (car_msgs) StdoutLine: {'line': b'-- Found builtin_interfaces: 2.0.3 (/opt/ros/jazzy/share/builtin_interfaces/cmake)\n'}
+[1.609321] (-) TimerEvent: {}
+[1.709537] (-) TimerEvent: {}
+[1.809762] (-) TimerEvent: {}
+[1.910001] (-) TimerEvent: {}
+[2.010325] (-) TimerEvent: {}
+[2.110768] (-) TimerEvent: {}
+[2.211591] (-) TimerEvent: {}
+[2.312016] (-) TimerEvent: {}
+[2.412223] (-) TimerEvent: {}
+[2.512452] (-) TimerEvent: {}
+[2.612955] (-) TimerEvent: {}
+[2.713539] (-) TimerEvent: {}
+[2.814118] (-) TimerEvent: {}
+[2.914826] (-) TimerEvent: {}
+[3.015127] (-) TimerEvent: {}
+[3.115468] (-) TimerEvent: {}
+[3.215754] (-) TimerEvent: {}
+[3.316624] (-) TimerEvent: {}
+[3.418841] (-) TimerEvent: {}
+[3.519044] (-) TimerEvent: {}
+[3.581362] (car_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)\n'}
+[3.619143] (-) TimerEvent: {}
+[3.719376] (-) TimerEvent: {}
+[3.821104] (-) TimerEvent: {}
+[3.921433] (-) TimerEvent: {}
+[4.021765] (-) TimerEvent: {}
+[4.122299] (-) TimerEvent: {}
+[4.223051] (-) TimerEvent: {}
+[4.323293] (-) TimerEvent: {}
+[4.423631] (-) TimerEvent: {}
+[4.524014] (-) TimerEvent: {}
+[4.624504] (-) TimerEvent: {}
+[4.725253] (-) TimerEvent: {}
+[4.827170] (-) TimerEvent: {}
+[4.927409] (-) TimerEvent: {}
+[5.027658] (-) TimerEvent: {}
+[5.127869] (-) TimerEvent: {}
+[5.213336] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[5.227979] (-) TimerEvent: {}
+[5.329685] (-) TimerEvent: {}
+[5.430190] (-) TimerEvent: {}
+[5.530559] (-) TimerEvent: {}
+[5.631001] (-) TimerEvent: {}
+[5.731243] (-) TimerEvent: {}
+[5.831992] (-) TimerEvent: {}
+[5.936292] (-) TimerEvent: {}
+[6.036592] (-) TimerEvent: {}
+[6.138299] (-) TimerEvent: {}
+[6.238540] (-) TimerEvent: {}
+[6.338801] (-) TimerEvent: {}
+[6.439121] (-) TimerEvent: {}
+[6.539542] (-) TimerEvent: {}
+[6.640847] (-) TimerEvent: {}
+[6.742283] (-) TimerEvent: {}
+[6.843726] (-) TimerEvent: {}
+[6.944017] (-) TimerEvent: {}
+[7.044586] (-) TimerEvent: {}
+[7.145829] (-) TimerEvent: {}
+[7.246308] (-) TimerEvent: {}
+[7.347209] (-) TimerEvent: {}
+[7.447448] (-) TimerEvent: {}
+[7.499907] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[7.507817] (car_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)\n'}
+[7.547564] (-) TimerEvent: {}
+[7.647938] (-) TimerEvent: {}
+[7.748466] (-) TimerEvent: {}
+[7.850838] (-) TimerEvent: {}
+[7.951105] (-) TimerEvent: {}
+[8.051337] (-) TimerEvent: {}
+[8.057498] (car_msgs) StdoutLine: {'line': b'-- Found PythonExtra: /home/ksj/.pyenv/shims/python3  \n'}
+[8.151437] (-) TimerEvent: {}
+[8.251727] (-) TimerEvent: {}
+[8.352593] (-) TimerEvent: {}
+[8.453704] (-) TimerEvent: {}
+[8.554240] (-) TimerEvent: {}
+[8.655642] (-) TimerEvent: {}
+[8.755913] (-) TimerEvent: {}
+[8.856193] (-) TimerEvent: {}
+[8.956558] (-) TimerEvent: {}
+[9.057227] (-) TimerEvent: {}
+[9.157547] (-) TimerEvent: {}
+[9.257819] (-) TimerEvent: {}
+[9.358547] (-) TimerEvent: {}
+[9.423010] (car_msgs) StdoutLine: {'line': b'-- Found Python3: /home/ksj/.pyenv/shims/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed \n'}
+[9.458659] (-) TimerEvent: {}
+[9.532820] (car_msgs) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)\n'}
+[9.543449] (car_msgs) StdoutLine: {'line': b'-- Configuring done (9.5s)\n'}
+[9.558935] (-) TimerEvent: {}
+[9.592579] (car_msgs) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[9.609798] (car_msgs) StdoutLine: {'line': b'-- Build files have been written to: /home/ksj/ros2_fin/build/car_msgs\n'}
+[9.618632] (car_msgs) CommandEnded: {'returncode': 0}
+[9.619316] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'build'}
+[9.619992] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/ksj/ros2_fin/build/car_msgs', '--', '-j16', '-l16'], 'cwd': '/home/ksj/ros2_fin/build/car_msgs', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_msgs', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[9.658979] (-) TimerEvent: {}
+[9.663176] (car_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating type hashes for ROS interfaces\x1b[0m\n'}
+[9.674278] (car_msgs) StdoutLine: {'line': b'[  2%] Built target ament_cmake_python_copy_car_msgs\n'}
+[9.759061] (-) TimerEvent: {}
+[9.859273] (-) TimerEvent: {}
+[9.960076] (-) TimerEvent: {}
+[10.009805] (car_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[10.010480] (car_msgs) StdoutLine: {'line': b'creating car_msgs.egg-info\n'}
+[10.018041] (car_msgs) StdoutLine: {'line': b'[  2%] Built target car_msgs__rosidl_generator_type_description\n'}
+[10.025482] (car_msgs) StdoutLine: {'line': b'[  5%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[10.029015] (car_msgs) StdoutLine: {'line': b'writing car_msgs.egg-info/PKG-INFO\n'}
+[10.029250] (car_msgs) StdoutLine: {'line': b'writing dependency_links to car_msgs.egg-info/dependency_links.txt\n'}
+[10.029472] (car_msgs) StdoutLine: {'line': b'writing top-level names to car_msgs.egg-info/top_level.txt\n'}
+[10.029589] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[10.037303] (car_msgs) StdoutLine: {'line': b'[  8%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[10.060146] (-) TimerEvent: {}
+[10.119016] (car_msgs) StdoutLine: {'line': b"reading manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[10.119430] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[10.145546] (car_msgs) StdoutLine: {'line': b'[  8%] Built target ament_cmake_python_build_car_msgs_egg\n'}
+[10.160281] (-) TimerEvent: {}
+[10.260642] (-) TimerEvent: {}
+[10.360829] (-) TimerEvent: {}
+[10.455436] (car_msgs) StdoutLine: {'line': b'[  8%] Built target car_msgs__cpp\n'}
+[10.460965] (-) TimerEvent: {}
+[10.487347] (car_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/v2_v_alert__functions.c.o\x1b[0m\n'}
+[10.487503] (car_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/v2_v_alert__type_support.c.o\x1b[0m\n'}
+[10.487584] (car_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/v2_v_alert__description.c.o\x1b[0m\n'}
+[10.561054] (-) TimerEvent: {}
+[10.567691] (car_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[10.618686] (car_msgs) StdoutLine: {'line': b'[ 20%] Built target car_msgs__rosidl_generator_c\n'}
+[10.626588] (car_msgs) StdoutLine: {'line': b'[ 29%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[10.626810] (car_msgs) StdoutLine: {'line': b'[ 29%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[10.626905] (car_msgs) StdoutLine: {'line': b'[ 29%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[10.626987] (car_msgs) StdoutLine: {'line': b'[ 32%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[10.627404] (car_msgs) StdoutLine: {'line': b'[ 35%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[10.629010] (car_msgs) StdoutLine: {'line': b'[ 38%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[10.661302] (-) TimerEvent: {}
+[10.762980] (-) TimerEvent: {}
+[10.863390] (-) TimerEvent: {}
+[10.963950] (-) TimerEvent: {}
+[11.008099] (car_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/v2_v_alert__type_support.cpp.o\x1b[0m\n'}
+[11.066988] (car_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/v2_v_alert__type_support.cpp.o\x1b[0m\n'}
+[11.067214] (-) TimerEvent: {}
+[11.075876] (car_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/v2_v_alert__type_support.cpp.o\x1b[0m\n'}
+[11.085394] (car_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/v2_v_alert__type_support.c.o\x1b[0m\n'}
+[11.093405] (car_msgs) StdoutLine: {'line': b'[ 52%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[11.114066] (car_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/v2_v_alert__type_support.cpp.o\x1b[0m\n'}
+[11.127279] (car_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/v2_v_alert__type_support_c.cpp.o\x1b[0m\n'}
+[11.137977] (car_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[11.143337] (car_msgs) StdoutLine: {'line': b'[ 61%] Built target car_msgs__rosidl_typesupport_c\n'}
+[11.167349] (-) TimerEvent: {}
+[11.175423] (car_msgs) StdoutLine: {'line': b'[ 61%] Built target car_msgs__rosidl_typesupport_introspection_c\n'}
+[11.267449] (-) TimerEvent: {}
+[11.367773] (-) TimerEvent: {}
+[11.468071] (-) TimerEvent: {}
+[11.490090] (car_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[11.526593] (car_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[11.541681] (car_msgs) StdoutLine: {'line': b'[ 67%] Built target car_msgs__rosidl_typesupport_cpp\n'}
+[11.568251] (-) TimerEvent: {}
+[11.618441] (car_msgs) StdoutLine: {'line': b'[ 67%] Built target car_msgs__rosidl_typesupport_introspection_cpp\n'}
+[11.668320] (-) TimerEvent: {}
+[11.728666] (car_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[11.762761] (car_msgs) StdoutLine: {'line': b'[ 73%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[11.768605] (-) TimerEvent: {}
+[11.836445] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[11.853782] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs__rosidl_typesupport_fastrtps_c\n'}
+[11.868753] (-) TimerEvent: {}
+[11.879971] (car_msgs) StdoutLine: {'line': b'[ 73%] Built target car_msgs\n'}
+[11.908630] (car_msgs) StdoutLine: {'line': b'[ 76%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[11.968842] (-) TimerEvent: {}
+[12.069077] (-) TimerEvent: {}
+[12.169623] (-) TimerEvent: {}
+[12.270276] (-) TimerEvent: {}
+[12.370563] (-) TimerEvent: {}
+[12.450254] (car_msgs) StdoutLine: {'line': b'[ 76%] Built target car_msgs__py\n'}
+[12.466110] (car_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_v2_v_alert_s.c.o\x1b[0m\n'}
+[12.470646] (-) TimerEvent: {}
+[12.570853] (-) TimerEvent: {}
+[12.671123] (-) TimerEvent: {}
+[12.688666] (car_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[12.725085] (car_msgs) StdoutLine: {'line': b'[ 82%] Built target car_msgs__rosidl_generator_py\n'}
+[12.750110] (car_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[12.750584] (car_msgs) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[12.751861] (car_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[12.771236] (-) TimerEvent: {}
+[12.864798] (car_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_c.so\x1b[0m\n'}
+[12.865046] (car_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[12.867856] (car_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[12.871312] (-) TimerEvent: {}
+[12.905239] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_c\n'}
+[12.908089] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_introspection_c\n'}
+[12.910602] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[12.929355] (car_msgs) CommandEnded: {'returncode': 0}
+[12.930950] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'install'}
+[12.944082] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/ksj/ros2_fin/build/car_msgs'], 'cwd': '/home/ksj/ros2_fin/build/car_msgs', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_msgs', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[12.953761] (car_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[12.954375] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/ament_index/resource_index/rosidl_interfaces/car_msgs\n'}
+[12.954510] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/msg/V2VAlert.json\n'}
+[12.954607] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.954723] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.955216] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.955350] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.c\n'}
+[12.955469] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__functions.c\n'}
+[12.955581] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.h\n'}
+[12.955642] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__functions.h\n'}
+[12.955706] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__description.c\n'}
+[12.955803] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.h\n'}
+[12.955872] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.h\n'}
+[12.955938] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[12.955993] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/library_path.sh\n'}
+[12.956047] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/library_path.dsv\n'}
+[12.956123] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so\n'}
+[12.956194] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so" to ""\n'}
+[12.956272] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.956331] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.956386] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.956460] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_c.h\n'}
+[12.956524] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[12.956577] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[12.956672] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[12.956775] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.956865] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.956983] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.957078] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.c\n'}
+[12.957143] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_c.h\n'}
+[12.957194] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[12.957254] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so\n'}
+[12.957334] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so" to ""\n'}
+[12.957422] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so\n'}
+[12.957520] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so" to ""\n'}
+[12.957621] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.957681] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.957763] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.957856] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__builder.hpp\n'}
+[12.957917] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__struct.hpp\n'}
+[12.957967] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__traits.hpp\n'}
+[12.958346] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.hpp\n'}
+[12.958439] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/v2_v_alert.hpp\n'}
+[12.958522] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[12.958611] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.958697] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.958792] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.958856] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[12.958910] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/dds_fastrtps\n'}
+[12.958990] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[12.959066] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[12.959246] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""\n'}
+[12.959352] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs\n'}
+[12.959456] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[12.959522] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[12.959576] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__rosidl_typesupport_introspection_cpp.hpp\n'}
+[12.959627] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/include/car_msgs/car_msgs/msg/detail/v2_v_alert__type_support.cpp\n'}
+[12.959704] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[12.959823] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so" to ""\n'}
+[12.959901] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so\n'}
+[12.960095] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so" to ""\n'}
+[12.960181] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/pythonpath.sh\n'}
+[12.960265] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/pythonpath.dsv\n'}
+[12.960355] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info\n'}
+[12.960437] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/top_level.txt\n'}
+[12.960529] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/SOURCES.txt\n'}
+[12.960609] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/PKG-INFO\n'}
+[12.960685] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.0-py3.12.egg-info/dependency_links.txt\n'}
+[12.960774] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs\n'}
+[12.960853] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[12.960926] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[12.961004] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg\n'}
+[12.961079] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert.py\n'}
+[12.961220] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert_s.c\n'}
+[12.961355] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py\n'}
+[12.961450] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[12.961579] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[12.961678] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[12.961758] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py\n'}
+[12.961837] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[12.971437] (-) TimerEvent: {}
+[13.063593] (car_msgs) StdoutLine: {'line': b"Listing '/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs'...\n"}
+[13.064540] (car_msgs) StdoutLine: {'line': b"Compiling '/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py'...\n"}
+[13.064660] (car_msgs) StdoutLine: {'line': b"Listing '/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg'...\n"}
+[13.064747] (car_msgs) StdoutLine: {'line': b"Compiling '/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py'...\n"}
+[13.064821] (car_msgs) StdoutLine: {'line': b"Compiling '/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_v2_v_alert.py'...\n"}
+[13.069812] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[13.069955] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[13.070060] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[13.070234] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so" to ""\n'}
+[13.070353] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[13.070578] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so" to ""\n'}
+[13.070653] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so\n'}
+[13.070800] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/ksj/ros2_fin/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so" to ""\n'}
+[13.070873] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/msg/V2VAlert.idl\n'}
+[13.070944] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/msg/V2VAlert.msg\n'}
+[13.071025] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/ament_index/resource_index/package_run_dependencies/car_msgs\n'}
+[13.071128] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/ament_index/resource_index/parent_prefix_path/car_msgs\n'}
+[13.071204] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/ament_prefix_path.sh\n'}
+[13.071277] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/ament_prefix_path.dsv\n'}
+[13.071353] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/path.sh\n'}
+[13.071431] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/environment/path.dsv\n'}
+[13.071490] (-) TimerEvent: {}
+[13.071572] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/local_setup.bash\n'}
+[13.071659] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/local_setup.sh\n'}
+[13.071740] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/local_setup.zsh\n'}
+[13.071828] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/local_setup.dsv\n'}
+[13.071899] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/package.dsv\n'}
+[13.071967] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/ament_index/resource_index/packages/car_msgs\n'}
+[13.072118] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport.cmake\n'}
+[13.072186] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[13.072256] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[13.072338] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[13.072422] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[13.072509] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[13.072643] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport.cmake\n'}
+[13.072815] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[13.072935] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cppExport.cmake\n'}
+[13.073052] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[13.073169] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[13.073288] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[13.073424] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[13.073573] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[13.073700] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[13.073847] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport.cmake\n'}
+[13.073989] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[13.074112] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[13.074236] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[13.074371] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[13.074536] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[13.074660] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[13.074774] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[13.074897] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[13.075018] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgsConfig.cmake\n'}
+[13.075137] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/cmake/car_msgsConfig-version.cmake\n'}
+[13.075252] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/ksj/ros2_fin/install/car_msgs/share/car_msgs/package.xml\n'}
+[13.077185] (car_msgs) CommandEnded: {'returncode': 0}
+[13.097726] (car_msgs) JobEnded: {'identifier': 'car_msgs', 'rc': 0}
+[13.098636] (car_comms) JobStarted: {'identifier': 'car_comms'}
+[13.101330] (car_control) JobStarted: {'identifier': 'car_control'}
+[13.104594] (car_planning) JobStarted: {'identifier': 'car_planning'}
+[13.172395] (-) TimerEvent: {}
+[13.272799] (-) TimerEvent: {}
+[13.373692] (-) TimerEvent: {}
+[13.473894] (-) TimerEvent: {}
+[13.574089] (-) TimerEvent: {}
+[13.674598] (-) TimerEvent: {}
+[13.775001] (-) TimerEvent: {}
+[13.875641] (-) TimerEvent: {}
+[13.976273] (-) TimerEvent: {}
+[14.076483] (-) TimerEvent: {}
+[14.176776] (-) TimerEvent: {}
+[14.277104] (-) TimerEvent: {}
+[14.378126] (-) TimerEvent: {}
+[14.479806] (-) TimerEvent: {}
+[14.580439] (-) TimerEvent: {}
+[14.680690] (-) TimerEvent: {}
+[14.780994] (-) TimerEvent: {}
+[14.881355] (-) TimerEvent: {}
+[14.886828] (car_comms) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../build/car_comms', 'build', '--build-base', '/home/ksj/ros2_fin/build/car_comms/build', 'install', '--record', '/home/ksj/ros2_fin/build/car_comms/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/ksj/ros2_fin/car_comms', 'env': {'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/ksj/ros2_fin/install/car_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_comms', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/ksj/ros2_fin/build/car_comms/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}, 'shell': False}
+[14.897328] (car_control) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../build/car_control', 'build', '--build-base', '/home/ksj/ros2_fin/build/car_control/build', 'install', '--record', '/home/ksj/ros2_fin/build/car_control/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/ksj/ros2_fin/car_control', 'env': {'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/ksj/ros2_fin/install/car_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_control', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/ksj/ros2_fin/build/car_control/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}, 'shell': False}
+[14.899961] (car_planning) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../build/car_planning', 'build', '--build-base', '/home/ksj/ros2_fin/build/car_planning/build', 'install', '--record', '/home/ksj/ros2_fin/build/car_planning/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/ksj/ros2_fin/car_planning', 'env': {'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'PYTHON_BASIC_REPL': '1', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'ksj', 'XDG_SESSION_TYPE': 'x11', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/ksj/ros2_fin/install/car_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/ksj', 'CHROME_DESKTOP': 'code.desktop', 'TERM_PROGRAM_VERSION': '1.104.1', 'DESKTOP_SESSION': 'ubuntu', 'PYENV_SHELL': 'bash', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '1647', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '2011', 'BUNDLED_DEBUGPY_PATH': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/libs/debugpy', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '5765', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'ksj', 'JOURNAL_STREAM': '9:5021', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@x11.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'ksj', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/home/ksj/.pyenv/shims:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/pyocd:/home/ksj/.vscode/extensions/arm.vscode-cmsis-debugger-1.1.0-linux-x64/tools/gdb/bin:/home/ksj/.pyenv/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/bundled/scripts/noConfigScripts:/home/ksj/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', 'SESSION_MANAGER': 'local/ksj-System-Product-Name:@/tmp/.ICE-unix/1968,unix/ksj-System-Product-Name:/tmp/.ICE-unix/1968', 'INVOCATION_ID': '2c4dc5a961334564b76c461fe88ddcee', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/ksj/.vscode/extensions/ms-python.debugpy-2025.14.1-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-4d98ac14fce5fef8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'PYTHONSTARTUP': '/home/ksj/.config/Code/User/workspaceStorage/e996f00c7809a186e672e1c642658897/ms-python.python/pythonrc.py', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-4b5c4e639b.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/ksj/ros2_fin/build/car_planning', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'PYENV_ROOT': '/home/ksj/.pyenv', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/ksj/ros2_fin/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/ksj/ros2_fin/install/car_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}, 'shell': False}
+[14.981456] (-) TimerEvent: {}
+[15.082138] (-) TimerEvent: {}
+[15.182395] (-) TimerEvent: {}
+[15.265714] (car_comms) StdoutLine: {'line': b'running egg_info\n'}
+[15.266122] (car_comms) StdoutLine: {'line': b'creating ../build/car_comms/car_comms.egg-info\n'}
+[15.281080] (car_planning) StdoutLine: {'line': b'running egg_info\n'}
+[15.281624] (car_planning) StdoutLine: {'line': b'creating ../build/car_planning/car_planning.egg-info\n'}
+[15.281958] (car_control) StdoutLine: {'line': b'running egg_info\n'}
+[15.282382] (car_control) StdoutLine: {'line': b'creating ../build/car_control/car_control.egg-info\n'}
+[15.282533] (-) TimerEvent: {}
+[15.290883] (car_comms) StdoutLine: {'line': b'writing ../build/car_comms/car_comms.egg-info/PKG-INFO\n'}
+[15.291214] (car_comms) StdoutLine: {'line': b'writing dependency_links to ../build/car_comms/car_comms.egg-info/dependency_links.txt\n'}
+[15.291407] (car_comms) StdoutLine: {'line': b'writing entry points to ../build/car_comms/car_comms.egg-info/entry_points.txt\n'}
+[15.291559] (car_comms) StdoutLine: {'line': b'writing requirements to ../build/car_comms/car_comms.egg-info/requires.txt\n'}
+[15.291690] (car_comms) StdoutLine: {'line': b'writing top-level names to ../build/car_comms/car_comms.egg-info/top_level.txt\n'}
+[15.291780] (car_comms) StdoutLine: {'line': b"writing manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'\n"}
+[15.301643] (car_control) StdoutLine: {'line': b'writing ../build/car_control/car_control.egg-info/PKG-INFO\n'}
+[15.301860] (car_control) StdoutLine: {'line': b'writing dependency_links to ../build/car_control/car_control.egg-info/dependency_links.txt\n'}
+[15.301982] (car_control) StdoutLine: {'line': b'writing entry points to ../build/car_control/car_control.egg-info/entry_points.txt\n'}
+[15.302083] (car_control) StdoutLine: {'line': b'writing requirements to ../build/car_control/car_control.egg-info/requires.txt\n'}
+[15.302185] (car_control) StdoutLine: {'line': b'writing top-level names to ../build/car_control/car_control.egg-info/top_level.txt\n'}
+[15.302285] (car_control) StdoutLine: {'line': b"writing manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'\n"}
+[15.302579] (car_planning) StdoutLine: {'line': b'writing ../build/car_planning/car_planning.egg-info/PKG-INFO\n'}
+[15.302820] (car_planning) StdoutLine: {'line': b'writing dependency_links to ../build/car_planning/car_planning.egg-info/dependency_links.txt\n'}
+[15.302966] (car_planning) StdoutLine: {'line': b'writing entry points to ../build/car_planning/car_planning.egg-info/entry_points.txt\n'}
+[15.303068] (car_planning) StdoutLine: {'line': b'writing requirements to ../build/car_planning/car_planning.egg-info/requires.txt\n'}
+[15.303170] (car_planning) StdoutLine: {'line': b'writing top-level names to ../build/car_planning/car_planning.egg-info/top_level.txt\n'}
+[15.303272] (car_planning) StdoutLine: {'line': b"writing manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'\n"}
+[15.353543] (car_control) StdoutLine: {'line': b"reading manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'\n"}
+[15.353910] (car_control) StdoutLine: {'line': b"writing manifest file '../build/car_control/car_control.egg-info/SOURCES.txt'\n"}
+[15.354531] (car_control) StdoutLine: {'line': b'running build\n'}
+[15.355156] (car_control) StdoutLine: {'line': b'running build_py\n'}
+[15.355355] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_control/build\n'}
+[15.355458] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_control/build/lib\n'}
+[15.355743] (car_comms) StdoutLine: {'line': b"reading manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'\n"}
+[15.355969] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_control/build/lib/car_control\n'}
+[15.356063] (car_planning) StdoutLine: {'line': b"reading manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'\n"}
+[15.356181] (car_comms) StdoutLine: {'line': b"writing manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'\n"}
+[15.356879] (car_control) StdoutLine: {'line': b'copying car_control/motor_controller_node.py -> /home/ksj/ros2_fin/build/car_control/build/lib/car_control\n'}
+[15.356975] (car_control) StdoutLine: {'line': b'copying car_control/__init__.py -> /home/ksj/ros2_fin/build/car_control/build/lib/car_control\n'}
+[15.357059] (car_control) StdoutLine: {'line': b'running install\n'}
+[15.357140] (car_comms) StdoutLine: {'line': b'running build\n'}
+[15.357225] (car_comms) StdoutLine: {'line': b'running build_py\n'}
+[15.357999] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_comms/build\n'}
+[15.358085] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_comms/build/lib\n'}
+[15.358165] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms\n'}
+[15.358245] (car_planning) StdoutLine: {'line': b"writing manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'\n"}
+[15.358350] (car_planning) StdoutLine: {'line': b'running build\n'}
+[15.358439] (car_planning) StdoutLine: {'line': b'running build_py\n'}
+[15.358537] (car_comms) StdoutLine: {'line': b'copying car_comms/v2c_comm.py -> /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms\n'}
+[15.358632] (car_comms) StdoutLine: {'line': b'copying car_comms/__init__.py -> /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms\n'}
+[15.358720] (car_comms) StdoutLine: {'line': b'running install\n'}
+[15.358804] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_planning/build\n'}
+[15.358892] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_planning/build/lib\n'}
+[15.358977] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning\n'}
+[15.359064] (car_planning) StdoutLine: {'line': b'copying car_planning/decision_maker_backup.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning\n'}
+[15.360450] (car_planning) StdoutLine: {'line': b'copying car_planning/decision_maker.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning\n'}
+[15.360938] (car_planning) StdoutLine: {'line': b'copying car_planning/__init__.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning\n'}
+[15.361014] (car_planning) StdoutLine: {'line': b'running install\n'}
+[15.365515] (car_control) StdoutLine: {'line': b'running install_lib\n'}
+[15.367969] (car_comms) StdoutLine: {'line': b'running install_lib\n'}
+[15.370677] (car_planning) StdoutLine: {'line': b'running install_lib\n'}
+[15.382639] (-) TimerEvent: {}
+[15.397791] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control\n'}
+[15.398519] (car_control) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_control/build/lib/car_control/motor_controller_node.py -> /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control\n'}
+[15.398691] (car_control) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_control/build/lib/car_control/__init__.py -> /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control\n'}
+[15.399081] (car_control) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control/motor_controller_node.py to motor_controller_node.cpython-312.pyc\n'}
+[15.400109] (car_control) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control/__init__.py to __init__.cpython-312.pyc\n'}
+[15.400536] (car_control) StdoutLine: {'line': b'running install_data\n'}
+[15.400906] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_control/share/ament_index\n'}
+[15.401217] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index\n'}
+[15.401442] (car_control) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index/packages\n'}
+[15.401566] (car_control) StdoutLine: {'line': b'copying resource/car_control -> /home/ksj/ros2_fin/install/car_control/share/ament_index/resource_index/packages\n'}
+[15.401735] (car_control) StdoutLine: {'line': b'copying package.xml -> /home/ksj/ros2_fin/install/car_control/share/car_control\n'}
+[15.401891] (car_control) StdoutLine: {'line': b'running install_egg_info\n'}
+[15.402246] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms\n'}
+[15.402386] (car_comms) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms/v2c_comm.py -> /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms\n'}
+[15.402843] (car_comms) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms/__init__.py -> /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms\n'}
+[15.403246] (car_comms) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms/v2c_comm.py to v2c_comm.cpython-312.pyc\n'}
+[15.405153] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning\n'}
+[15.405381] (car_planning) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/decision_maker_backup.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning\n'}
+[15.405563] (car_planning) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/decision_maker.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning\n'}
+[15.405673] (car_planning) StdoutLine: {'line': b'copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/__init__.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning\n'}
+[15.406303] (car_planning) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/decision_maker_backup.py to decision_maker_backup.cpython-312.pyc\n'}
+[15.406747] (car_comms) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms/__init__.py to __init__.cpython-312.pyc\n'}
+[15.407004] (car_comms) StdoutLine: {'line': b'running install_data\n'}
+[15.407513] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_comms/share/ament_index\n'}
+[15.407675] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index\n'}
+[15.407775] (car_comms) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index/packages\n'}
+[15.407855] (car_comms) StdoutLine: {'line': b'copying resource/car_comms -> /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index/packages\n'}
+[15.407929] (car_comms) StdoutLine: {'line': b'copying package.xml -> /home/ksj/ros2_fin/install/car_comms/share/car_comms\n'}
+[15.408587] (car_planning) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/decision_maker.py to decision_maker.cpython-312.pyc\n'}
+[15.408709] (car_comms) StdoutLine: {'line': b'running install_egg_info\n'}
+[15.408955] (car_planning) StdoutLine: {'line': b'byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/__init__.py to __init__.cpython-312.pyc\n'}
+[15.409060] (car_planning) StdoutLine: {'line': b'running install_data\n'}
+[15.409136] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/share/ament_index\n'}
+[15.409272] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index\n'}
+[15.409375] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index/packages\n'}
+[15.409560] (car_planning) StdoutLine: {'line': b'copying resource/car_planning -> /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index/packages\n'}
+[15.409651] (car_planning) StdoutLine: {'line': b'copying package.xml -> /home/ksj/ros2_fin/install/car_planning/share/car_planning\n'}
+[15.409735] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/share/car_planning/launch\n'}
+[15.409965] (car_planning) StdoutLine: {'line': b'copying launch/v2x_full_stack.launch.py -> /home/ksj/ros2_fin/install/car_planning/share/car_planning/launch\n'}
+[15.410046] (car_planning) StdoutLine: {'line': b'creating /home/ksj/ros2_fin/install/car_planning/share/car_planning/config\n'}
+[15.410122] (car_planning) StdoutLine: {'line': b'copying config/decision_maker.yaml -> /home/ksj/ros2_fin/install/car_planning/share/car_planning/config\n'}
+[15.410252] (car_planning) StdoutLine: {'line': b'running install_egg_info\n'}
+[15.429520] (car_control) StdoutLine: {'line': b'Copying ../build/car_control/car_control.egg-info to /home/ksj/ros2_fin/install/car_control/lib/python3.12/site-packages/car_control-0.1.0-py3.12.egg-info\n'}
+[15.430344] (car_control) StdoutLine: {'line': b'running install_scripts\n'}
+[15.434192] (car_planning) StdoutLine: {'line': b'Copying ../build/car_planning/car_planning.egg-info to /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning-0.0.0-py3.12.egg-info\n'}
+[15.434748] (car_comms) StdoutLine: {'line': b'Copying ../build/car_comms/car_comms.egg-info to /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.1-py3.12.egg-info\n'}
+[15.435090] (car_planning) StdoutLine: {'line': b'running install_scripts\n'}
+[15.435915] (car_comms) StdoutLine: {'line': b'running install_scripts\n'}
+[15.482989] (-) TimerEvent: {}
+[15.583373] (-) TimerEvent: {}
+[15.590254] (car_control) StdoutLine: {'line': b'Installing motor_controller_node script to /home/ksj/ros2_fin/install/car_control/lib/car_control\n'}
+[15.590581] (car_control) StdoutLine: {'line': b"writing list of installed files to '/home/ksj/ros2_fin/build/car_control/install.log'\n"}
+[15.594818] (car_comms) StdoutLine: {'line': b'Installing v2c_comm script to /home/ksj/ros2_fin/install/car_comms/lib/car_comms\n'}
+[15.595454] (car_planning) StdoutLine: {'line': b'Installing decision_maker script to /home/ksj/ros2_fin/install/car_planning/lib/car_planning\n'}
+[15.595648] (car_comms) StdoutLine: {'line': b"writing list of installed files to '/home/ksj/ros2_fin/build/car_comms/install.log'\n"}
+[15.595934] (car_planning) StdoutLine: {'line': b"writing list of installed files to '/home/ksj/ros2_fin/build/car_planning/install.log'\n"}
+[15.668571] (car_control) CommandEnded: {'returncode': 0}
+[15.672465] (car_control) JobEnded: {'identifier': 'car_control', 'rc': 0}
+[15.674229] (car_comms) CommandEnded: {'returncode': 0}
+[15.681825] (car_comms) JobEnded: {'identifier': 'car_comms', 'rc': 0}
+[15.682727] (car_planning) CommandEnded: {'returncode': 0}
+[15.683439] (-) TimerEvent: {}
+[15.687723] (car_planning) JobEnded: {'identifier': 'car_planning', 'rc': 0}
+[15.688509] (-) EventReactorShutdown: {}

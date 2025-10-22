@@ -1,6 +1,0 @@
-Invoking command in '/ws/build/car_msgs': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake /ws/src/car_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/ws/install
-Invoked command in '/ws/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake /ws/src/car_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/ws/install
-Invoking command in '/ws/build/car_msgs': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake --build /ws/build/car_msgs -- -j4 -l4
-Invoked command in '/ws/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake --build /ws/build/car_msgs -- -j4 -l4
-Invoking command in '/ws/build/car_msgs': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake --install /ws/build/car_msgs
-Invoked command in '/ws/build/car_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/jazzy /usr/bin/cmake --install /ws/build/car_msgs

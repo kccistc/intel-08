@@ -1,0 +1,7 @@
+car_planning:
+  ros__parameters:
+    stop_distance_m: 10.0
+    slow_distance_m: 20.0
+    cruise_speed: 1.0
+    slow_speed: 0.3
+    turn_rate: 0.4

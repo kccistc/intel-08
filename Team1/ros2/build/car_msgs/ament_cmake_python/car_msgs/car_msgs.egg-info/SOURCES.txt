@@ -1,8 +1,0 @@
-setup.py
-car_msgs/__init__.py
-car_msgs.egg-info/PKG-INFO
-car_msgs.egg-info/SOURCES.txt
-car_msgs.egg-info/dependency_links.txt
-car_msgs.egg-info/top_level.txt
-car_msgs/msg/__init__.py
-car_msgs/msg/_v2_v_alert.py

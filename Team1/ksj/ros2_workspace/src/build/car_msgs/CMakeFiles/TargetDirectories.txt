@@ -1,9 +1,0 @@
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/uninstall.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/car_msgs_uninstall.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/test.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/edit_cache.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/rebuild_cache.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/list_install_components.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/install.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/install/local.dir
-/home/ksj/ros2_workspace/src/build/car_msgs/CMakeFiles/install/strip.dir

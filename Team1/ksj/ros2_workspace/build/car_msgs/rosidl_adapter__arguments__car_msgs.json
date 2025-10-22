@@ -1,7 +1,0 @@
-{
-  "package_name": "car_msgs",
-  "non_idl_tuples": [
-    "/home/ksj/ros2_workspace/src/car_msgs:msg/LaneInfo.msg",
-    "/home/ksj/ros2_workspace/src/car_msgs:msg/V2VAlert.msg"
-  ]
-}

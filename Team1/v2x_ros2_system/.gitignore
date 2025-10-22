@@ -1,8 +1,0 @@
-build/
-install/
-log/
-rosbag*/
-*.bag
-__pycache__/
-*.pyc
-.colcon*

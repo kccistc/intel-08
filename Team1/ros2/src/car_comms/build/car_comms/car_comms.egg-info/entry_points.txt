@@ -1,2 +1,0 @@
-[console_scripts]
-v2x_alert_bridge = car_comms.v2x_alert_bridge:main

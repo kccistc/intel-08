@@ -1,2 +1,0 @@
-[console_scripts]
-v2x_sub = car_comms.v2x_subscriber:main

@@ -1,0 +1,2 @@
+/home/jeongseon/workspace/pred_danger/model/best_model_rear_classification.pth
+/home/jeongseon/workspace/pred_danger/model/scaler_rear_classification.pkl

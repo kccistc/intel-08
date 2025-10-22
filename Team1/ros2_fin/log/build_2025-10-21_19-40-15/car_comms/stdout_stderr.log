@@ -1,0 +1,35 @@
+running egg_info
+creating ../build/car_comms/car_comms.egg-info
+writing ../build/car_comms/car_comms.egg-info/PKG-INFO
+writing dependency_links to ../build/car_comms/car_comms.egg-info/dependency_links.txt
+writing entry points to ../build/car_comms/car_comms.egg-info/entry_points.txt
+writing requirements to ../build/car_comms/car_comms.egg-info/requires.txt
+writing top-level names to ../build/car_comms/car_comms.egg-info/top_level.txt
+writing manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'
+reading manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'
+writing manifest file '../build/car_comms/car_comms.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/ksj/ros2_fin/build/car_comms/build
+creating /home/ksj/ros2_fin/build/car_comms/build/lib
+creating /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms
+copying car_comms/v2c_comm.py -> /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms
+copying car_comms/__init__.py -> /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms
+running install
+running install_lib
+creating /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms
+copying /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms/v2c_comm.py -> /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms
+copying /home/ksj/ros2_fin/build/car_comms/build/lib/car_comms/__init__.py -> /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms
+byte-compiling /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms/v2c_comm.py to v2c_comm.cpython-312.pyc
+byte-compiling /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/ksj/ros2_fin/install/car_comms/share/ament_index
+creating /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index
+creating /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index/packages
+copying resource/car_comms -> /home/ksj/ros2_fin/install/car_comms/share/ament_index/resource_index/packages
+copying package.xml -> /home/ksj/ros2_fin/install/car_comms/share/car_comms
+running install_egg_info
+Copying ../build/car_comms/car_comms.egg-info to /home/ksj/ros2_fin/install/car_comms/lib/python3.12/site-packages/car_comms-0.0.1-py3.12.egg-info
+running install_scripts
+Installing v2c_comm script to /home/ksj/ros2_fin/install/car_comms/lib/car_comms
+writing list of installed files to '/home/ksj/ros2_fin/build/car_comms/install.log'

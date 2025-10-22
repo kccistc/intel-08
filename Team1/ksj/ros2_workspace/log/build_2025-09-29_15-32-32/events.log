@@ -1,8 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000103] (-) JobUnselected: {'identifier': 'car_comms'}
-[0.000145] (-) JobUnselected: {'identifier': 'car_control'}
-[0.000192] (-) JobUnselected: {'identifier': 'car_msgs'}
-[0.000203] (-) JobUnselected: {'identifier': 'car_planning'}
-[0.000212] (-) JobUnselected: {'identifier': 'car_vision'}
-[0.000219] (-) JobUnselected: {'identifier': 'vision_pkg'}
-[0.000521] (-) EventReactorShutdown: {}

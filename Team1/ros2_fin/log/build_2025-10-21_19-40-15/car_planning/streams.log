@@ -1,0 +1,44 @@
+[1.800s] Invoking command in '/home/ksj/ros2_fin/car_planning': AMENT_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_fin/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_fin/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/car_planning build --build-base /home/ksj/ros2_fin/build/car_planning/build install --record /home/ksj/ros2_fin/build/car_planning/install.log --single-version-externally-managed install_data
+[2.177s] running egg_info
+[2.177s] creating ../build/car_planning/car_planning.egg-info
+[2.198s] writing ../build/car_planning/car_planning.egg-info/PKG-INFO
+[2.198s] writing dependency_links to ../build/car_planning/car_planning.egg-info/dependency_links.txt
+[2.198s] writing entry points to ../build/car_planning/car_planning.egg-info/entry_points.txt
+[2.198s] writing requirements to ../build/car_planning/car_planning.egg-info/requires.txt
+[2.198s] writing top-level names to ../build/car_planning/car_planning.egg-info/top_level.txt
+[2.199s] writing manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'
+[2.251s] reading manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'
+[2.254s] writing manifest file '../build/car_planning/car_planning.egg-info/SOURCES.txt'
+[2.254s] running build
+[2.254s] running build_py
+[2.254s] creating /home/ksj/ros2_fin/build/car_planning/build
+[2.254s] creating /home/ksj/ros2_fin/build/car_planning/build/lib
+[2.254s] creating /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning
+[2.254s] copying car_planning/decision_maker_backup.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning
+[2.256s] copying car_planning/decision_maker.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning
+[2.256s] copying car_planning/__init__.py -> /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning
+[2.256s] running install
+[2.266s] running install_lib
+[2.301s] creating /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning
+[2.301s] copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/decision_maker_backup.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning
+[2.301s] copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/decision_maker.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning
+[2.301s] copying /home/ksj/ros2_fin/build/car_planning/build/lib/car_planning/__init__.py -> /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning
+[2.302s] byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/decision_maker_backup.py to decision_maker_backup.cpython-312.pyc
+[2.304s] byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/decision_maker.py to decision_maker.cpython-312.pyc
+[2.304s] byte-compiling /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning/__init__.py to __init__.cpython-312.pyc
+[2.304s] running install_data
+[2.304s] creating /home/ksj/ros2_fin/install/car_planning/share/ament_index
+[2.305s] creating /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index
+[2.305s] creating /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index/packages
+[2.305s] copying resource/car_planning -> /home/ksj/ros2_fin/install/car_planning/share/ament_index/resource_index/packages
+[2.305s] copying package.xml -> /home/ksj/ros2_fin/install/car_planning/share/car_planning
+[2.305s] creating /home/ksj/ros2_fin/install/car_planning/share/car_planning/launch
+[2.305s] copying launch/v2x_full_stack.launch.py -> /home/ksj/ros2_fin/install/car_planning/share/car_planning/launch
+[2.305s] creating /home/ksj/ros2_fin/install/car_planning/share/car_planning/config
+[2.305s] copying config/decision_maker.yaml -> /home/ksj/ros2_fin/install/car_planning/share/car_planning/config
+[2.306s] running install_egg_info
+[2.330s] Copying ../build/car_planning/car_planning.egg-info to /home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages/car_planning-0.0.0-py3.12.egg-info
+[2.330s] running install_scripts
+[2.491s] Installing decision_maker script to /home/ksj/ros2_fin/install/car_planning/lib/car_planning
+[2.491s] writing list of installed files to '/home/ksj/ros2_fin/build/car_planning/install.log'
+[2.578s] Invoked command in '/home/ksj/ros2_fin/car_planning' returned '0': AMENT_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/ksj/ros2_fin/install/car_msgs:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/ksj/ros2_fin/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/ksj/ros2_fin/build/car_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ksj/ros2_fin/install/car_planning/lib/python3.12/site-packages:/home/ksj/ros2_fin/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/car_planning build --build-base /home/ksj/ros2_fin/build/car_planning/build install --record /home/ksj/ros2_fin/build/car_planning/install.log --single-version-externally-managed install_data
