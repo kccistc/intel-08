@@ -1,0 +1,7 @@
+
+train: /home/jeongseon/workspace/pred_danger/yolo_carla_dataset/train/images
+val: /home/jeongseon/workspace/pred_danger/yolo_carla_dataset/valid/images
+test: /home/jeongseon/workspace/pred_danger/yolo_carla_dataset/test/images
+
+nc: 1
+names: ['vehicle']
