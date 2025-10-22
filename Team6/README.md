@@ -314,9 +314,17 @@ $ python vision_server.py
 ---
 ### 결과 및 시연
 
-```bash
-추가 바람
-```
+작동 영상
+
+https://github.com/user-attachments/assets/9ad40d47-5914-423f-bc3b-39cf2ed8cae1
+
+영상 저장
+
+
+
+https://github.com/user-attachments/assets/c7097c90-bde7-446c-878f-aa3ac36c2586
+
+
 
 ---
 
@@ -329,6 +337,7 @@ $ python vision_server.py
 | **김민성** | Yocto |
 | **이두현** | Gstream / AI / Carla |
 | **정찬영** | AI / HW / 3D printing |
+
 
 
 
