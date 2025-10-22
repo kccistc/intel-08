@@ -1,0 +1,40 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2712";
+
+    fragment@0 {
+        target = <&spi0>;
+        __overlay__ {
+            status = "okay";
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            /* CE0=GPIO8, CE1=GPIO7 (active-low) */
+            cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
+
+            /* ★ CS0 테스트용 spidev는 쓰지 않음 (충돌 방지)
+            spidev@0 {
+                compatible = "spidev";
+                reg = <0>;
+                spi-max-frequency = <1000000>;
+                status = "disabled";
+            };
+            */
+
+            /* ★ MCP2515를 CS0(GPIO8)로 사용 */
+            mcp2515@0 {
+                compatible = "microchip,mcp2515";
+                reg = <0>;                         /* CS0 */
+                spi-max-frequency = <500000>;
+                oscillator-frequency = <8000000>;  /* 보드가 16MHz면 16000000 */
+
+                interrupt-parent = <&gpio>;
+                interrupts = <12 2>;               /* INT=GPIO12, falling-edge */
+
+                status = "okay";
+            };
+        };
+    };
+};

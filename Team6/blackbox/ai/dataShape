@@ -1,0 +1,12 @@
+Input petrv2_repvggB0_backbone_pp_800x320/input_layer1 UINT8, NHWC(320x800x3) 
+Output petrv2_repvggB0_backbone_pp_800x320/conv28 UINT8, FCR(10x25x1280) 
+
+Input petrv2_repvggB0_transformer_pp_800x320/input_layer1 UINT8, FCR(12x250x1280) 
+Input petrv2_repvggB0_transformer_pp_800x320/input_layer2 UINT8, FCR(12x250x256) 
+
+Output petrv2_repvggB0_transformer_pp_800x320/concat1 UINT16, FCR(1x304x10) 
+Output petrv2_repvggB0_transformer_pp_800x320/conv41 UINT16, FCR(1x304x10)
+
+
+hailo parse-hef petrv2_repvggB0_transformer_pp_800x320.hef 
+hailo parse-hef petrv2_repvggB0_backbone_pp_800x320.hef 

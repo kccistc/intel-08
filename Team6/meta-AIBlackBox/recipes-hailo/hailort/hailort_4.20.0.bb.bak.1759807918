@@ -1,0 +1,48 @@
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
+SUMMARY = "HailoRT (library + hailortcli)"
+HOMEPAGE = "https://github.com/hailo-ai/hailort"
+LICENSE = "MIT"
+
+PV = "4.20.0"
+SRC_URI = "\
+    git://github.com/hailo-ai/hailort.git;protocol=https;nobranch=1 \
+    file://LICENSE.MIT \
+"
+SRCREV = "542ba8f3cd95ed85175083ee4add00167c50f668"
+
+# 라이선스 파일은 files/에서 가져와 WORKDIR에 놓고, 그 파일의 체크섬을 검증
+LIC_FILES_CHKSUM = "file://${WORKDIR}/LICENSE.MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+
+S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"
+
+inherit cmake pkgconfig
+
+EXTRA_OECMAKE = "\
+  -DCMAKE_BUILD_TYPE=Release \
+  -DHAILO_BUILD_EXAMPLES=OFF \
+  -DHAILO_BUILD_EMULATOR=OFF \
+  -DHAILO_BUILD_GSTREAMER=OFF \
+  -DHAILO_BUILD_TESTS=OFF \
+  -DHAILO_BUILD_PYHAILORT=OFF \
+"
+
+DEPENDS = "protobuf-native protobuf zlib"
+
+# 패키지 분할
+PACKAGES = "${PN} ${PN}-cli ${PN}-dev ${PN}-dbg"
+
+FILES:${PN} = "${libdir}/libhailort.so.*"
+FILES:${PN}-cli = "${bindir}/hailortcli"
+FILES:${PN}-dev = "\
+  ${includedir}/hailo/* \
+  ${libdir}/libhailort.so \
+  ${libdir}/pkgconfig/* \
+  ${libdir}/cmake/HailoRT* \
+"
+RDEPENDS:${PN}-cli = "${PN}"
+do_configure[network] = "1"
+do_compile[network]   = "1"
+DEPENDS += "git-native"

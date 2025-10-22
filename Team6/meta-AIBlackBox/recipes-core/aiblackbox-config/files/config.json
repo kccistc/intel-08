@@ -1,0 +1,12 @@
+{
+  "can_bitrate": 500000,
+  "display": { "width": 800, "height": 480 },
+  "record": {
+    "device": "/dev/video2",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "bitrate": 4000000,
+    "dir": "/data/records"
+  }
+}
