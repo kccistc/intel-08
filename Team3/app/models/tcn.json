@@ -1,0 +1,27 @@
+{
+  "classes": [
+    "bentover_dumbbell",
+    "jumping_jack",
+    "side_lateral_raise",
+    "burpee",
+    "idle",
+    "leg_raise",
+    "pushup",
+    "shoulder_press",
+    "squat"
+  ],
+  "input_channels": 51,
+  "hparams": {
+    "win": 60,
+    "levels": 4,
+    "channels": 128,
+    "kernel": 5,
+    "dropout": 0.2,
+    "fps": 30.0,
+    "use_velocity": true,
+    "use_acceleration": false,
+    "deriv_kernel": "central5",
+    "pad_mode": "zeros"
+  },
+  "model_type": "deriv"
+}

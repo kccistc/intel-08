@@ -1,0 +1,50 @@
+{
+  "upper_body": {
+    "shoulder_press": {
+      "metrics": { "elbow": { "shape": "triangular", "min": 80.0, "best": 100.0, "max": 160.0 } },
+      "phases":  { "up_th": 125.0, "down_th": 110.0, "debounce_n": 3, "cooldown_n": 3 }
+    },
+    "side_lateral_raise": {
+      "metrics": { "shoulder": { "shape": "triangular", "min": 45.0, "best": 60.0, "max": 75.0 } },
+      "phases":  { "up_th": 80.0, "down_th": 60.0, "debounce_n": 3, "cooldown_n": 4 }
+    },
+    "dumbbell_row": {
+      "metrics": {
+        "shoulder": { "shape": "triangular", "min": 18.0, "best": 30.0, "max": 45.0 },
+        "elbow":    { "shape": "plateau",    "min": 145.0, "max": 165.0 }
+      },
+      "phases":  { "down_th": 145.0, "up_th": 165.0, "debounce_n": 3, "cooldown_n": 0 }
+    }
+  },
+  "lower_body": {
+    "squat": {
+      "metrics": {
+        "hip":  { "best": 100.0, "maxv": 65.0, "minv": 150.0 },
+        "knee": { "best": 120.0, "maxv": 80.0, "minv": 150.0 }
+      },
+      "phases": { "down_th": 145.0, "up_th": 165.0, "debounce_n": 2 }
+    },
+    "leg_raise": {
+      "metrics": { "hip": { "best": 140.0, "max": 165.0, "min": 110.0 } },
+      "phases":  { "down_th": 155.0, "up_th": 170.0, "debounce_n": 3, "cooldown_n": 5 }
+    }
+  },
+  "core": {
+    "burpee": {
+      "phases": { "down_enter": 110.0, "up_enter": 110.0 },
+      "score":  { "fixed": 100 }
+    },
+    "pushup": {
+      "phases": { "down_enter": 120.0, "score_trigger": 135.0, "debounce_n": 3 },
+      "score":  {
+        "elbow_min": 90.3, "elbow_max": 133.5,
+        "knee_min": 90.0,  "knee_max": 157.0,
+        "w_elbow": 0.7, "w_knee": 0.3
+      }
+    },
+    "jumping_jack": {
+      "phases": { "open_enter": 90.0, "close_enter": 90.0, "count_every": 2 },
+      "score":  { "fixed": 100 }
+    }
+  }
+}

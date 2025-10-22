@@ -1,0 +1,32 @@
+{
+  "input_features": [
+    "rms_norm_L",
+    "rms_norm_R",
+    "diff_rms_norm",
+    "ratio_rms_norm",
+    "diemg_L",
+    "diemg_R",
+    "diff_diemg",
+    "ratio_diemg",
+    "dmdf_L",
+    "dmdf_R",
+    "diff_dmdf",
+    "ratio_dmdf",
+    "dsampen_L",
+    "dsampen_R",
+    "diff_dsampen",
+    "ratio_dsampen",
+    "dmsesen_L",
+    "dmsesen_R",
+    "diff_dmsesen",
+    "ratio_dmsesen",
+    "tempo_cv"
+  ],
+  "target_labels": [
+    "FI_L",
+    "FI_R",
+    "BI"
+  ],
+  "scaler": "models/mt_scaler.joblib",
+  "model_path": "models/mt_fi_balance.pt"
+}
