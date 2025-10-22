@@ -1,0 +1,106 @@
+dbaeb5e Merge pull request #37 from StrongThrow/song
+e133911 final code
+f8508b1 Merge pull request #36 from StrongThrow/duhyeon
+8aceede vision_server.py 최종 수정
+91c6930 Update README with project overview and details
+340f8e5 Update README.md
+099815c Update README.md
+60791f9 Update README.md
+b2e14fd Merge pull request #35 from StrongThrow/duhyeon
+a15ad04 last change
+f7d4312 Update README.md
+96b1ef6 Update README.md
+e317de4 Update README.md
+a8dfc8a Update README.md
+fca1dae Merge pull request #34 from StrongThrow/salnock-patch-1
+22b78c0 Update README.md
+f41e893 Merge pull request #33 from StrongThrow/change_Algorithm
+e8e227d changeCodeSonggu
+dc59053 Merge pull request #32 from StrongThrow/duhyeon
+7b253c7 sry
+0fe576c code change with main.c
+4285eb4 단일 저장 변경완완료
+447867b Update README.md
+6d0ee06 Update README.md
+d79668b 민성쿤의 요구사항 추가된 버전
+4cfad1a Update README.md
+5e6ef5e Update README.md
+9b46450 Update README.md
+6d442ed Update README.md
+42dcb52 Update README.md
+04b6c98 Update README.md
+fda6488 Update README.md
+59f8c93 Update README.md
+1625143 Update README.md
+348f87f Update README.md
+680d2ad Update README.md
+3690720 미미친
+3d0f3ae Merge pull request #31 from StrongThrow/changeCode
+c1abdf7 change
+b3c0246 Merge pull request #30 from StrongThrow/chanyeong_branch
+3159814 readme입니당
+83035a6 Merge pull request #29 from StrongThrow/duhyeon
+e33470d pi 제거
+b8ac201 성공
+9f8e7bf Merge pull request #27 from StrongThrow/changeCode
+2827907 change main C code
+c5f1391 Merge pull request #26 from StrongThrow/duhyeon
+59f54f2 vision_server관련 추가 파일 및 수정
+498ef9d change main
+4ba451a Merge pull request #24 from StrongThrow/code
+4626b8d change main file
+fcd87a8 Merge pull request #21 from StrongThrow/gihwan_branch
+6b20a63 아 코드 바꿈
+998ebb6 sorry2
+0c391d1 sorry
+4c6aa05 sorry
+73a9c0a Merge pull request #20 from StrongThrow/fix_app
+2c9b23a make skeleton code
+f746c25 Merge pull request #19 from StrongThrow/gihwan_branch
+e52c13a arduino
+60c6324 can-gpsxy
+8bf35a8 good
+3b024c4 Merge pull request #18 from StrongThrow/change_all
+bff8a5a change source file
+4e9cbe3 Merge pull request #17 from StrongThrow/LDH_branch
+fb844c4 살려려사람
+777c424 Merge pull request #16 from StrongThrow/gihwan_branch
+4494665 can, arduino
+5315b66 Merge pull request #15 from StrongThrow/gihwan_branch
+be31128 gstreaming+calra+can
+312e508 hi
+2a284ec 인생
+179624e Merge pull request #14 from StrongThrow/gihwan_branch
+9c3e8e9 Add multi_cars_autopilot_serial.py from Carla examples
+c09d6a3 server추가 및 app vision server modelFrame displayFrame 분할
+357e3f7 Merge pull request #13 from StrongThrow/gihwan_branch
+ea330eb Merge pull request #12 from StrongThrow/bsp
+219295c 기환테스트
+7e4ecba 끝..?
+304860c Merge pull request #11 from StrongThrow/LDH_branch
+110553e vision_server 수정
+ff1828d import GstVideo 빼먹었었음
+a95e34f Merge pull request #9 from StrongThrow/LDH_branch
+2e5518b vision_server.py RGBDisplay class 추가
+270c4e4 Merge pull request #8 from StrongThrow/LDH_branch
+d5654af python Gstream class
+216b2dc change
+01af1d5 수정본 branch를 만들어야하는데 쩝
+432590e change can.c
+4b333f2 code structure
+38e8c81 Merge pull request #6 from StrongThrow/add_carla_add_scp
+5c113a6 add carla code
+013b7de Merge pull request #5 from StrongThrow/add_carla_add_scp
+3eb9132 add carla files
+c7c880f Merge pull request #4 from StrongThrow/fixMakefile
+53926e8 fix makefile, add bsp
+e56bd33 미안
+62b0a8c makefile변경
+24097b1 Merge pull request #3 from StrongThrow/feature/bsp-add-storage-api
+cfeaa4e 나 수정함 kms
+d925a27 Merge pull request #2 from StrongThrow/feature/cross-complie
+5f15943 cross-complie-version
+972bd18 Merge pull request #1 from StrongThrow/feature/cross-complie-add
+a905a8e Feat: Integrate cJSON as a submodule and update Makefile
+7bfb3a0 Create README.md
+1b76d39 Initial project structure and mock code setup
