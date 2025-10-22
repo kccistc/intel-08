@@ -1,0 +1,5 @@
+[Match]
+MACAddressPolicy=persistent
+
+[Link]
+NamePolicy=kernel database onboard slot path
