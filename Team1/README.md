@@ -53,6 +53,25 @@
    
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=gosumjigi)]([https://github.com/anuraghazra/github-readme-stats](https://github.com/kccistc/intel-08/new/main/Team1))
 
+🔗 About Project (프로젝트 개요)
+교통 및 주변 상황을 인식하는 스마트 시스템의 하부 제어 모듈입니다.
+
+stm 차량은 ROS 2 (라즈베리 파이5) 시스템으로부터 UART 통신으로 명령을 받아, 차량의 모터(바퀴)를 정밀 제어하고, 제어 상태를 OLED 디스플레이에 시각화하여 운전자(또는 개발자)에게 정보를 제공합니다.
+
+
+## ⚙️ 1. 사용된 주요 기술 및 하드웨어분류기술/모듈역할마이크로컨트롤러STM32F4 
+
+### 전체 시스템 제어 및 통신 인터페이스상위 시스템ROS 2 (라즈베리 파이)주행 명령 및 속도 제어량 전송모터 
+제어TIM2 (PWM)DC 모터 속도 제어 (주기: 9999)시각화SSD1306 (OLED)실시간 PWM 속도 계기판 출력통신 
+
+
+## ⚡ 2. STM32 주요 기능 및 동작 원리
+### 2.1. ROS 2 명령 수신 및 처리 📡(UART1)메인 루프에서 UART1을 통해 라즈베리 파이로부터 주행 명령을 수신합니다.프로토콜: "S,speed,direction\n" (예: S,50,0)속도 변환: 수신된 speed 값 (0~100)을 실제 모터 PWM 듀티 사이클
+(0 ~ 9000, MAX_PWM_SPEED)로 변환하여 모터에 적용합니다. 
+
+<img width="324" height="80" alt="image" src="https://github.com/user-attachments/assets/5c4142f7-1e67-4131-a918-467e51be55c4" />
+
+
 ## 📂 프로젝트 디렉토리 구조
 
 ```📦 project-root
