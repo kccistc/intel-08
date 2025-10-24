@@ -1,5 +1,6 @@
 # 🏋️‍♂️ **AI Smart Gym Project**
 
+## 👥 **Team: 자세어때**
 | 이름 | 역할 | 주요 담당 | 메일 |
 | --- | --- | --- | --- |
 | **서민솔** | 팀장 | 프로젝트 총괄, 운동 분류 모델 설계 | minsolseo4@gmail.com |
@@ -90,12 +91,6 @@ EMG·IMU 센서 융합 파워리프팅 스쿼트 분석까지 지원하는 파�
 <img width="861" height="485" alt="image" src="https://github.com/user-attachments/assets/eeaca896-b994-43b9-892b-fadff9362e0d" />
 
 
-
----
-
-## 👥 **Team: 자세어때**
-
-
 ---
 
 ## 🧠 **기술 스택**
@@ -129,14 +124,6 @@ EMG·IMU 센서 융합 파워리프팅 스쿼트 분석까지 지원하는 파�
 - 운동 수행 정확도 향상 및 **부상 예방**  
 - 개인 맞춤 피드백을 통한 **훈련 효율 극대화**  
 - AI + 센서 융합 **스마트 피트니스 솔루션 실현**
-
----
-
-## 🎬 **시연 예시**
-
-<p align="center">
-  <img src="assets/demo.gif" alt="Demo" width="70%">
-</p>
 
 ---
 
